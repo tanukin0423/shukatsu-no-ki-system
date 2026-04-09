@@ -930,21 +930,17 @@ function sendMail() {
     '&su='+encodeURIComponent(subject)+
     '&body='+encodeURIComponent(body);
 
-  // まずwindow.openで試みる
+  const mailtoUrl='mailto:'+dest+
+    '?subject='+encodeURIComponent(subject)+
+    '&body='+encodeURIComponent(body);
+
+  // まずGmailで試みる
   const gmailWin = window.open(url,'_blank');
 
-  // ポップアップブロックや開けなかった場合のフォールバック
   setTimeout(function(){
+    // スマートフォン・ポップアップブロック対策：mailtoにフォールバック
     if(!gmailWin || gmailWin.closed){
-      // location.hrefで直接遷移
-      if(confirm('Gmailが開けませんでした。\nこのタブでGmailを開きますか？')){
-        window.location.href = url;
-      }
-    } else {
-      // 正常に開いた場合も確認
-      if(confirm('Gmailは開きましたか？\n\n開いていない場合は「OK」を押すと\nこのタブでGmailを開きます。')){
-        window.location.href = url;
-      }
+      window.location.href = mailtoUrl;
     }
   }, 1500);
 }
