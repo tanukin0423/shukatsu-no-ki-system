@@ -127,6 +127,8 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--gbg);color:var(--tex
 .wish-summary{margin-top:12px;display:flex;flex-direction:column;gap:6px;}
 .wish-item{display:flex;align-items:center;gap:8px;background:var(--gp);border:1.5px solid var(--border);border-radius:9px;padding:8px 13px;font-size:0.82rem;transition:all 0.2s;}
 .wish-item.filled{border-color:var(--gm);background:#d4eece;}
+.wish-del{margin-left:auto;background:none;border:none;color:#c0392b;cursor:pointer;font-size:0.85rem;padding:2px 6px;border-radius:4px;}
+.wish-del:hover{background:#fdecea;}
 .wish-num{background:var(--gd);color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;flex-shrink:0;}
 .wish-text{color:var(--tl);}
 .wish-item.filled .wish-text{color:var(--gd);font-weight:500;}
@@ -155,6 +157,50 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--gbg);color:var(--tex
 /* ローディング */
 .loading{text-align:center;padding:20px;color:var(--tl);font-size:0.85rem;}
 </style>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBmPpJxhMnGk5P-XxXL2QO8V8kVMKxHfYc",
+  authDomain: "career-board-4a3f8.firebaseapp.com",
+  projectId: "career-board-4a3f8",
+  storageBucket: "career-board-4a3f8.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef1234567890"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.fbLoadCounselors = async function() {
+  try {
+    const snap = await getDoc(doc(db, 'config', 'counselors'));
+    if (!snap.exists()) return null;
+    return snap.data().counselors || null;
+  } catch(e) {
+    console.error('Firebase loadCounselors error:', e);
+    return null;
+  }
+};
+
+window.fbLoadSlots = async function(counselorId) {
+  try {
+    const snap = await getDoc(doc(db, 'slots', counselorId));
+    if (!snap.exists()) return null;
+    const data = snap.data();
+    const result = {};
+    (data.blocked || []).forEach(k => { result[k] = false; });
+    return result;
+  } catch(e) {
+    console.error('Firebase loadSlots error:', e);
+    return null;
+  }
+};
+
+window.firebaseReady = true;
+</script>
 </head>
 <body>
 
@@ -392,14 +438,18 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--gbg);color:var(--tex
       <!-- 時間パネル -->
       <div class="time-panel" id="timePanel">
         <div class="time-panel-label" id="timePanelLabel">時間帯を選んでください</div>
+        <div style="font-size:0.72rem;color:var(--tl);margin-bottom:8px;" id="timePanelNote"></div>
         <div class="time-grid" id="timeGrid"></div>
+        <button id="cancelDateBtn" style="display:none;margin-top:8px;width:100%;padding:7px;background:white;border:1.5px solid var(--red);border-radius:8px;color:var(--red);font-family:inherit;font-size:0.78rem;cursor:pointer;" onclick="cancelDate()">
+          🗑 この日の予約を削除する
+        </button>
       </div>
 
       <!-- 選択サマリー -->
       <div class="wish-summary" id="wishSummary">
-        <div class="wish-item" id="wi0"><span class="wish-num">1</span><span class="wish-text" id="wt0">未選択</span></div>
-        <div class="wish-item" id="wi1"><span class="wish-num">2</span><span class="wish-text" id="wt1">未選択</span></div>
-        <div class="wish-item" id="wi2"><span class="wish-num">3</span><span class="wish-text" id="wt2">未選択</span></div>
+        <div class="wish-item" id="wi0"><span class="wish-num">1</span><span class="wish-text" id="wt0">未選択</span><button class="wish-del" onclick="removeWish(0)" style="display:none;">✕</button></div>
+        <div class="wish-item" id="wi1"><span class="wish-num">2</span><span class="wish-text" id="wt1">未選択</span><button class="wish-del" onclick="removeWish(1)" style="display:none;">✕</button></div>
+        <div class="wish-item" id="wi2"><span class="wish-num">3</span><span class="wish-text" id="wt2">未選択</span><button class="wish-del" onclick="removeWish(2)" style="display:none;">✕</button></div>
       </div>
     </div>
 
@@ -427,11 +477,46 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--gbg);color:var(--tex
       <div id="confirmContent" style="font-size:0.85rem;line-height:2;"></div>
     </div>
     <div class="section" style="text-align:center;">
-      <p style="font-size:0.78rem;color:var(--tl);margin-bottom:14px;">
-        「メールで送信する」を押すとGmailが開きます。<br>
-        初回の方は検査結果PDFを添付してから送信してください。
-      </p>
-      <button class="submit-btn" onclick="sendMail()">📧 メールで送信する</button>
+      <div style="background:#e8f5e3;border:1.5px solid #7db96a;border-radius:10px;padding:12px;margin-bottom:14px;font-size:0.82rem;line-height:1.9;">
+        <b>📧 送信方法について</b><br>
+        💻 <b>PCの方：</b>ボタンを押すとGmailが自動で開きます。<br>
+        📱 <b>スマートフォンの方：</b>ボタンを押してメール内容をコピーし、<br>
+        　　Gmailアプリで新規作成→貼り付け→送信してください。
+      </div>
+      <button class="submit-btn" onclick="sendMail()">📧 メール内容を作成する</button>
+
+      <!-- メール内容表示エリア -->
+      <div id="mailPreviewArea" style="display:none;margin-top:20px;text-align:left;">
+        <div style="background:#e8f5e3;border:1.5px solid #7db96a;border-radius:12px;padding:16px;margin-bottom:12px;">
+          <div style="font-size:0.82rem;font-weight:700;color:#2d5a27;margin-bottom:8px;">📧 メール情報</div>
+          <div style="font-size:0.82rem;margin-bottom:4px;">宛先：<span id="previewDest" style="color:#1565c0;font-weight:700;"></span></div>
+          <div style="font-size:0.82rem;">件名：<span id="previewSubject" style="font-weight:700;"></span></div>
+        </div>
+        <div style="background:#fdfaf5;border:1.5px solid #d0e4c8;border-radius:12px;padding:16px;margin-bottom:12px;">
+          <div style="font-size:0.82rem;font-weight:700;color:#2d5a27;margin-bottom:8px;">📝 メール本文</div>
+          <pre id="previewBody" style="font-family:'Noto Sans JP',sans-serif;font-size:0.78rem;white-space:pre-wrap;line-height:1.8;color:#2a2a2a;"></pre>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button onclick="copyMailContent()" style="width:100%;padding:14px;background:#2d5a27;color:white;border:none;border-radius:50px;font-family:'Noto Sans JP',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">
+            📋 メール内容をコピーする
+          </button>
+          <button onclick="openMailDraft()" style="width:100%;padding:14px;background:#1565c0;color:white;border:none;border-radius:50px;font-family:'Noto Sans JP',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">
+            📧 メール作成画面を開く
+          </button>
+        </div>
+        <div style="margin-top:12px;background:#fff8e1;border:1.5px solid #f0c040;border-radius:10px;padding:12px;font-size:0.78rem;line-height:1.9;color:#5a4000;">
+          <b>📧 送信手順：</b><br>
+          ① 「📧 メール作成画面を開く」を押す<br>
+          　　→ PC・スマートフォン共通でメールアプリが開きます<br>
+          ② 宛先・件名・本文が自動入力されています<br>
+          ③ 「送信」を押して完了！<br><br>
+          <b>📱 うまく開かない場合：</b><br>
+          ① 「📋 メール内容をコピーする」を押す<br>
+          ② Gmailアプリで新規作成を開く<br>
+          ③ 宛先に <b><span class="copy-dest"></span></b> を入力<br>
+          ④ 本文欄を長押し→「貼り付け」→送信
+        </div>
+      </div>
     </div>
     <div class="nav-row">
       <button class="nav-btn secondary" onclick="goStep(2)">← 戻る</button>
@@ -511,19 +596,35 @@ function checkUrlParam() {
 // ===== 相談員データ読み込み =====
 async function loadCounselors() {
   try {
-    // localStorageから読み込む（admin.htmlで設定したデータ）
-    const saved = localStorage.getItem('counselors_data');
-    if (saved) {
-      const data = JSON.parse(saved);
-      counselors = (data.counselors || []).filter(function(c){ return c.active; });
-    } else {
-      // デフォルトデータ
-      counselors = [
-        {id:'kitayama', name:'北山 四郎', email:'kitayama@tama.ac.jp', dept:'キャリア支援課', active:true},
-        {id:'soudan-a', name:'相談員A', email:'soudan-a@tama.ac.jp', dept:'キャリア支援課', active:true},
-        {id:'soudan-b', name:'相談員B', email:'soudan-b@tama.ac.jp', dept:'キャリア支援課', active:true},
-        {id:'soudan-c', name:'相談員C', email:'soudan-c@tama.ac.jp', dept:'キャリア支援課', active:true},
-      ];
+    // Firebaseから取得を試みる
+    let loaded = false;
+    if (window.fbLoadCounselors) {
+      const fbCounselors = await window.fbLoadCounselors();
+      if (fbCounselors && fbCounselors.length > 0) {
+        counselors = fbCounselors.filter(function(c){ return c.active; });
+        // localStorageも更新しておく（オフライン対応）
+        const data = { updatedAt: new Date().toISOString().slice(0,10), counselors: fbCounselors };
+        localStorage.setItem('counselors_data', JSON.stringify(data));
+        loaded = true;
+        console.log('Counselors loaded from Firebase');
+      }
+    }
+    // Firebaseが使えない場合はlocalStorageから
+    if (!loaded) {
+      const saved = localStorage.getItem('counselors_data');
+      if (saved) {
+        const data = JSON.parse(saved);
+        counselors = (data.counselors || []).filter(function(c){ return c.active; });
+        console.log('Counselors loaded from localStorage');
+      } else {
+        // デフォルトデータ
+        counselors = [
+          {id:'kitayama', name:'北山 四郎', email:'kitayama@tama.ac.jp', dept:'キャリア支援課', active:true},
+          {id:'soudan-a', name:'相談員A', email:'soudan-a@tama.ac.jp', dept:'キャリア支援課', active:true},
+          {id:'soudan-b', name:'相談員B', email:'soudan-b@tama.ac.jp', dept:'キャリア支援課', active:true},
+          {id:'soudan-c', name:'相談員C', email:'soudan-c@tama.ac.jp', dept:'キャリア支援課', active:true},
+        ];
+      }
     }
     renderCounselorSelect();
   } catch(e) {
@@ -547,12 +648,29 @@ async function onCounselorChange() {
   blockedSlots = new Set();
   if (id) {
     try {
-      const saved = localStorage.getItem('slots_'+id);
-      if (saved) {
-        const slots = JSON.parse(saved);
-        Object.keys(slots).forEach(function(k){
-          if(slots[k]===false) blockedSlots.add(k);
-        });
+      // Firebaseから取得を試みる
+      let loaded = false;
+      if (window.fbLoadSlots) {
+        const fbSlots = await window.fbLoadSlots(id);
+        if (fbSlots !== null) {
+          Object.keys(fbSlots).forEach(function(k){
+            if(fbSlots[k]===false) blockedSlots.add(k);
+          });
+          // localStorageも更新
+          localStorage.setItem('slots_'+id, JSON.stringify(fbSlots));
+          loaded = true;
+          console.log('Slots loaded from Firebase for:', id);
+        }
+      }
+      // Firebaseが使えない場合はlocalStorageから
+      if (!loaded) {
+        const saved = localStorage.getItem('slots_'+id);
+        if (saved) {
+          const slots = JSON.parse(saved);
+          Object.keys(slots).forEach(function(k){
+            if(slots[k]===false) blockedSlots.add(k);
+          });
+        }
       }
     } catch(e) {}
     renderWeekGrid(0,'grid0'); renderWeekGrid(1,'grid1');
@@ -640,12 +758,13 @@ function isBlocked(d, time) {
 }
 
 function getTimes() {
+  // 45分刻み: 10:00, 10:45, 11:30, 12:15, 13:00, 13:45, 14:30, 15:15, 16:00（9スロット）
   const s=[];
-  for(let h=10;h<=16;h++){
-    s.push(String(h).padStart(2,'0')+':00');
-    if(h<16) s.push(String(h).padStart(2,'0')+':30');
+  let total=10*60;
+  while(total<=16*60){
+    s.push(String(Math.floor(total/60)).padStart(2,'0')+':'+String(total%60).padStart(2,'0'));
+    total+=45;
   }
-  s.push('16:30');
   return s;
 }
 
@@ -724,18 +843,21 @@ function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCal
 // ===== 日付クリック =====
 function onDateClick(d, btn) {
   const iso=ymd(d);
-  const ei=wishes.findIndex(function(w){ return w&&w.iso===iso; });
-  if(ei!==-1){ wishes[ei]=null; btn.classList.remove('selected'); updateWishSummary(); document.getElementById('timePanel').style.display='none'; return; }
-  if(wishes.filter(function(w){ return w; }).length>=3){ alert('希望日は3つまでです。外したい日をもう一度タップしてください。'); return; }
+  // 同じ日・同じ時間の重複チェックはonTimeClickで行う
+  if(wishes.filter(function(w){ return w; }).length>=3){
+    alert('希望日時は3つまでです。サマリーの「✕」で削除してから選んでください。');
+    return;
+  }
   pendingDate={iso:iso,label:dateLabel(d),d:d};
   showTimePanel(d);
 }
 
 function onCalClick(d) {
   const iso=ymd(d);
-  const ei=wishes.findIndex(function(w){ return w&&w.iso===iso; });
-  if(ei!==-1){ wishes[ei]=null; updateWishSummary(); renderCalGrid(); document.getElementById('timePanel').style.display='none'; return; }
-  if(wishes.filter(function(w){ return w; }).length>=3){ alert('希望日は3つまでです。外したい日をもう一度クリックしてください。'); return; }
+  if(wishes.filter(function(w){ return w; }).length>=3){
+    alert('希望日時は3つまでです。サマリーの「✕」で削除してから選んでください。');
+    return;
+  }
   pendingDate={iso:iso,label:dateLabel(d),d:d,isCal:true};
   showTimePanel(d);
 }
@@ -744,14 +866,18 @@ function onCalClick(d) {
 function showTimePanel(d) {
   const panel=document.getElementById('timePanel');
   document.getElementById('timePanelLabel').textContent=dateLabel(d)+'　の時間帯を選んでください';
+  document.getElementById('timePanelNote').textContent='同じ日の別の時間帯も選べます';
+  document.getElementById('cancelDateBtn').style.display='none';
   const grid=document.getElementById('timeGrid');
   grid.innerHTML='';
   getTimes().forEach(function(t){
     const btn=document.createElement('button');
     const blocked=isBlocked(d,t);
-    btn.className='time-btn'+(blocked?' blocked-time':'');
-    btn.textContent=t;
-    if(!blocked){
+    // すでに選択済みの時間はグレーアウト
+    const alreadySelected=wishes.some(function(w){ return w&&w.iso===ymd(d)&&w.time===t; });
+    btn.className='time-btn'+(blocked?' blocked-time':alreadySelected?' blocked-time':'');
+    btn.textContent=t+(alreadySelected?' ✓':'');
+    if(!blocked&&!alreadySelected){
       btn.onclick=function(){ onTimeClick(t); };
     }
     grid.appendChild(btn);
@@ -760,18 +886,34 @@ function showTimePanel(d) {
   panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
+function cancelDate(){
+  // 削除はwishSummaryの✕ボタンで行う
+  pendingDate=null;
+  document.getElementById('timePanel').style.display='none';
+}
+
 function onTimeClick(t) {
   if(!pendingDate) return;
-  const ei=wishes.findIndex(function(w){ return !w; });
+  // 同じ日時の重複チェック
+  const dup = wishes.some(function(w){ return w&&w.iso===pendingDate.iso&&w.time===t; });
+  if(dup){ alert('その日時はすでに選択されています。'); return; }
+  // 空きスロットに追加
+  const ei = wishes.findIndex(function(w){ return !w; });
   if(ei===-1) return;
   wishes[ei]={iso:pendingDate.iso, label:pendingDate.label+' '+t, time:t};
-  // ボタンをselectedに
+  // 日付ボタンをselectedに
   document.querySelectorAll('.date-btn').forEach(function(b){
     if(b.dataset.iso===pendingDate.iso) b.classList.add('selected');
   });
   if(pendingDate.isCal) renderCalGrid();
-  pendingDate=null;
-  document.getElementById('timePanel').style.display='none';
+  // まだ空きがあれば同じ日の別の時間も選べるようtimePanelを更新
+  const remaining = wishes.filter(function(w){ return !w; }).length;
+  if(remaining > 0){
+    showTimePanel(pendingDate.d);
+  } else {
+    pendingDate=null;
+    document.getElementById('timePanel').style.display='none';
+  }
   updateWishSummary();
 }
 
@@ -780,16 +922,32 @@ function updateWishSummary() {
   wishes.forEach(function(w,i){
     const item=document.getElementById('wi'+i);
     const txt=document.getElementById('wt'+i);
+    const del=item.querySelector('.wish-del');
     if(w){
       item.classList.add('filled');
       txt.textContent=w.label;
-      txt.className='wish-text';
+      if(del) del.style.display='inline-block';
     } else {
       item.classList.remove('filled');
       txt.textContent='未選択';
-      txt.className='wish-text';
+      if(del) del.style.display='none';
     }
   });
+}
+
+function removeWish(idx){
+  const iso = wishes[idx] ? wishes[idx].iso : null;
+  wishes[idx]=null;
+  // 同じ日の他の希望がなければselectedを解除
+  if(iso && !wishes.some(function(w){ return w&&w.iso===iso; })){
+    document.querySelectorAll('.date-btn').forEach(function(b){
+      if(b.dataset.iso===iso) b.classList.remove('selected');
+    });
+    renderCalGrid();
+  }
+  document.getElementById('timePanel').style.display='none';
+  pendingDate=null;
+  updateWishSummary();
 }
 
 // ===== 確認画面 =====
@@ -925,24 +1083,59 @@ function sendMail() {
   body+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
   body+='以上、よろしくお願いいたします。';
 
-  const url='https://mail.google.com/mail/?view=cm&fs=1'+
+  // メールプレビュー表示
+  document.getElementById('previewDest').textContent = dest;
+  document.getElementById('previewSubject').textContent = subject;
+  document.getElementById('previewBody').textContent = body;
+  document.querySelectorAll('.copy-dest').forEach(function(el){ el.textContent = dest; });
+
+  // Gmail URL保存
+  window._gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1'+
     '&to='+encodeURIComponent(dest)+
     '&su='+encodeURIComponent(subject)+
     '&body='+encodeURIComponent(body);
+  window._mailDest = dest;
+  window._mailSubject = subject;
+  window._mailBody = body;
 
-  const mailtoUrl='mailto:'+dest+
-    '?subject='+encodeURIComponent(subject)+
-    '&body='+encodeURIComponent(body);
+  // プレビューエリアを表示
+  var area = document.getElementById('mailPreviewArea');
+  area.style.display = 'block';
+  area.scrollIntoView({behavior:'smooth', block:'start'});
+}
 
-  // まずGmailで試みる
-  const gmailWin = window.open(url,'_blank');
+function copyMailContent(){
+  var dest = window._mailDest || '';
+  var subject = window._mailSubject || '';
+  var body = window._mailBody || '';
+  var full = '宛先：' + dest + '\n件名：' + subject + '\n\n' + body;
+  navigator.clipboard.writeText(full).then(function(){
+    alert('✅ コピーしました！\nGmailアプリを開いて貼り付けてください。');
+  }).catch(function(){
+    // clipboard APIが使えない場合
+    var ta = document.createElement('textarea');
+    ta.value = full;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('✅ コピーしました！\nGmailアプリを開いて貼り付けてください。');
+  });
+}
 
-  setTimeout(function(){
-    // スマートフォン・ポップアップブロック対策：mailtoにフォールバック
-    if(!gmailWin || gmailWin.closed){
-      window.location.href = mailtoUrl;
-    }
-  }, 1500);
+function openMailDraft(){
+  var dest = window._mailDest || '';
+  var subject = window._mailSubject || '';
+  var body = window._mailBody || '';
+
+  var encodedBody = encodeURIComponent(body).replace(/%0A/g, '%0D%0A');
+
+  var url =
+    'mailto:' + dest +
+    '?subject=' + encodeURIComponent(subject) +
+    '&body=' + encodedBody;
+
+  location.href = url;
 }
 
 function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }

@@ -112,6 +112,88 @@ body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+// ===== Firebase 設定 =====
+const firebaseConfig = {
+  apiKey: "AIzaSyBmPpJxhMnGk5P-XxXL2QO8V8kVMKxHfYc",
+  authDomain: "career-board-4a3f8.firebaseapp.com",
+  projectId: "career-board-4a3f8",
+  storageBucket: "career-board-4a3f8.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef1234567890"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ===== Firebase へのスロット保存 =====
+window.fbSaveSlots = async function(counselorId, slotsData) {
+  try {
+    await setDoc(doc(db, 'slots', counselorId), {
+      counselorId: counselorId,
+      blocked: Object.keys(slotsData).filter(k => slotsData[k] === false),
+      updatedAt: new Date().toISOString()
+    });
+    return true;
+  } catch(e) {
+    console.error('Firebase saveSlots error:', e);
+    return false;
+  }
+};
+
+// ===== Firebase からスロット読込 =====
+window.fbLoadSlots = async function(counselorId) {
+  try {
+    const snap = await getDoc(doc(db, 'slots', counselorId));
+    if (!snap.exists()) return null;
+    const data = snap.data();
+    const result = {};
+    (data.blocked || []).forEach(k => { result[k] = false; });
+    return result;
+  } catch(e) {
+    console.error('Firebase loadSlots error:', e);
+    return null;
+  }
+};
+
+// ===== Firebase へ相談員データ保存 =====
+window.fbSaveCounselors = async function(counselorsData) {
+  try {
+    await setDoc(doc(db, 'config', 'counselors'), {
+      updatedAt: new Date().toISOString(),
+      workHours: { start: '10:00', end: '16:45', days: [1,2,3,4,5] },
+      counselors: counselorsData.map(c => ({
+        id: c.id, name: c.name, email: c.email,
+        dept: c.dept || 'キャリア支援課', active: c.active
+      }))
+    });
+    return true;
+  } catch(e) {
+    console.error('Firebase saveCounselors error:', e);
+    return false;
+  }
+};
+
+// ===== Firebase から相談員データ読込 =====
+window.fbLoadCounselors = async function() {
+  try {
+    const snap = await getDoc(doc(db, 'config', 'counselors'));
+    if (!snap.exists()) return null;
+    return snap.data().counselors || null;
+  } catch(e) {
+    console.error('Firebase loadCounselors error:', e);
+    return null;
+  }
+};
+
+// Firebase 準備完了フラグ
+window.firebaseReady = true;
+console.log('Firebase initialized');
+</script>
 </head>
 <body>
 
@@ -139,7 +221,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);
 <div class="admin-wrap" id="adminWrap">
   <div class="header">
     <div><h1>🌳 就活の木　管理画面<span class="role-badge" id="roleBadge"></span></h1></div>
-    <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span id="fbStatus" style="font-size:0.72rem;background:rgba(255,255,255,0.15);border-radius:10px;padding:3px 10px;color:rgba(255,255,255,0.7);">🔄 Firebase接続中...</span>
+      <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+    </div>
   </div>
 
   <div class="tab-bar">
@@ -234,7 +319,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);
       <div class="field" style="margin-bottom:14px;">
         <label>GitHub Pages のベースURL</label>
         <input type="text" id="myQrBaseUrl"
-          placeholder="例：https://tanukin0423.github.io/shukatsu-no-ki-system/"
+          placeholder="例：https://tanukin0423.github.io/career-form/"
           style="font-size:0.85rem;"
           oninput="renderMyQR()">
       </div>
@@ -297,7 +382,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);
       <div class="field" style="margin-bottom:12px;">
         <label>GitHub Pages のベースURL</label>
         <input type="text" id="qrBaseUrl"
-          placeholder="例：https://tanukin0423.github.io/shukatsu-no-ki-system/"
+          placeholder="例：https://tanukin0423.github.io/career-form/"
           style="font-size:0.85rem;"
           oninput="renderQRList()">
         <p style="font-size:0.72rem;color:var(--tl);margin-top:4px;">
@@ -355,20 +440,52 @@ function defaultCounselors(){
   ];
 }
 
-function loadData(){
+async function loadData(){
+  // まずlocalStorageから読む（即時表示用）
   const s=localStorage.getItem('counselors_data');
   try{ counselors=s?JSON.parse(s).counselors:defaultCounselors(); }catch(e){ counselors=defaultCounselors(); }
   counselors.forEach(function(c){
     const d=localStorage.getItem('slots_'+c.id);
     try{ allSlots[c.id]=d?JSON.parse(d):{}; }catch(e){ allSlots[c.id]={}; }
   });
+
+  // Firebaseからも取得（上書き）
+  if(window.fbLoadCounselors){
+    try{
+      const fbCounselors = await window.fbLoadCounselors();
+      if(fbCounselors && fbCounselors.length > 0){
+        // Firebase側にパスワードがないので、localStorageのパスワードを引き継ぐ
+        const localMap = {};
+        counselors.forEach(function(c){ localMap[c.id]=c.password; });
+        counselors = fbCounselors.map(function(c){
+          return Object.assign({}, c, { password: localMap[c.id] || c.id+'2026' });
+        });
+        // slotsもFirebaseから
+        for(const c of counselors){
+          const fbSlots = await window.fbLoadSlots(c.id);
+          if(fbSlots !== null){
+            allSlots[c.id] = fbSlots;
+            localStorage.setItem('slots_'+c.id, JSON.stringify(fbSlots));
+          } else if(!allSlots[c.id]){
+            allSlots[c.id] = {};
+          }
+        }
+        // localStorageも更新
+        const data={updatedAt:new Date().toISOString().slice(0,10),workHours:{start:'10:00',end:'16:45',days:[1,2,3,4,5]},counselors:counselors};
+        localStorage.setItem('counselors_data', JSON.stringify(data));
+        console.log('Firebase data loaded successfully');
+      }
+    } catch(e){ console.warn('Firebase load failed, using localStorage:', e); }
+  }
 }
 
-function doLogin(){
+async function doLogin(){
   const id=document.getElementById('loginId').value.trim();
   const pw=document.getElementById('loginPw').value;
   document.getElementById('loginErr').textContent='';
-  loadData();
+  document.getElementById('loginErr').textContent='⏳ データ読み込み中...';
+  await loadData();
+  document.getElementById('loginErr').textContent='';
   if(id===ADMIN_ID&&pw===ADMIN_PW){ currentRole='admin'; currentUserId=ADMIN_ID; startAdmin(); return; }
   const c=counselors.find(function(x){ return x.id===id&&x.active&&x.password===pw; });
   if(c){ currentRole='counselor'; currentUserId=id; startAdmin(); return; }
@@ -513,10 +630,20 @@ function saveEdit(){
   closeModal(); renderCounselorTable(); renderSelects();
 }
 
-function saveCounselors(){
-  const data={updatedAt:new Date().toISOString().slice(0,10),workHours:{start:'10:00',end:'17:00',days:[1,2,3,4,5]},counselors:counselors};
+async function saveCounselors(){
+  const data={updatedAt:new Date().toISOString().slice(0,10),workHours:{start:'10:00',end:'16:45',days:[1,2,3,4,5]},counselors:counselors};
   localStorage.setItem('counselors_data',JSON.stringify(data));
-  updateJsonView(); showSt('saveStatus1','✅ 保存しました','ok');
+
+  let fbOk = false;
+  if(window.fbSaveCounselors){
+    fbOk = await window.fbSaveCounselors(counselors);
+  }
+
+  updateJsonView();
+  const msg = fbOk
+    ? '✅ Firebase + ローカルに保存しました'
+    : '⚠️ ローカルのみ保存（Firebase接続を確認してください）';
+  showSt('saveStatus1', msg, fbOk ? 'ok' : 'err');
 }
 
 function getMonday(d){ const r=new Date(d); r.setHours(0,0,0,0); const dw=r.getDay(); r.setDate(r.getDate()+(dw===0?-6:1-dw)); return r; }
@@ -524,7 +651,17 @@ function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0
 function isHol(d){ return HOLIDAYS.has(ymd(d)); }
 function isPast(d){ const t=new Date(); t.setHours(0,0,0,0); return d<t; }
 function isFar(d){ const l=new Date(); l.setDate(l.getDate()+60); return d>l; }
-function getTimes(){ const s=[]; for(let h=10;h<=16;h++){ s.push(String(h).padStart(2,'0')+':00'); if(h<16)s.push(String(h).padStart(2,'0')+':30'); } s.push('16:30'); return s; }
+function getTimes(){
+  // 45分刻み: 10:00, 10:45, 11:30, 12:15, 13:00, 13:45, 14:30, 15:15, 16:00（9スロット）
+  const s=[];
+  let total=10*60;
+  while(total<=16*60){
+    const h=Math.floor(total/60), m=total%60;
+    s.push(String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'));
+    total+=45;
+  }
+  return s;
+}
 
 function loadCalendar(){
   if(currentRole==='admin'){ const el=document.getElementById('calCounselorSel'); if(el) currentCalId=el.value; }
@@ -562,20 +699,43 @@ function renderAdminCal(){
 }
 
 function toggleSl(ds,t){ if(!allSlots[currentCalId]) allSlots[currentCalId]={}; const k=ds+' '+t; allSlots[currentCalId][k]=(allSlots[currentCalId][k]===false)?true:false; renderAdminCal(); }
-function resetCalendar(){ if(!confirm('全て○にリセットします。')) return; allSlots[currentCalId]={}; localStorage.removeItem('slots_'+currentCalId); renderAdminCal(); showSt('saveStatus2','✅ リセットしました（保存済み）','ok'); }
+async function resetCalendar(){
+  if(!confirm('全て○にリセットします。')) return;
+  allSlots[currentCalId]={};
+  localStorage.removeItem('slots_'+currentCalId);
+  if(window.fbSaveSlots){ await window.fbSaveSlots(currentCalId, {}); }
+  renderAdminCal();
+  showSt('saveStatus2','✅ リセットしました（Firebase・ローカル両方）','ok');
+}
 function blockAllWeek(){ const ts=getTimes(); if(!allSlots[currentCalId]) allSlots[currentCalId]={}; for(let i=0;i<5;i++){ const d=new Date(calBaseMonday); d.setDate(calBaseMonday.getDate()+i); if(!isHol(d)&&!isPast(d)&&!isFar(d)) ts.forEach(function(t){ allSlots[currentCalId][ymd(d)+' '+t]=false; }); } renderAdminCal(); }
 function calPrev(){ calBaseMonday.setDate(calBaseMonday.getDate()-7); renderAdminCal(); }
 function calNext(){ calBaseMonday.setDate(calBaseMonday.getDate()+7); renderAdminCal(); }
 
-function saveCalendar(){
+async function saveCalendar(){
   const id=currentCalId, slots=allSlots[id]||{};
   const today=new Date(); today.setHours(0,0,0,0);
   const limit=new Date(); limit.setDate(limit.getDate()+60);
   const filtered={};
   Object.keys(slots).forEach(function(k){ if(slots[k]===false){ const dt=new Date(k.split(' ')[0]); if(dt>=today&&dt<=limit) filtered[k]=false; } });
   allSlots[id]=filtered;
-  localStorage.setItem('slots_'+id,JSON.stringify(filtered));
-  updateJsonView(); showSt('saveStatus2','✅ 保存しました（60日以内のみ保持）','ok');
+
+  // localStorageにも保存（フォールバック）
+  localStorage.setItem('slots_'+id, JSON.stringify(filtered));
+
+  // Firebaseに保存
+  const btn = document.querySelector('button[onclick="saveCalendar()"]');
+  if(btn){ btn.textContent='💾 保存中…'; btn.disabled=true; }
+  let fbOk = false;
+  if(window.fbSaveSlots){
+    fbOk = await window.fbSaveSlots(id, filtered);
+  }
+  if(btn){ btn.textContent='💾 カレンダーを保存'; btn.disabled=false; }
+
+  updateJsonView();
+  const msg = fbOk
+    ? '✅ Firebase + ローカルに保存しました（60日以内のみ）'
+    : '⚠️ ローカルのみ保存（Firebase接続を確認してください）';
+  showSt('saveStatus2', msg, fbOk ? 'ok' : 'err');
 }
 
 function updateJsonView(){
@@ -597,6 +757,20 @@ function downloadJson(fn,id){ const b=new Blob([document.getElementById(id).valu
 function downloadSlotJson(){ downloadJson('slots_'+document.getElementById('jsonCounselorSel').value+'.json','jsonSlots'); }
 function showSt(id,msg,type){ const el=document.getElementById(id); el.textContent=msg; el.className='save-status '+type; el.style.display='inline-block'; setTimeout(function(){ el.style.display='none'; },3000); }
 function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Firebase接続状態を表示
+function updateFbStatus(){
+  const el = document.getElementById('fbStatus');
+  if(!el) return;
+  if(window.firebaseReady){
+    el.textContent = '🔥 Firebase接続済み';
+    el.style.background = 'rgba(255,255,255,0.25)';
+    el.style.color = 'white';
+  } else {
+    setTimeout(updateFbStatus, 500);
+  }
+}
+setTimeout(updateFbStatus, 300);
 
 // ===== QRコード生成（カレンダータブ・自分専用） =====
 function renderMyQR() {
