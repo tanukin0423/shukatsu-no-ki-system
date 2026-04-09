@@ -479,7 +479,7 @@ textarea.fi.tall{min-height:88px;}
       </div>
       <div style="margin-top:8px;">
         <div class="fl">面談確定日時</div>
-        <input class="fi" id="confirmedDate" placeholder="例：2026年4月8日（水）10:30">
+        <input class="fi" id="confirmedDate" placeholder="例：2026年4月8日（水）10:00 / 10:45 / 11:30…">
       </div>
       <div style="margin-top:6px;">
         <div class="fl">自由記入（アンケートより）</div>
@@ -976,6 +976,7 @@ function saveJSON(withDate){
   setTimeout(function(){URL.revokeObjectURL(url);},1000);
   g('saveStatus').textContent='💾 最終保存：'+now;
   toast('💾 '+fname+' を保存しました！\n学生フォルダに保存してください。');
+} // ← saveJSON 終了
 
 // Firebase用：データ収集・復元のグローバル公開
 window._collectJSON = function(){
@@ -1005,13 +1006,21 @@ window._collectJSON = function(){
   };
 };
 window._restoreJSON = function(data){ restoreJSON(data); };
-}
 
-// ===== saveAll: JSON + Cloud 同時保存 =====
+// ===== saveAll: Cloud保存 ＋ ローカルバックアップ =====
 function saveAll(){
-  saveJSON(false);
+  // Cloud保存（fbSaveBtnを経由）
   var fbBtn = document.getElementById('fbSaveBtn');
   if(fbBtn) fbBtn.click();
+  // ローカルバックアップ（ダウンロードなし・localStorageに保存）
+  if(window._collectJSON){
+    var data = window._collectJSON();
+    if(data && data.gakuseki){
+      try{
+        localStorage.setItem('karte_backup_'+data.gakuseki, JSON.stringify(data));
+      }catch(e){}
+    }
+  }
 }
 
 // ===== AI機能（Claude API連携） =====
@@ -1474,25 +1483,8 @@ document.getElementById('fbLoadBtn').addEventListener('click', async function(){
   await loadFromCloud(gakuseki);
 });
 
-// CSV読み込み後のCloud自動マージ
-window._autoCloudMerge = async function(gakuseki){
-  try{
-    const snap = await getDoc(doc(db,'karte', gakuseki));
-    if(!snap.exists()) return; // 初回面談なら何もしない
-    const data = snap.data();
-    // ES・面談記録・補足メモなどをマージ（基本情報はCSV優先）
-    restoreKarteData(data);
-    // 小さなトーストで通知（alertは使わない）
-    var t = document.getElementById('toast');
-    if(t){
-      t.textContent = '☁️ 過去のカルテデータをCloudから自動読み込みしました（'+gakuseki+'）';
-      t.style.display='block';
-      setTimeout(function(){ t.style.display='none'; }, 4000);
-    }
-  }catch(e){
-    console.warn('Cloud自動マージ失敗:', e);
-  }
-};
+// ===== Cloud読み込みの本体関数 =====
+async function loadFromCloud(gakuseki){
   const info = document.getElementById('cloudLoadInfo');
   try{
     const snap = await getDoc(doc(db,'karte', gakuseki));
@@ -1503,14 +1495,42 @@ window._autoCloudMerge = async function(gakuseki){
     }
     const data = snap.data();
     restoreKarteData(data);
-    // モーダルを閉じる
-    var ov = document.querySelector('.ov');
-    if(ov) ov.classList.add('hide');
-    alert('✅ Cloudから読み込みました！\n学籍番号：'+gakuseki+'\n保存日時：'+(data._cloudSavedAt||'不明'));
+    // 起動モーダルを閉じる
+    const startModal = document.getElementById('startModal');
+    if(startModal) startModal.classList.add('hide');
+    // ヘッダーのボタンから呼ばれた場合は全オーバーレイを閉じる
+    document.querySelectorAll('.ov').forEach(function(ov){ ov.classList.add('hide'); });
+    // 通知
+    var t = document.getElementById('toast');
+    if(t){
+      t.textContent = '✅ Cloudから読み込みました！（'+gakuseki+'）保存日時：'+(data._cloudSavedAt||'不明');
+      t.style.display='block';
+      setTimeout(function(){ t.style.display='none'; }, 4000);
+    }
   }catch(e){
     alert('❌ Cloud読み込みに失敗しました。\n'+e.message);
   }
 }
+
+// CSV読み込み後のCloud自動マージ
+window._autoCloudMerge = async function(gakuseki){
+  try{
+    const snap = await getDoc(doc(db,'karte', gakuseki));
+    if(!snap.exists()) return; // 初回面談なら何もしない
+    const data = snap.data();
+    // ES・面談記録・補足メモなどをマージ（基本情報はCSV優先）
+    restoreKarteData(data);
+    // 小さなトーストで通知
+    var t = document.getElementById('toast');
+    if(t){
+      t.textContent = '☁️ 過去のカルテデータをCloudから自動読み込みしました（'+gakuseki+'）';
+      t.style.display='block';
+      setTimeout(function(){ t.style.display='none'; }, 4000);
+    }
+  }catch(e){
+    console.warn('Cloud自動マージ失敗:', e);
+  }
+};
 
 // 起動モーダルのcloudLoadBtn
 const cloudLoadBtn = document.getElementById('cloudLoadBtn');
