@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理者画面｜キャリア支援課 予約システム</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gp:#e8f5e3;
+  --bark:#6b4c2a;--cream:#fdfaf5;
+  --text:#2a2a2a;--tl:#888;--border:#c8dfc2;
+  --red:#A32D2D;--red-pale:#FCEBEB;
+  --blue:#185FA5;--blue-pale:#E6F1FB;
+  --amber:#BA7517;--amber-pale:#FAEEDA;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);min-height:100vh;}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.login-box{background:white;border-radius:16px;padding:40px 36px;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(45,90,39,0.15);}
+.login-logo{text-align:center;margin-bottom:24px;}
+.login-logo .tree{font-size:2.4rem;}
+.login-logo h1{font-size:1.1rem;color:var(--gd);font-weight:700;margin-top:6px;}
+.login-logo p{font-size:0.78rem;color:var(--tl);margin-top:4px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:0.82rem;font-weight:700;color:var(--gd);margin-bottom:5px;}
+.field input,.field select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:0.9rem;}
+.field input:focus,.field select:focus{outline:none;border-color:var(--gm);}
+.login-btn{width:100%;padding:12px;background:var(--gd);color:white;border:none;border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:4px;}
+.login-btn:hover{background:var(--gm);}
+.login-err{color:var(--red);font-size:0.78rem;text-align:center;margin-top:8px;min-height:18px;}
+.login-hint{font-size:0.72rem;color:var(--tl);text-align:center;margin-top:12px;line-height:1.7;background:var(--gp);border-radius:6px;padding:8px;}
+.admin-wrap{display:none;}
+.header{background:var(--gd);color:white;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.header h1{font-size:1rem;font-weight:700;}
+.role-badge{font-size:0.72rem;background:rgba(255,255,255,0.2);border-radius:10px;padding:2px 10px;margin-left:8px;}
+.logout-btn{background:rgba(255,255,255,0.2);border:none;color:white;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:0.78rem;font-family:'Noto Sans JP',sans-serif;}
+.tab-bar{background:white;border-bottom:2px solid var(--border);display:flex;padding:0 24px;overflow-x:auto;}
+.tab-btn{padding:12px 20px;border:none;background:none;font-family:'Noto Sans JP',sans-serif;font-size:0.83rem;font-weight:700;color:var(--tl);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;}
+.tab-btn.active{color:var(--gd);border-bottom-color:var(--gd);}
+.tab-btn.hidden{display:none;}
+.tab-panel{display:none;padding:20px;max-width:920px;margin:0 auto;}
+.tab-panel.active{display:block;}
+.section{background:white;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(45,90,39,0.08);}
+.section-title{font-size:0.95rem;font-weight:700;color:var(--gd);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.btn{padding:8px 16px;border:none;border-radius:7px;font-family:'Noto Sans JP',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.btn-primary{background:var(--gd);color:white;}
+.btn-primary:hover{background:var(--gm);}
+.btn-secondary{background:white;border:1.5px solid var(--border);color:var(--text);}
+.btn-secondary:hover{border-color:var(--gm);}
+.btn-danger{background:var(--red);color:white;}
+.btn-amber{background:var(--amber);color:white;}
+.btn-sm{padding:5px 11px;font-size:0.75rem;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.data-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+.data-table th{background:var(--gd);color:white;padding:8px 10px;text-align:left;font-weight:700;white-space:nowrap;}
+.data-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.data-table tr:hover td{background:var(--gp);}
+.data-table tr.inactive td{opacity:0.5;}
+.pw-mask{font-family:monospace;font-size:0.78rem;background:#f5f5f5;padding:2px 7px;border-radius:4px;letter-spacing:1px;}
+.status-badge{display:inline-block;font-size:0.68rem;padding:2px 8px;border-radius:10px;font-weight:700;}
+.st-active{background:var(--gp);color:var(--gd);}
+.st-inactive{background:#f0f0f0;color:#999;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+.add-form{background:var(--gp);border:1.5px solid var(--border);border-radius:10px;padding:16px;margin-top:14px;}
+.counselor-select-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.counselor-select-wrap label{font-weight:700;font-size:0.85rem;color:var(--gd);white-space:nowrap;}
+.counselor-select-wrap select{padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:'Noto Sans JP',sans-serif;font-size:0.85rem;min-width:160px;}
+.cal-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.week-nav{display:flex;align-items:center;gap:8px;}
+.week-nav button{background:var(--gp);border:1px solid var(--border);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:1rem;color:var(--gd);}
+.wlabel{font-size:0.85rem;font-weight:700;color:var(--gd);min-width:130px;text-align:center;}
+.cal-grid{display:grid;grid-template-columns:52px repeat(5,1fr);gap:3px;font-size:0.7rem;}
+.cal-head{text-align:center;padding:5px 2px;font-weight:700;color:var(--gd);background:var(--gp);border-radius:4px;}
+.time-label{text-align:right;padding:2px 5px;color:var(--tl);font-size:0.65rem;display:flex;align-items:center;justify-content:flex-end;}
+.cal-slot{text-align:center;padding:3px 2px;border-radius:4px;cursor:pointer;transition:all 0.12s;border:1.5px solid transparent;font-size:0.7rem;font-weight:700;min-height:24px;display:flex;align-items:center;justify-content:center;}
+.cal-slot.open{background:#e8f5e3;color:#2d5a27;border-color:#c8dfc2;}
+.cal-slot.open:hover{background:#c8e8c0;border-color:#4a8c3f;}
+.cal-slot.blocked{background:#FCEBEB;color:#A32D2D;border-color:#f0c0c0;}
+.cal-slot.blocked:hover{background:#f5a0a0;}
+.cal-slot.past{background:#f5f5f5;color:#ccc;cursor:not-allowed;}
+.cal-slot.far{background:#fff9e6;color:#cca300;cursor:not-allowed;font-size:0.6rem;}
+.cal-legend{display:flex;gap:12px;margin-top:8px;font-size:0.72rem;color:var(--tl);flex-wrap:wrap;}
+.cal-legend span{display:flex;align-items:center;gap:4px;}
+.dot{width:11px;height:11px;border-radius:3px;}
+.dot-open{background:#e8f5e3;border:1px solid #c8dfc2;}
+.dot-blocked{background:#FCEBEB;border:1px solid #f0c0c0;}
+.save-status{font-size:0.78rem;padding:5px 10px;border-radius:6px;display:none;}
+.save-status.ok{background:var(--gp);color:var(--gd);}
+.save-status.err{background:var(--red-pale);color:var(--red);}
+.json-area{width:100%;min-height:120px;padding:12px;border:1.5px solid var(--border);border-radius:8px;font-family:monospace;font-size:0.75rem;background:#1a1a1a;color:#7db96a;resize:vertical;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:white;border-radius:14px;overflow:hidden;max-width:500px;width:100%;}
+.modal-header{background:var(--gd);color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;}
+.modal-header h3{font-size:0.95rem;font-weight:700;}
+.modal-close{background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;}
+.modal-body{padding:20px;}
+.modal-footer{padding:12px 20px;background:#f9f9f9;display:flex;gap:8px;justify-content:flex-end;}
+/* QRコードリスト */
+.qr-grid{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px;}
+.qr-card{background:var(--gp);border:1.5px solid var(--border);border-radius:12px;padding:16px;text-align:center;width:200px;}
+.qr-card .qr-name{font-weight:700;font-size:0.9rem;color:var(--gd);margin-bottom:4px;}
+.qr-card .qr-id{font-size:0.72rem;color:var(--tl);margin-bottom:10px;}
+.qr-card canvas{border-radius:6px;}
+.qr-card .qr-url{font-size:0.62rem;color:var(--tl);margin-top:6px;word-break:break-all;line-height:1.5;}
+@media print{
+  .tab-bar,.header,.btn-row,.field,p,.save-status{display:none!important;}
+  .qr-grid{display:flex;flex-wrap:wrap;gap:20px;}
+  .qr-card{break-inside:avoid;}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="tree">🌳</div>
+      <h1>就活の木　管理画面</h1>
+      <p>多摩大学 キャリア支援課</p>
+    </div>
+    <div class="field"><label>ログインID</label>
+      <input type="text" id="loginId" placeholder="例：admin または kitayama"
+        onkeydown="if(event.key==='Enter')document.getElementById('loginPw').focus()">
+    </div>
+    <div class="field"><label>パスワード</label>
+      <input type="password" id="loginPw" placeholder="パスワードを入力"
+        onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">ログイン</button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-hint">管理者：ID「admin」でログイン<br>相談員：各自のIDとパスワードでログイン</div>
+  </div>
+</div>
+
+<div class="admin-wrap" id="adminWrap">
+  <div class="header">
+    <div><h1>🌳 就活の木　管理画面<span class="role-badge" id="roleBadge"></span></h1></div>
+    <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn hidden" id="tbCounselors" onclick="switchTab('tabCounselors',this)">👥 相談員管理</button>
+    <button class="tab-btn" id="tbCalendar" onclick="switchTab('tabCalendar',this)">🗓 カレンダー設定</button>
+    <button class="tab-btn hidden" id="tbJson" onclick="switchTab('tabJson',this)">📄 JSONデータ</button>
+  </div>
+
+  <!-- 相談員管理（管理者のみ） -->
+  <div class="tab-panel" id="tabCounselors">
+    <div class="section">
+      <div class="section-title">👥 相談員一覧（パスワード管理）</div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>ID</th><th>氏名</th><th>メールアドレス</th><th>所属</th><th>パスワード</th><th>状態</th><th>操作</th></tr></thead>
+          <tbody id="counselorTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">➕ 相談員を追加</div>
+      <div class="add-form">
+        <div class="form-grid">
+          <div class="field"><label>ID（英数字・ハイフンのみ）</label><input type="text" id="newId" placeholder="例：tanaka-k"></div>
+          <div class="field"><label>氏名</label><input type="text" id="newName" placeholder="例：田中 花子"></div>
+          <div class="field"><label>メールアドレス</label><input type="email" id="newEmail" placeholder="例：tanaka@tama.ac.jp"></div>
+          <div class="field"><label>所属部署</label><input type="text" id="newDept" value="キャリア支援課"></div>
+          <div class="field"><label>パスワード（初期設定）</label><input type="text" id="newPw" placeholder="例：tanaka2026"></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="addCounselor()">➕ 追加する</button>
+          <button class="btn btn-secondary" onclick="clearAddForm()">クリア</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">💾 変更を保存</div>
+      <p style="font-size:0.82rem;color:var(--tl);margin-bottom:12px;">
+        追加・編集後に保存してください。JSONタブからダウンロードしてGitHubにアップしてください。
+        <br><strong style="color:var(--red);">※パスワード情報はJSONには含まれません。このブラウザ内に保存されます。</strong>
+      </p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveCounselors()">💾 保存する</button>
+        <span class="save-status" id="saveStatus1"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- カレンダー設定 -->
+  <div class="tab-panel" id="tabCalendar">
+    <div class="section">
+      <div class="section-title">🗓 カレンダー設定</div>
+      <p style="font-size:0.78rem;color:var(--tl);margin-bottom:14px;">
+        サイボウズを見ながら塞がっている時間帯を<span style="color:var(--red);font-weight:700;">×（赤）</span>に設定してください。
+        保存後にJSONタブからダウンロードしてGitHubにアップしてください。
+        <span style="color:var(--amber);font-weight:700;">60日以降は設定不可（黄色）です。</span>
+      </p>
+      <div class="counselor-select-wrap" id="calSelWrap">
+        <label>相談員：</label>
+        <select id="calCounselorSel" onchange="loadCalendar()"></select>
+      </div>
+      <div class="cal-header">
+        <div class="week-nav">
+          <button onclick="calPrev()">‹</button>
+          <span class="wlabel" id="calWeekLabel"></span>
+          <button onclick="calNext()">›</button>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="resetCalendar()">全て○にリセット</button>
+        <button class="btn btn-sm" style="background:var(--red-pale);color:var(--red);border:1px solid var(--red);" onclick="blockAllWeek()">この週を全て×</button>
+      </div>
+      <div class="cal-grid" id="adminCalGrid"></div>
+      <div class="cal-legend">
+        <span><div class="dot dot-open"></div>○ 予約可能</span>
+        <span><div class="dot dot-blocked"></div>× 塞がっている</span>
+        <span style="color:var(--amber);">黄色：60日以降（設定不可）</span>
+      </div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-primary" onclick="saveCalendar()">💾 カレンダーを保存</button>
+        <span class="save-status" id="saveStatus2"></span>
+      </div>
+    </div>
+
+    <!-- 自分専用QRコードセクション -->
+    <div class="section" id="myQrSection">
+      <div class="section-title">📱 自分専用の予約QRコード</div>
+      <p style="font-size:0.82rem;color:var(--tl);margin-bottom:14px;">
+        このQRコードを学生に渡してください。読み取ると担当者が自動的にあなたに設定されます。
+        <br><strong style="color:var(--red);">※GitHubにアップ後のURLを入力してください。ローカルでは学生に共有できません。</strong>
+      </p>
+      <div class="field" style="margin-bottom:14px;">
+        <label>GitHub Pages のベースURL</label>
+        <input type="text" id="myQrBaseUrl"
+          placeholder="例：https://tanukin0423.github.io/shukatsu-no-ki-system/"
+          style="font-size:0.85rem;"
+          oninput="renderMyQR()">
+      </div>
+      <div id="myQrDisplay" style="display:none;">
+        <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <!-- QRコードはimgタグで表示（qrcode.jsがsrcを設定） -->
+            <div id="myQrImg" style="width:200px;height:200px;background:#f5f5f5;border-radius:8px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;"></div>
+            <div id="myQrName" style="font-size:0.85rem;font-weight:700;color:var(--gd);margin-top:8px;"></div>
+            <div id="myQrId" style="font-size:0.72rem;color:var(--tl);margin-bottom:6px;"></div>
+          </div>
+          <div style="flex:1;min-width:200px;">
+            <div style="font-size:0.8rem;font-weight:700;color:var(--gd);margin-bottom:6px;">予約URL</div>
+            <div id="myQrUrl" style="font-size:0.75rem;color:var(--text);background:#f5f5f5;padding:8px;border-radius:6px;word-break:break-all;line-height:1.6;margin-bottom:10px;"></div>
+            <div class="btn-row">
+              <button class="btn btn-primary btn-sm" onclick="downloadMyQR()">⬇ QRコードをダウンロード</button>
+              <button class="btn btn-secondary btn-sm" onclick="printMyQR()">🖨 印刷</button>
+              <button class="btn btn-secondary btn-sm" onclick="copyMyUrl()">📋 URLをコピー</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="myQrNote" style="font-size:0.78rem;color:var(--tl);">URLを入力するとQRコードが表示されます。</div>
+    </div>
+  </div>
+
+  <!-- JSONデータ（管理者のみ） -->
+  <div class="tab-panel" id="tabJson">
+    <div class="section">
+      <div class="section-title">📄 counselors.json（パスワード除外・公開用）</div>
+      <p style="font-size:0.78rem;color:var(--tl);margin-bottom:8px;">
+        このJSONをGitHubにアップロードしてください。パスワード情報は含まれていません。
+      </p>
+      <textarea class="json-area" id="jsonCounselors" readonly></textarea>
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-sm" onclick="copyJson('jsonCounselors')">📋 コピー</button>
+        <button class="btn btn-primary btn-sm" onclick="downloadJson('counselors.json','jsonCounselors')">⬇ ダウンロード</button>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">📄 slots JSON（相談員ごと）</div>
+      <div class="counselor-select-wrap">
+        <label>相談員：</label>
+        <select id="jsonCounselorSel" onchange="showSlotJson()"></select>
+      </div>
+      <textarea class="json-area" id="jsonSlots" readonly></textarea>
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-sm" onclick="copyJson('jsonSlots')">📋 コピー</button>
+        <button class="btn btn-primary btn-sm" onclick="downloadSlotJson()">⬇ ダウンロード</button>
+      </div>
+    </div>
+
+    <!-- QRコード生成 -->
+    <div class="section">
+      <div class="section-title">📱 相談員別 QRコード生成</div>
+      <p style="font-size:0.82rem;color:var(--tl);margin-bottom:14px;">
+        各相談員専用のQRコードを生成します。学生がQRコードを読み取ると、担当の先生が自動的に設定されます。
+        <br><strong style="color:var(--gd);">GitHubのURLを入力してください。</strong>
+      </p>
+      <div class="field" style="margin-bottom:12px;">
+        <label>GitHub Pages のベースURL</label>
+        <input type="text" id="qrBaseUrl"
+          placeholder="例：https://tanukin0423.github.io/shukatsu-no-ki-system/"
+          style="font-size:0.85rem;"
+          oninput="renderQRList()">
+        <p style="font-size:0.72rem;color:var(--tl);margin-top:4px;">
+          末尾に「/」を入れてください。ローカルでテストする場合は「file:///…/index.html」など
+        </p>
+      </div>
+      <div id="qrList"></div>
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn btn-primary" onclick="printQRPage()">🖨 QRコード一覧を印刷</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 編集モーダル -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>相談員を編集</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editIdx">
+      <div class="form-grid">
+        <div class="field"><label>ID（変更不可）</label><input type="text" id="editId" readonly style="background:#f5f5f5;"></div>
+        <div class="field"><label>氏名</label><input type="text" id="editName"></div>
+        <div class="field"><label>メールアドレス</label><input type="email" id="editEmail"></div>
+        <div class="field"><label>所属部署</label><input type="text" id="editDept"></div>
+        <div class="field"><label>新しいパスワード（変更しない場合は空欄）</label><input type="text" id="editPw" placeholder="空欄のままなら変更しない"></div>
+        <div class="field"><label>状態</label><select id="editActive"><option value="true">有効</option><option value="false">無効</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveEdit()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_ID='admin', ADMIN_PW='karigu2026';
+const DAYS=['日','月','火','水','木','金','土'];
+const HOLIDAYS=new Set(['2026-01-01','2026-01-12','2026-02-11','2026-02-23','2026-03-20','2026-04-29','2026-05-03','2026-05-04','2026-05-05','2026-05-06','2026-07-20','2026-08-11','2026-09-21','2026-09-22','2026-09-23','2026-10-12','2026-11-03','2026-11-23','2026-12-23']);
+
+let currentRole='', currentUserId='';
+let counselors=[], allSlots={};
+let calBaseMonday=getMonday(new Date()), currentCalId='';
+
+function defaultCounselors(){
+  return [
+    {id:'kitayama',name:'北山 四郎',email:'kitayama@tama.ac.jp',dept:'キャリア支援課',password:'kitayama2026',active:true},
+    {id:'soudan-a',name:'相談員A',email:'soudan-a@tama.ac.jp',dept:'キャリア支援課',password:'soudana2026',active:true},
+    {id:'soudan-b',name:'相談員B',email:'soudan-b@tama.ac.jp',dept:'キャリア支援課',password:'soudanb2026',active:true},
+    {id:'soudan-c',name:'相談員C',email:'soudan-c@tama.ac.jp',dept:'キャリア支援課',password:'soudanc2026',active:true},
+  ];
+}
+
+function loadData(){
+  const s=localStorage.getItem('counselors_data');
+  try{ counselors=s?JSON.parse(s).counselors:defaultCounselors(); }catch(e){ counselors=defaultCounselors(); }
+  counselors.forEach(function(c){
+    const d=localStorage.getItem('slots_'+c.id);
+    try{ allSlots[c.id]=d?JSON.parse(d):{}; }catch(e){ allSlots[c.id]={}; }
+  });
+}
+
+function doLogin(){
+  const id=document.getElementById('loginId').value.trim();
+  const pw=document.getElementById('loginPw').value;
+  document.getElementById('loginErr').textContent='';
+  loadData();
+  if(id===ADMIN_ID&&pw===ADMIN_PW){ currentRole='admin'; currentUserId=ADMIN_ID; startAdmin(); return; }
+  const c=counselors.find(function(x){ return x.id===id&&x.active&&x.password===pw; });
+  if(c){ currentRole='counselor'; currentUserId=id; startAdmin(); return; }
+  document.getElementById('loginErr').textContent='IDまたはパスワードが正しくありません';
+  document.getElementById('loginPw').value='';
+}
+
+function startAdmin(){
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('adminWrap').style.display='block';
+  if(currentRole==='admin'){
+    document.getElementById('roleBadge').textContent='管理者';
+    document.getElementById('tbCounselors').classList.remove('hidden');
+    document.getElementById('tbJson').classList.remove('hidden');
+    showTab('tabCounselors','tbCounselors');
+    document.getElementById('calSelWrap').style.display='flex';
+  } else {
+    const c=counselors.find(function(x){ return x.id===currentUserId; });
+    document.getElementById('roleBadge').textContent=(c?c.name:currentUserId)+'（相談員）';
+    document.getElementById('calSelWrap').style.display='none';
+    currentCalId=currentUserId;
+    showTab('tabCalendar','tbCalendar');
+  }
+  // QRセクションを現在のユーザーに合わせて初期化
+  document.getElementById('myQrSection').style.display='block';
+  renderCounselorTable();
+  renderSelects();
+  renderAdminCal();
+  updateJsonView();
+}
+
+function doLogout(){
+  currentRole=''; currentUserId='';
+  document.getElementById('loginWrap').style.display='flex';
+  document.getElementById('adminWrap').style.display='none';
+  document.getElementById('loginId').value='';
+  document.getElementById('loginPw').value='';
+  document.getElementById('loginErr').textContent='';
+  document.getElementById('tbCounselors').classList.add('hidden');
+  document.getElementById('tbJson').classList.add('hidden');
+}
+
+function showTab(tabId, btnId){
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById(tabId).classList.add('active');
+  document.getElementById(btnId).classList.add('active');
+}
+
+function switchTab(tabId,btn){
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+  if(tabId==='tabJson') updateJsonView();
+}
+
+function renderCounselorTable(){
+  document.getElementById('counselorTbody').innerHTML=counselors.map(function(c,i){
+    return '<tr class="'+(c.active?'':'inactive')+'">' +
+      '<td><code style="font-size:0.78rem;">'+escHtml(c.id)+'</code></td>' +
+      '<td><strong>'+escHtml(c.name)+'</strong></td>' +
+      '<td>'+escHtml(c.email)+'</td>' +
+      '<td>'+escHtml(c.dept||'')+'</td>' +
+      '<td><span class="pw-mask">'+maskPw(c.password||'')+'</span></td>' +
+      '<td><span class="status-badge '+(c.active?'st-active':'st-inactive')+'">'+(c.active?'有効':'無効')+'</span></td>' +
+      '<td style="display:flex;gap:4px;">' +
+        '<button class="btn btn-amber btn-sm" onclick="openEdit('+i+')">編集</button>' +
+        (c.id!=='kitayama'?'<button class="btn btn-danger btn-sm" onclick="delCounselor('+i+')">削除</button>':'') +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function maskPw(pw){
+  if(!pw) return '（未設定）';
+  return pw.slice(0,2)+'●●●●'+pw.slice(-1);
+}
+
+function renderSelects(){
+  const active=counselors.filter(function(c){ return c.active; });
+  ['calCounselorSel','jsonCounselorSel'].forEach(function(sid){
+    const el=document.getElementById(sid);
+    if(!el) return;
+    el.innerHTML=active.map(function(c){
+      return '<option value="'+c.id+'">'+c.name+'（'+c.id+'）</option>';
+    }).join('');
+  });
+  if(currentRole==='admin'&&active.length>0){ currentCalId=active[0].id; }
+  loadCalendar(); showSlotJson();
+}
+
+function addCounselor(){
+  const id=document.getElementById('newId').value.trim();
+  const name=document.getElementById('newName').value.trim();
+  const email=document.getElementById('newEmail').value.trim();
+  const dept=document.getElementById('newDept').value.trim();
+  const pw=document.getElementById('newPw').value.trim();
+  if(!id||!name||!email||!pw){ alert('全項目を入力してください。'); return; }
+  if(!/^[a-zA-Z0-9\-]+$/.test(id)){ alert('IDは英数字とハイフンのみです。'); return; }
+  if(counselors.find(function(c){ return c.id===id; })){ alert('このIDはすでに使用されています。'); return; }
+  counselors.push({id:id,name:name,email:email,dept:dept,password:pw,active:true});
+  allSlots[id]={};
+  renderCounselorTable(); renderSelects(); clearAddForm();
+  alert('「'+name+'」を追加しました。「保存する」を押してください。');
+}
+
+function clearAddForm(){
+  ['newId','newName','newEmail','newPw'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('newDept').value='キャリア支援課';
+}
+
+function delCounselor(i){
+  if(!confirm('「'+counselors[i].name+'」を削除しますか？')) return;
+  const id=counselors[i].id;
+  counselors.splice(i,1); delete allSlots[id]; localStorage.removeItem('slots_'+id);
+  renderCounselorTable(); renderSelects();
+}
+
+function openEdit(i){
+  const c=counselors[i];
+  document.getElementById('editIdx').value=i;
+  document.getElementById('editId').value=c.id;
+  document.getElementById('editName').value=c.name;
+  document.getElementById('editEmail').value=c.email;
+  document.getElementById('editDept').value=c.dept||'';
+  document.getElementById('editPw').value='';
+  document.getElementById('editActive').value=c.active?'true':'false';
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeModal(){ document.getElementById('editModal').classList.remove('show'); }
+
+function saveEdit(){
+  const i=parseInt(document.getElementById('editIdx').value);
+  counselors[i].name=document.getElementById('editName').value.trim();
+  counselors[i].email=document.getElementById('editEmail').value.trim();
+  counselors[i].dept=document.getElementById('editDept').value.trim();
+  const np=document.getElementById('editPw').value.trim();
+  if(np) counselors[i].password=np;
+  counselors[i].active=document.getElementById('editActive').value==='true';
+  closeModal(); renderCounselorTable(); renderSelects();
+}
+
+function saveCounselors(){
+  const data={updatedAt:new Date().toISOString().slice(0,10),workHours:{start:'10:00',end:'17:00',days:[1,2,3,4,5]},counselors:counselors};
+  localStorage.setItem('counselors_data',JSON.stringify(data));
+  updateJsonView(); showSt('saveStatus1','✅ 保存しました','ok');
+}
+
+function getMonday(d){ const r=new Date(d); r.setHours(0,0,0,0); const dw=r.getDay(); r.setDate(r.getDate()+(dw===0?-6:1-dw)); return r; }
+function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function isHol(d){ return HOLIDAYS.has(ymd(d)); }
+function isPast(d){ const t=new Date(); t.setHours(0,0,0,0); return d<t; }
+function isFar(d){ const l=new Date(); l.setDate(l.getDate()+60); return d>l; }
+function getTimes(){ const s=[]; for(let h=10;h<=16;h++){ s.push(String(h).padStart(2,'0')+':00'); if(h<16)s.push(String(h).padStart(2,'0')+':30'); } s.push('16:30'); return s; }
+
+function loadCalendar(){
+  if(currentRole==='admin'){ const el=document.getElementById('calCounselorSel'); if(el) currentCalId=el.value; }
+  if(!allSlots[currentCalId]) allSlots[currentCalId]={};
+  renderAdminCal();
+}
+
+function renderAdminCal(){
+  const times=getTimes(), grid=document.getElementById('adminCalGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  const slots=allSlots[currentCalId]||{}, wd=[];
+  const eh=document.createElement('div'); eh.className='cal-head'; eh.style.background='transparent'; grid.appendChild(eh);
+  for(let i=0;i<5;i++){
+    const d=new Date(calBaseMonday); d.setDate(calBaseMonday.getDate()+i); wd.push(d);
+    const h=document.createElement('div'); h.className='cal-head';
+    if(isHol(d)||isPast(d)||isFar(d)) h.style.opacity='0.4';
+    h.innerHTML=DAYS[d.getDay()]+'<br>'+(d.getMonth()+1)+'/'+d.getDate(); grid.appendChild(h);
+  }
+  document.getElementById('calWeekLabel').textContent=(wd[0].getMonth()+1)+'/'+wd[0].getDate()+'〜'+(wd[4].getMonth()+1)+'/'+wd[4].getDate();
+  times.forEach(function(time){
+    const tl=document.createElement('div'); tl.className='time-label'; tl.textContent=time; grid.appendChild(tl);
+    wd.forEach(function(d){
+      const ds=ymd(d), el=document.createElement('div');
+      if(isPast(d)||isHol(d)){ el.className='cal-slot past'; el.textContent='—'; }
+      else if(isFar(d)){ el.className='cal-slot far'; el.textContent='60日↑'; }
+      else{
+        const k=ds+' '+time, bl=slots[k]===false;
+        el.className='cal-slot '+(bl?'blocked':'open'); el.textContent=bl?'×':'○';
+        el.onclick=(function(dk,tk){ return function(){ toggleSl(dk,tk); }; })(ds,time);
+      }
+      grid.appendChild(el);
+    });
+  });
+}
+
+function toggleSl(ds,t){ if(!allSlots[currentCalId]) allSlots[currentCalId]={}; const k=ds+' '+t; allSlots[currentCalId][k]=(allSlots[currentCalId][k]===false)?true:false; renderAdminCal(); }
+function resetCalendar(){ if(!confirm('全て○にリセットします。')) return; allSlots[currentCalId]={}; localStorage.removeItem('slots_'+currentCalId); renderAdminCal(); showSt('saveStatus2','✅ リセットしました（保存済み）','ok'); }
+function blockAllWeek(){ const ts=getTimes(); if(!allSlots[currentCalId]) allSlots[currentCalId]={}; for(let i=0;i<5;i++){ const d=new Date(calBaseMonday); d.setDate(calBaseMonday.getDate()+i); if(!isHol(d)&&!isPast(d)&&!isFar(d)) ts.forEach(function(t){ allSlots[currentCalId][ymd(d)+' '+t]=false; }); } renderAdminCal(); }
+function calPrev(){ calBaseMonday.setDate(calBaseMonday.getDate()-7); renderAdminCal(); }
+function calNext(){ calBaseMonday.setDate(calBaseMonday.getDate()+7); renderAdminCal(); }
+
+function saveCalendar(){
+  const id=currentCalId, slots=allSlots[id]||{};
+  const today=new Date(); today.setHours(0,0,0,0);
+  const limit=new Date(); limit.setDate(limit.getDate()+60);
+  const filtered={};
+  Object.keys(slots).forEach(function(k){ if(slots[k]===false){ const dt=new Date(k.split(' ')[0]); if(dt>=today&&dt<=limit) filtered[k]=false; } });
+  allSlots[id]=filtered;
+  localStorage.setItem('slots_'+id,JSON.stringify(filtered));
+  updateJsonView(); showSt('saveStatus2','✅ 保存しました（60日以内のみ保持）','ok');
+}
+
+function updateJsonView(){
+  const pub={updatedAt:new Date().toISOString().slice(0,10),workHours:{start:'10:00',end:'17:00',days:[1,2,3,4,5]},counselors:counselors.map(function(c){ return {id:c.id,name:c.name,email:c.email,dept:c.dept,active:c.active}; })};
+  const el=document.getElementById('jsonCounselors'); if(el) el.value=JSON.stringify(pub,null,2);
+  showSlotJson();
+}
+
+function showSlotJson(){
+  const sel=document.getElementById('jsonCounselorSel'); if(!sel) return;
+  const id=sel.value; if(!id) return;
+  const s=allSlots[id]||{};
+  const blocked=Object.keys(s).filter(function(k){ return s[k]===false; });
+  const el=document.getElementById('jsonSlots'); if(el) el.value=JSON.stringify({counselorId:id,blocked:blocked,updatedAt:new Date().toISOString().slice(0,10)},null,2);
+}
+
+function copyJson(id){ const ta=document.getElementById(id); ta.select(); document.execCommand('copy'); alert('コピーしました！'); }
+function downloadJson(fn,id){ const b=new Blob([document.getElementById(id).value],{type:'application/json;charset=utf-8;'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=fn; a.click(); URL.revokeObjectURL(u); }
+function downloadSlotJson(){ downloadJson('slots_'+document.getElementById('jsonCounselorSel').value+'.json','jsonSlots'); }
+function showSt(id,msg,type){ const el=document.getElementById(id); el.textContent=msg; el.className='save-status '+type; el.style.display='inline-block'; setTimeout(function(){ el.style.display='none'; },3000); }
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ===== QRコード生成（カレンダータブ・自分専用） =====
+function renderMyQR() {
+  var baseUrl = document.getElementById('myQrBaseUrl').value.trim();
+  var display = document.getElementById('myQrDisplay');
+  var note = document.getElementById('myQrNote');
+  if (!baseUrl) {
+    display.style.display = 'none';
+    note.textContent = 'URLを入力するとQRコードが表示されます。';
+    return;
+  }
+  var id = currentCalId || currentUserId || 'kitayama';
+  var c = counselors.find(function(x){ return x.id === id; }) || { id:id, name:id, email:id+'@tama.ac.jp' };
+  var base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+  var url = base + 'index.html?c=' + id;
+  window._myQrUrl = url;
+  window._myQrCounselorName = c.name;
+  window._myQrId = id;
+
+  // コンテナをクリア
+  var container = document.getElementById('myQrImg');
+  container.innerHTML = '';
+
+  // qrcode.jsで生成
+  try {
+    new QRCode(container, {
+      text: url,
+      width: 196,
+      height: 196,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch(e) {
+    container.innerHTML = '<div style="width:196px;height:196px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#888;">エラー</div>';
+  }
+
+  document.getElementById('myQrName').textContent = c.name;
+  document.getElementById('myQrId').textContent = '（' + id + '）';
+  document.getElementById('myQrUrl').textContent = url;
+  display.style.display = 'block';
+  note.textContent = '';
+}
+
+// QR canvasを取得（qrcode.jsはcanvasとimgの両方を生成する）
+function getMyQrCanvas() {
+  var container = document.getElementById('myQrImg');
+  // canvasを優先、なければimgから再構築
+  var canvas = container.querySelector('canvas');
+  return canvas;
+}
+
+// 印刷・ダウンロード用の合成キャンバスを生成
+function buildQrCanvas(qrCanvas, callback) {
+  var name = window._myQrCounselorName || '';
+  var url = window._myQrUrl || '';
+  var out = document.createElement('canvas');
+  out.width = 320; out.height = 380;
+  var ctx = out.getContext('2d');
+  // 背景
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, 320, 380);
+  // ヘッダー
+  ctx.fillStyle = '#2d5a27';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('多摩大学 キャリア支援課', 160, 28);
+  // QRコード
+  if (qrCanvas) {
+    ctx.drawImage(qrCanvas, 62, 42, 196, 196);
+  } else {
+    ctx.fillStyle = '#eee';
+    ctx.fillRect(62, 42, 196, 196);
+  }
+  // 名前
+  ctx.fillStyle = '#2d5a27';
+  ctx.font = 'bold 18px sans-serif';
+  ctx.fillText(name, 160, 268);
+  // 案内文
+  ctx.fillStyle = '#555';
+  ctx.font = '13px sans-serif';
+  ctx.fillText('面談予約はこちら', 160, 292);
+  // URL
+  ctx.fillStyle = '#aaa';
+  ctx.font = '8px sans-serif';
+  var shortUrl = url.length > 60 ? url.slice(0,60)+'...' : url;
+  ctx.fillText(shortUrl, 160, 315);
+  callback(out);
+}
+
+function downloadMyQR() {
+  if (!window._myQrUrl) { alert('先にURLを入力してください。'); return; }
+  var qrCanvas = getMyQrCanvas();
+  buildQrCanvas(qrCanvas, function(out) {
+    var a = document.createElement('a');
+    a.download = 'QR_' + (window._myQrCounselorName || 'counselor') + '.png';
+    a.href = out.toDataURL('image/png');
+    a.click();
+  });
+}
+
+function printMyQR() {
+  if (!window._myQrUrl) { alert('先にURLを入力してください。'); return; }
+  var qrCanvas = getMyQrCanvas();
+  buildQrCanvas(qrCanvas, function(out) {
+    var dataUrl = out.toDataURL('image/png');
+    var name = window._myQrCounselorName || '';
+    var w = window.open('', '_blank');
+    if (!w) { alert('ポップアップを許可してください。'); return; }
+    w.document.open();
+    w.document.write(
+      '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR ' + name + '</title>' +
+      '<style>body{margin:0;padding:16px;text-align:center;}' +
+      'img{width:320px;height:380px;display:block;margin:0 auto;}' +
+      '@media print{body{padding:4px;}}</style>' +
+      '</head><body><img id="p" src="' + dataUrl + '">' +
+      '<script>document.getElementById("p").onload=function(){window.print();};<' + '/script>' +
+      '</body></html>'
+    );
+    w.document.close();
+  });
+}
+
+function copyMyUrl() {
+  if (!window._myQrUrl) { alert('先にURLを入力してください。'); return; }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(window._myQrUrl).then(function(){ alert('URLをコピーしました！'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = window._myQrUrl;
+    document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('URLをコピーしました！');
+  }
+}
+
+// ===== QRコード生成（JSONタブ・全員分） =====
+function renderQRList() {
+  const baseUrl = document.getElementById('qrBaseUrl').value.trim();
+  const container = document.getElementById('qrList');
+  if (!baseUrl) {
+    container.innerHTML = '<p style="font-size:0.82rem;color:var(--tl);">ベースURLを入力するとQRコードが表示されます。</p>';
+    return;
+  }
+  const active = counselors.filter(function(c){ return c.active; });
+  container.innerHTML = '<div class="qr-grid" id="qrGrid"></div>';
+  const grid = document.getElementById('qrGrid');
+  active.forEach(function(c) {
+    const url = baseUrl + (baseUrl.endsWith('/') ? '' : '/') + 'index.html?c=' + c.id;
+    const card = document.createElement('div');
+    card.className = 'qr-card';
+    card.innerHTML =
+      '<div class="qr-name">' + escHtml(c.name) + '</div>' +
+      '<div class="qr-id">' + escHtml(c.id) + '</div>' +
+      '<canvas id="qr_' + c.id + '" width="160" height="160"></canvas>' +
+      '<div class="qr-url">' + escHtml(url) + '</div>';
+    grid.appendChild(card);
+    // QRコードを描画（Google Charts API使用）
+    const img = document.createElement('img');
+    img.src = 'https://chart.googleapis.com/chart?chs=160x160&cht=qr&chl=' + encodeURIComponent(url) + '&choe=UTF-8';
+    img.style.cssText = 'width:160px;height:160px;border-radius:6px;';
+    img.alt = c.name + ' QRコード';
+    const canvas = document.getElementById('qr_' + c.id);
+    canvas.parentElement.replaceChild(img, canvas);
+  });
+}
+
+function printQRPage() {
+  if (!document.getElementById('qrBaseUrl').value.trim()) {
+    alert('先にベースURLを入力してください。');
+    return;
+  }
+  window.print();
+}
+</script>
+</body>
+</html>

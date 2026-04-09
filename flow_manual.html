@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>就活の木　システム運用フローマニュアル｜多摩大学キャリア支援課</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gl:#7db96a;--gp:#e8f5e3;
+  --bark:#6b4c2a;--gold:#c8860a;--blue:#1565c0;--red:#c0392b;
+  --purple:#6a1b9a;--teal:#00695c;
+  --cream:#fdfaf5;--border:#d0e4c8;--text:#2a2a2a;--tl:#666;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:#f0f4f0;color:var(--text);font-size:14px;line-height:1.7;}
+
+@media print{
+  .no-print{display:none!important;}
+  .page-break{page-break-before:always;}
+  body{background:white;font-size:11px;}
+  .card{box-shadow:none!important;border:1px solid #ddd;}
+  .sidebar{display:none!important;}
+  .content{margin-left:0!important;}
+}
+
+/* レイアウト */
+.sidebar{width:220px;background:var(--gd);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;padding:12px 0;}
+.content{margin-left:220px;padding:20px 24px;max-width:920px;}
+.print-btn{position:fixed;top:12px;right:12px;background:var(--gold);color:white;border:none;border-radius:8px;padding:8px 16px;font-family:inherit;font-size:0.8rem;font-weight:700;cursor:pointer;z-index:200;}
+
+/* サイドバー */
+.toc-logo{padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.15);margin-bottom:6px;}
+.toc-logo h2{color:white;font-size:0.82rem;font-weight:700;line-height:1.5;}
+.toc-logo small{color:rgba(255,255,255,0.55);font-size:0.65rem;}
+.toc-section-title{color:rgba(255,255,255,0.45);font-size:0.62rem;font-weight:700;padding:6px 16px 3px;letter-spacing:0.1em;}
+.toc-link{display:block;padding:5px 16px;color:rgba(255,255,255,0.75);text-decoration:none;font-size:0.72rem;transition:all 0.2s;}
+.toc-link:hover,.toc-link.active{background:rgba(255,255,255,0.15);color:white;}
+.toc-badge{display:inline-block;background:rgba(255,255,255,0.2);border-radius:3px;padding:1px 5px;font-size:0.6rem;margin-right:4px;}
+
+/* 表紙 */
+.cover{background:linear-gradient(135deg,var(--gd) 0%,var(--bark) 100%);color:white;border-radius:14px;padding:40px 36px;margin-bottom:22px;position:relative;overflow:hidden;}
+.cover::before{content:'🌳';position:absolute;right:30px;top:50%;transform:translateY(-50%);font-size:7rem;opacity:0.08;}
+.cover h1{font-family:'Noto Serif JP',serif;font-size:1.6rem;font-weight:700;margin-bottom:6px;}
+.cover .sub{font-size:0.92rem;opacity:0.82;margin-bottom:16px;}
+.cover .tags{display:flex;gap:8px;flex-wrap:wrap;}
+.cover .tag{background:rgba(255,255,255,0.15);padding:3px 12px;border-radius:20px;font-size:0.75rem;}
+
+/* カード */
+.card{background:white;border-radius:12px;box-shadow:0 2px 14px rgba(45,90,39,0.08);margin-bottom:18px;overflow:hidden;}
+.ch{padding:10px 18px;font-weight:700;font-size:0.88rem;display:flex;align-items:center;gap:8px;}
+.ch.green{background:var(--gd);color:white;}
+.ch.bark{background:var(--bark);color:white;}
+.ch.blue{background:var(--blue);color:white;}
+.ch.gold{background:var(--gold);color:white;}
+.ch.red{background:var(--red);color:white;}
+.ch.purple{background:var(--purple);color:white;}
+.ch.teal{background:var(--teal);color:white;}
+.cb{padding:18px 20px;}
+
+/* セクションタイトル */
+.sec-title{font-family:'Noto Serif JP',serif;font-size:1.2rem;font-weight:700;color:var(--gd);padding:6px 0 4px;border-bottom:3px solid var(--gl);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sec-num{background:var(--gd);color:white;border-radius:6px;padding:2px 10px;font-size:0.8rem;font-family:'Noto Sans JP',sans-serif;}
+.sec-num.bark{background:var(--bark);}
+.sec-num.blue{background:var(--blue);}
+.sec-num.gold{background:var(--gold);}
+
+/* フロー図 */
+.flow-container{margin:16px 0;}
+.flow-phase{margin-bottom:20px;}
+.phase-label{display:inline-flex;align-items:center;gap:8px;background:var(--gd);color:white;border-radius:8px;padding:6px 14px;font-size:0.82rem;font-weight:700;margin-bottom:10px;}
+.phase-label.student{background:var(--blue);}
+.phase-label.staff{background:var(--bark);}
+.phase-label.system{background:var(--teal);}
+.phase-label.prep{background:var(--purple);}
+
+.flow-steps{display:flex;flex-direction:column;gap:0;}
+.flow-step{display:flex;align-items:stretch;gap:0;}
+.flow-icon-col{display:flex;flex-direction:column;align-items:center;width:44px;flex-shrink:0;}
+.flow-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;z-index:1;}
+.flow-dot.blue{background:var(--blue);}
+.flow-dot.bark{background:var(--bark);}
+.flow-dot.green{background:var(--gd);}
+.flow-dot.gold{background:var(--gold);}
+.flow-dot.teal{background:var(--teal);}
+.flow-dot.purple{background:var(--purple);}
+.flow-line{width:2px;background:var(--border);flex:1;margin:2px 0;}
+.flow-content{flex:1;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;margin:0 0 8px 8px;}
+.flow-content .f-title{font-weight:700;font-size:0.88rem;color:var(--gd);margin-bottom:3px;}
+.flow-content .f-title.blue{color:var(--blue);}
+.flow-content .f-title.bark{color:var(--bark);}
+.flow-content .f-title.teal{color:var(--teal);}
+.flow-content .f-title.gold{color:var(--gold);}
+.flow-content .f-title.purple{color:var(--purple);}
+.flow-content .f-desc{font-size:0.81rem;color:var(--tl);line-height:1.7;}
+.flow-content .f-tool{display:inline-flex;align-items:center;gap:4px;background:var(--gp);border:1px solid var(--gl);border-radius:6px;padding:2px 8px;font-size:0.72rem;color:var(--gd);font-weight:700;margin-top:4px;}
+.flow-content .f-tool.blue{background:#e3f2fd;border-color:var(--blue);color:var(--blue);}
+.flow-content .f-tool.bark{background:#fdf6ec;border-color:var(--bark);color:var(--bark);}
+.flow-content .f-tool.gold{background:#fff8e1;border-color:var(--gold);color:var(--gold);}
+
+/* ステップ */
+.step-list{counter-reset:st;}
+.step-item{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;}
+.step-n{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.82rem;color:white;flex-shrink:0;margin-top:2px;}
+.step-n.green{background:var(--gd);}
+.step-n.bark{background:var(--bark);}
+.step-n.blue{background:var(--blue);}
+.step-n.gold{background:var(--gold);}
+.step-n.purple{background:var(--purple);}
+.step-body .t{font-weight:700;font-size:0.88rem;margin-bottom:3px;}
+.step-body .d{font-size:0.82rem;color:var(--tl);line-height:1.7;}
+
+/* テーブル */
+table{width:100%;border-collapse:collapse;font-size:0.82rem;margin:8px 0;}
+thead th{background:var(--gd);color:white;padding:7px 10px;text-align:left;}
+tbody tr:nth-child(even){background:var(--gp);}
+tbody td{padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+
+/* ボックス */
+.info-box{background:var(--gp);border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;margin:8px 0;font-size:0.83rem;line-height:1.8;}
+.warn-box{background:#fff8e1;border:1.5px solid var(--gold);border-radius:8px;padding:10px 14px;margin:8px 0;font-size:0.83rem;line-height:1.8;}
+.tip-box{background:#e3f2fd;border:1.5px solid var(--blue);border-radius:8px;padding:10px 14px;margin:8px 0;font-size:0.83rem;line-height:1.8;}
+.box-t{font-weight:700;margin-bottom:4px;}
+
+/* チェックリスト */
+.checklist{list-style:none;padding:0;}
+.checklist li{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.83rem;}
+.checklist li:last-child{border-bottom:none;}
+.check-icon{width:20px;height:20px;border-radius:4px;background:var(--gp);border:1.5px solid var(--gl);display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0;margin-top:1px;}
+
+/* ファイルバッジ */
+.file-badge{display:inline-flex;align-items:center;gap:4px;background:white;border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;font-size:0.75rem;font-weight:700;color:var(--gd);margin:2px;}
+.file-badge.blue{border-color:var(--blue);color:var(--blue);}
+.file-badge.bark{border-color:var(--bark);color:var(--bark);}
+.file-badge.gold{border-color:var(--gold);color:var(--gold);}
+.file-badge.purple{border-color:var(--purple);color:var(--purple);}
+
+p{margin-bottom:8px;font-size:0.86rem;line-height:1.8;}
+h3{font-size:0.92rem;font-weight:700;color:var(--bark);margin:12px 0 6px;padding-left:8px;border-left:3px solid var(--bark);}
+h3.blue{color:var(--blue);border-left-color:var(--blue);}
+h3.green{color:var(--gd);border-left-color:var(--gd);}
+ul,ol{padding-left:18px;font-size:0.83rem;line-height:1.9;margin:4px 0;}
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">🖨 印刷・PDF保存</button>
+
+<!-- サイドバー -->
+<nav class="sidebar no-print">
+  <div class="toc-logo">
+    <h2>🌳 就活の木<br>運用フローマニュアル</h2>
+    <small>多摩大学 キャリア支援課</small>
+  </div>
+  <div class="toc-section-title">はじめに</div>
+  <a class="toc-link" href="#overview">システム全体像</a>
+  <a class="toc-link" href="#files">ファイル一覧</a>
+
+  <div class="toc-section-title">PART 1　事前準備</div>
+  <a class="toc-link" href="#prep1"><span class="toc-badge">準1</span>GitHub公開</a>
+  <a class="toc-link" href="#prep2"><span class="toc-badge">準2</span>カレンダー設定</a>
+  <a class="toc-link" href="#prep3"><span class="toc-badge">準3</span>QRコード作成</a>
+  <a class="toc-link" href="#prep4"><span class="toc-badge">準4</span>マスター登録</a>
+  <a class="toc-link" href="#prep-check">事前準備チェックリスト</a>
+
+  <div class="toc-section-title">PART 2　運用フロー</div>
+  <a class="toc-link" href="#flow-overview">フロー全体図</a>
+  <a class="toc-link" href="#flow1"><span class="toc-badge">流1</span>学生がメール送信</a>
+  <a class="toc-link" href="#flow2"><span class="toc-badge">流2</span>NO2NO3で分析</a>
+  <a class="toc-link" href="#flow3"><span class="toc-badge">流3</span>日程確定メール</a>
+  <a class="toc-link" href="#flow4"><span class="toc-badge">流4</span>カルテで面談記録</a>
+  <a class="toc-link" href="#flow5"><span class="toc-badge">流5</span>週次更新</a>
+
+  <div class="toc-section-title">補足</div>
+  <a class="toc-link" href="#intl">留学生対応</a>
+  <a class="toc-link" href="#faq">よくある質問</a>
+</nav>
+
+<div class="content">
+
+<!-- 表紙 -->
+<div class="cover">
+  <h1>就活の木　システム運用フローマニュアル</h1>
+  <div class="sub">事前準備から面談記録まで・完全ガイド</div>
+  <div class="tags">
+    <span class="tag">多摩大学 キャリア支援課</span>
+    <span class="tag">北山 四郎（キャリ爺）</span>
+    <span class="tag">2026年度版</span>
+    <span class="tag">就活の木ブランド</span>
+  </div>
+</div>
+
+<!-- システム全体像 -->
+<div id="overview">
+  <div class="sec-title"><span class="sec-num">概要</span>システム全体像</div>
+  <div class="card">
+    <div class="ch green">🌳 5つのツールの役割と連携</div>
+    <div class="cb">
+      <table>
+        <thead><tr><th>ツール名</th><th>役割</th><th>使う人</th><th>タイミング</th></tr></thead>
+        <tbody>
+          <tr><td><span class="file-badge purple">📊 student_master_import.html</span></td><td>学生マスターデータをFirebaseに登録</td><td>管理者</td><td>学期開始時・週1回更新</td></tr>
+          <tr><td><span class="file-badge bark">⚙️ admin.html</span></td><td>カレンダー設定・QRコード生成・相談員管理</td><td>管理者・相談員</td><td>学期開始前</td></tr>
+          <tr><td><span class="file-badge blue">📱 index.html</span></td><td>学生が面談を予約するフォーム（日本語版）</td><td>学生</td><td>面談予約時</td></tr>
+          <tr><td><span class="file-badge blue">🌐 NO1_intl_multilang.html</span></td><td>留学生向け多言語対応予約フォーム</td><td>留学生</td><td>面談予約時</td></tr>
+          <tr><td><span class="file-badge gold">✉️ NO2NO3_merged_2026.html</span></td><td>予約メールの分析・日程確定・CSV出力</td><td>相談員</td><td>メール受信後</td></tr>
+          <tr><td><span class="file-badge">🗒 karte_v5.html</span></td><td>面談カルテ記録・ES素材管理・Cloud保存</td><td>相談員</td><td>面談前後</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box" style="margin-top:12px;">
+        <div class="box-t">💡 データの流れ（概要）</div>
+        学生マスター（Firebase）← Excelから登録<br>
+        学生がフォームからメール送信 → 相談員がNO2NO3で分析・確定 → カルテv5で面談記録 → Firebase（Cloud）に保存
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ファイル一覧 -->
+<div id="files">
+  <div class="card">
+    <div class="ch bark">📁 GitHubリポジトリのファイル構成</div>
+    <div class="cb">
+      <div class="info-box">
+        <div class="box-t">🔗 公開URL</div>
+        https://tanukin0423.github.io/career-form/
+      </div>
+      <table>
+        <thead><tr><th>ファイル名</th><th>説明</th><th>GitHubに必要</th></tr></thead>
+        <tbody>
+          <tr><td>index.html</td><td>日本語版学生予約フォーム</td><td>✅ 必須</td></tr>
+          <tr><td>NO1_intl_multilang.html</td><td>留学生向け4言語対応フォーム</td><td>✅ 必須</td></tr>
+          <tr><td>admin.html</td><td>管理・設定ツール</td><td>✅ 必須</td></tr>
+          <tr><td>counselors.json</td><td>相談員一覧データ</td><td>✅ 必須</td></tr>
+          <tr><td>slots_kitayama.json</td><td>北山先生の空き時間</td><td>✅ 必須</td></tr>
+          <tr><td>slots_soudan-a/b/c.json</td><td>各相談員の空き時間</td><td>✅ 必須</td></tr>
+          <tr><td>NO2NO3_merged_2026.html</td><td>メール管理ツール（相談員用）</td><td>△ 任意</td></tr>
+          <tr><td>karte_v5.html</td><td>面談カルテ（相談員用）</td><td>△ Cloud機能使用時のみ</td></tr>
+          <tr><td>student_master_import.html</td><td>マスター登録ツール（管理者用）</td><td>△ Cloud機能使用時のみ</td></tr>
+          <tr><td>intl_qr_generator.html</td><td>留学生フォーム用QRコード生成</td><td>△ 任意</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==============================
+     PART 1：事前準備
+     ============================== -->
+<div id="part1" class="page-break">
+  <div class="sec-title"><span class="sec-num purple">PART 1</span>事前準備（システム稼働前にやること）</div>
+  <p>以下の準備は<b>学期開始前に一度だけ</b>実施します。一度設定すれば毎学期流用できます。</p>
+</div>
+
+<!-- 準備1：GitHub公開 -->
+<div id="prep1">
+  <div class="card">
+    <div class="ch purple">📤 準備1：GitHubにファイルをアップロードする</div>
+    <div class="cb">
+      <p>学生がフォームにアクセスできるよう、GitHub Pagesでファイルを公開します。</p>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-n purple">1</div>
+          <div class="step-body">
+            <div class="t">github.comにログイン</div>
+            <div class="d">アカウント：tanukin0423　リポジトリ：career-form を開く</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n purple">2</div>
+          <div class="step-body">
+            <div class="t">「Add file」→「Upload files」を選択</div>
+            <div class="d">以下のファイルをまとめてドラッグ&ドロップする：<br>
+            index.html / NO1_intl_multilang.html / admin.html / counselors.json / slots_xxx.json</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n purple">3</div>
+          <div class="step-body">
+            <div class="t">「Commit changes」ボタンを押す</div>
+            <div class="d">1〜2分後に公開URLでアクセスできるようになる。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n purple">4</div>
+          <div class="step-body">
+            <div class="t">動作確認</div>
+            <div class="d">https://tanukin0423.github.io/career-form/index.html にアクセスして予約フォームが表示されることを確認。</div>
+          </div>
+        </div>
+      </div>
+      <div class="warn-box">
+        <div class="box-t">⚠️ Firebase有効期限に注意</div>
+        FirebaseのセキュリティルールはTest mode設定のため有効期限があります（2026年4月28日）。期限が切れるとCloud機能が動作しなくなります。期限前にFirebase Consoleでルールを更新してください。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 準備2：カレンダー設定 -->
+<div id="prep2">
+  <div class="card">
+    <div class="ch bark">🗓 準備2：カレンダー設定（面談可能日時の登録）</div>
+    <div class="cb">
+      <p>学生がフォームで選べる面談日時を設定します。学期ごとに更新してください。</p>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-n bark">1</div>
+          <div class="step-body">
+            <div class="t">admin.htmlをブラウザで開いてログイン</div>
+            <div class="d">各相談員が自分のID・パスワードでログイン<br>
+            例）北山先生：ID「kitayama」/ PW「kitayama2026」</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n bark">2</div>
+          <div class="step-body">
+            <div class="t">「🗓 カレンダー設定」タブでマス目をクリック</div>
+            <div class="d">○（白）= 予約可能 / ✕（灰）= ブロック（休み・会議等）<br>
+            クリックするたびに○⇔✕が切り替わる。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n bark">3</div>
+          <div class="step-body">
+            <div class="t">「💾 カレンダーを保存」を押す</div>
+            <div class="d">ブラウザのlocalStorageに保存される。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n bark">4</div>
+          <div class="step-body">
+            <div class="t">「📄 JSONデータ」タブ → slots_xxx.jsonをダウンロード</div>
+            <div class="d">これをGitHubにアップロードすると、学生の予約フォームに反映される。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n bark">5</div>
+          <div class="step-body">
+            <div class="t">GitHubにアップロードして反映を確認</div>
+            <div class="d">index.htmlを開いてカレンダーに設定した日時が表示されることを確認。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 準備3：QRコード作成 -->
+<div id="prep3">
+  <div class="card">
+    <div class="ch gold">📱 準備3：QRコードを作成・配布する</div>
+    <div class="cb">
+      <p>学生がスマートフォンで読み取ると、担当者が自動設定された予約フォームが開きます。</p>
+
+      <h3 class="green">日本語版フォームのQRコード（担当者別）</h3>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-n gold">1</div>
+          <div class="step-body">
+            <div class="t">admin.htmlに自分のIDでログイン</div>
+            <div class="d">各相談員が自分のアカウントでログインする。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n gold">2</div>
+          <div class="step-body">
+            <div class="t">カレンダー設定画面を下にスクロール</div>
+            <div class="d">「📱 自分専用の予約QRコード」セクションにQRコードが自動生成される。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n gold">3</div>
+          <div class="step-body">
+            <div class="t">Ctrl+P で印刷</div>
+            <div class="d">ゼミ室の掲示板・名刺・資料配布に活用する。</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="blue">留学生フォームのQRコード</h3>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-n blue">1</div>
+          <div class="step-body">
+            <div class="t">intl_qr_generator.htmlをブラウザで開く</div>
+            <div class="d">2つのQRコードが自動生成される：<br>
+            👤 松岡相談員宛（matsuoka-h@tama.ac.jp）<br>
+            🏫 キャリア支援課全体（placement@gr.tama.ac.jp）</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n blue">2</div>
+          <div class="step-body">
+            <div class="t">印刷ボタンで両方まとめて印刷</div>
+            <div class="d">留学生向け掲示板・留学生ガイダンス資料・国際センター連携資料に掲載する。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <div class="box-t">💡 QRコードが埋め込むURL</div>
+        松岡先生宛：…/NO1_intl_multilang.html?dest=matsuoka<br>
+        キャリア支援課：…/NO1_intl_multilang.html?dest=career<br>
+        URLをメール・LINEで送付しても同じ効果があります。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 準備4：マスター登録 -->
+<div id="prep4">
+  <div class="card">
+    <div class="ch purple">📊 準備4：学生マスターデータをFirebaseに登録する</div>
+    <div class="cb">
+      <p>大学システムから取得したExcelをFirebaseに登録しておくと、カルテv5で学籍番号入力だけで氏名・ゼミ・担当者が自動表示されます。</p>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-n purple">1</div>
+          <div class="step-body">
+            <div class="t">大学システムから最新Excelを取得</div>
+            <div class="d">3年生（28卒）と4年生（27卒）のExcelファイルをダウンロードしておく。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n purple">2</div>
+          <div class="step-body">
+            <div class="t">student_master_import.htmlをブラウザで開く</div>
+            <div class="d">パスワード「karigu2026」でログイン。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n purple">3</div>
+          <div class="step-body">
+            <div class="t">両方のExcelファイルをドラッグ&ドロップ</div>
+            <div class="d">3年生・4年生の欄にそれぞれのファイルをドロップ。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n purple">4</div>
+          <div class="step-body">
+            <div class="t">「📊 データを解析する」→ 内容を確認 → 「☁️ 全件をCloudに登録」</div>
+            <div class="d">プログレスバーが完了すれば登録完了。所要時間：約2〜3分。</div>
+          </div>
+        </div>
+      </div>
+      <div class="info-box">
+        <div class="box-t">🔄 週1回の定期更新について</div>
+        内定状況・担当者変更は週1回（月曜朝推奨）に同じ手順で全件上書き更新してください。同じ学籍番号は自動的に上書きされます。所要時間は約2〜3分です。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 事前準備チェックリスト -->
+<div id="prep-check">
+  <div class="card">
+    <div class="ch green">✅ 事前準備チェックリスト</div>
+    <div class="cb">
+      <p>システム稼働前に以下が全て完了していることを確認してください。</p>
+      <ul class="checklist">
+        <li><span class="check-icon">□</span><span>GitHubにindex.html・NO1_intl_multilang.html・admin.htmlをアップロード済み</span></li>
+        <li><span class="check-icon">□</span><span>counselors.jsonをGitHubにアップロード済み</span></li>
+        <li><span class="check-icon">□</span><span>各相談員がカレンダー設定を完了し、slots_xxx.jsonをGitHubにアップロード済み</span></li>
+        <li><span class="check-icon">□</span><span>日本語版QRコード（担当者別）を印刷・配布済み</span></li>
+        <li><span class="check-icon">□</span><span>留学生フォーム用QRコードを印刷・配布済み（松岡先生宛・キャリア支援課宛）</span></li>
+        <li><span class="check-icon">□</span><span>学生マスターデータをFirebaseに登録済み</span></li>
+        <li><span class="check-icon">□</span><span>Firebaseセキュリティルールの有効期限を確認（2026年4月28日）</span></li>
+        <li><span class="check-icon">□</span><span>各相談員が自分のIDとパスワードでadmin.htmlにログインできることを確認</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==============================
+     PART 2：運用フロー
+     ============================== -->
+<div id="part2" class="page-break">
+  <div class="sec-title"><span class="sec-num blue">PART 2</span>実際の運用フロー（日々の操作）</div>
+</div>
+
+<!-- フロー全体図 -->
+<div id="flow-overview">
+  <div class="card">
+    <div class="ch blue">🔄 運用フロー全体図</div>
+    <div class="cb">
+      <div class="flow-container">
+
+        <!-- 学生フェーズ -->
+        <div class="flow-phase">
+          <div class="phase-label student">👩‍🎓 学生の操作</div>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot blue">📱</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title blue">QRコードを読み取る・URLにアクセス</div>
+                <div class="f-desc">担当者のQRコードを読み取ると、担当者が自動設定された状態でフォームが開く。</div>
+                <div class="f-tool blue">📱 index.html / NO1_intl_multilang.html</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot blue">✍️</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title blue">フォームに必要事項を入力</div>
+                <div class="f-desc">学籍番号・氏名・ゼミ・メール・希望進路・相談テーマ・希望日時（第1〜3希望）を入力。</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot blue">📧</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title blue">「送信」ボタンを押す → Gmailが自動で開く → 送信</div>
+                <div class="f-desc">Gmailが開き、宛先・件名・本文が自動入力された状態になる。学生は「送信」を押すだけ。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 矢印 -->
+        <div style="text-align:center;font-size:1.5rem;color:var(--gl);margin:6px 0;">⬇</div>
+
+        <!-- 相談員フェーズ1 -->
+        <div class="flow-phase">
+          <div class="phase-label staff">👨‍💼 相談員の操作（メール受信後）</div>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot bark">📬</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title bark">学生からの予約メールを受信</div>
+                <div class="f-desc">通常のメールで受信。件名「【面談申込】○○（学籍番号）ゼミ名」の形式。</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot bark">📋</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title bark">NO2NO3ツールを開いてログイン</div>
+                <div class="f-desc">NO2NO3_merged_2026.htmlを開き、自分のID・パスワードでログイン。自分宛の予約申込が一覧表示される。</div>
+                <div class="f-tool bark">✉️ NO2NO3_merged_2026.html</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot bark">📅</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title bark">学生の希望日時とカレンダーを照合</div>
+                <div class="f-desc">
+                  <span style="color:var(--gd);font-weight:700;">○ 確定可能</span>：希望日時に空きあり → 日時をクリックして確定<br>
+                  <span style="color:var(--red);font-weight:700;">✕ 要調整</span>：全希望が埋まっている → 自動的に再調整依頼メールが作成される
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot bark">✉️</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title bark">「一括メール送信」で確定メールを返信</div>
+                <div class="f-desc">全学生分のGmailが順番に開く。内容を確認して送信。メール署名は担当者ごとに自動設定される。</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot bark">💾</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title bark">CSVをエクスポートする</div>
+                <div class="f-desc">確定した面談予約をCSV形式でダウンロード。このCSVをカルテv5で読み込む。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 矢印 -->
+        <div style="text-align:center;font-size:1.5rem;color:var(--gl);margin:6px 0;">⬇</div>
+
+        <!-- 面談フェーズ -->
+        <div class="flow-phase">
+          <div class="phase-label">🗒 面談前・面談中・面談後（カルテv5）</div>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot green">📂</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title">カルテv5を開いてログイン</div>
+                <div class="f-desc">パスワード「karigu2026」でログイン。</div>
+                <div class="f-tool">🗒 karte_v5.html</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot green">📋</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title">カルテの開き方を選択</div>
+                <div class="f-desc">
+                  ① CSVから読み込む（初回面談）→ Cloudに過去データがあれば自動マージ<br>
+                  ② JSONから読み込む（ローカル保存がある場合）<br>
+                  ③ Cloudから読み込む（2回目以降・学籍番号入力だけ）<br>
+                  ④ 新規手入力
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot green">💬</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title">面談実施・リアルタイムで記録入力</div>
+                <div class="f-desc">追記欄（アルバイト・部活・スキル等）、面談記録（今回の内容・次回課題）、ES素材帳（ガクチカ・自己PR・志望動機＋補足メモ）を入力。</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot gold">💾</div>
+                <div class="flow-line"></div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title gold">💾☁️ 保存ボタンを押す</div>
+                <div class="f-desc">JSONファイルのダウンロード＋Firebase Cloud保存が同時に行われる。各セクション右の保存ボタンでも可。</div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-icon-col">
+                <div class="flow-dot bark">✖️</div>
+              </div>
+              <div class="flow-content">
+                <div class="f-title bark">「✖ 閉じる」でログオフ</div>
+                <div class="f-desc">「保存してログオフ」を選択 → パスワード画面に戻る。次の利用者は再度パスワードが必要。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 流れ1：学生メール送信 -->
+<div id="flow1">
+  <div class="card">
+    <div class="ch blue">📱 流れ1：学生がフォームから予約メールを送る</div>
+    <div class="cb">
+      <h3 class="blue">日本語版（一般学生）の場合</h3>
+      <ol>
+        <li>担当者のQRコードをスマートフォンで読み取る（またはURLにアクセス）</li>
+        <li>「初回相談」または「継続相談」を選択</li>
+        <li>学籍番号・氏名・ゼミ・メール・相談テーマ・希望日時を入力</li>
+        <li>「📧 Gmailで送信する」ボタンを押す</li>
+        <li>Gmailが開いたら「送信」ボタンを押す</li>
+      </ol>
+
+      <h3 class="blue" style="margin-top:14px;">留学生版（多言語）の場合</h3>
+      <ol>
+        <li>留学生向けQRコードを読み取る（松岡先生宛 または キャリア支援課宛）</li>
+        <li>画面上部の言語ボタンで自分の言語を選択（🇯🇵🇺🇸🇨🇳🇰🇷）</li>
+        <li>担当者が自動設定されていることを確認（変更も可能）</li>
+        <li>基本情報・在留資格・ビザ期限・日本語能力・就活状況・希望日時を入力</li>
+        <li>「📧 Gmailで送信する」を押してメール送信</li>
+      </ol>
+
+      <div class="info-box">
+        <div class="box-t">📧 届くメールの形式</div>
+        件名：【面談申込】氏名（学籍番号）ゼミ名<br>
+        本文：基本情報・相談テーマ・希望日時（第1〜3希望）が整理されて届く
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 流れ2：NO2NO3で分析 -->
+<div id="flow2">
+  <div class="card">
+    <div class="ch gold">✉️ 流れ2：NO2NO3ツールで予約メールを分析する</div>
+    <div class="cb">
+      <p>学生から届いたメールをNO2NO3ツールに読み込ませて、カレンダーと照合します。</p>
+
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-n gold">1</div>
+          <div class="step-body">
+            <div class="t">NO2NO3_merged_2026.htmlを開いて自分のIDでログイン</div>
+            <div class="d">ログイン後、自分宛の予約申込が一覧で表示される。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n gold">2</div>
+          <div class="step-body">
+            <div class="t">学生一覧と希望日時・カレンダー照合結果を確認</div>
+            <div class="d">
+              ○マーク：希望日時に空きあり → そのままクリックして確定できる<br>
+              ✕マーク：全希望が埋まっている → 再調整依頼メールが自動作成される
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n gold">3</div>
+          <div class="step-body">
+            <div class="t">確定日時をクリックして選択</div>
+            <div class="d">○の学生は希望日時をクリックして「確定」にする。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        <div class="box-t">⚠️ ✕（全希望ブロック）の学生への対応</div>
+        ① 再調整依頼メールが自動作成される → 送信して学生に別日程を依頼<br>
+        ② admin.htmlで該当時間のカレンダーを○に変更して再設定<br>
+        ③ slots_xxx.jsonをGitHubにアップロードして反映
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 流れ3：日程確定メール -->
+<div id="flow3">
+  <div class="card">
+    <div class="ch gold">📨 流れ3：日程確定メールを一括送信する</div>
+    <div class="cb">
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-n gold">1</div>
+          <div class="step-body">
+            <div class="t">全学生の確定日時を選択し終えたら「一括メール確認・送信」ボタンを押す</div>
+            <div class="d">学生ごとのGmailが順番に自動で開く。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n gold">2</div>
+          <div class="step-body">
+            <div class="t">各Gmailの内容を確認して「送信」を押す</div>
+            <div class="d">確定メール：確定日時・場所・準備事項が自動入力されている<br>
+            再調整メール：✕の学生には別途日程調整のお願いメールが作成される<br>
+            メール署名は担当者ごとに自動設定される。</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-n gold">3</div>
+          <div class="step-body">
+            <div class="t">CSVをエクスポートする</div>
+            <div class="d">確定した面談予約をCSVでダウンロード。このCSVをカルテv5に読み込むと学生情報が自動入力される。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 流れ4：カルテ面談記録 -->
+<div id="flow4">
+  <div class="card">
+    <div class="ch green">🗒 流れ4：カルテv5で面談を記録する</div>
+    <div class="cb">
+      <h3 class="green">面談前（2〜3分）</h3>
+      <ol>
+        <li>karte_v5.htmlを開いてパスワード「karigu2026」でログイン</li>
+        <li>「③ Cloudから読み込む」→ 学籍番号を入力 → 前回のカルテが即表示（2回目以降）</li>
+        <li>初回は「① CSVから読み込む」→ NO2NO3で出力したCSVを選択</li>
+        <li>前回の面談記録・ES素材を確認しておく</li>
+      </ol>
+
+      <h3 class="green" style="margin-top:12px;">面談中（リアルタイム入力）</h3>
+      <ol>
+        <li>面談中追記欄：アルバイト・部活・資格・スキルなどをヒアリングしながら入力</li>
+        <li>ES素材帳：ガクチカ・自己PR・志望動機の本文と補足メモを入力</li>
+        <li>気づいたら随時 <b>💾☁️ 保存ボタン</b>を押す（3分ごとに自動バックアップも動作中）</li>
+      </ol>
+
+      <h3 class="green" style="margin-top:12px;">面談終了後（すぐに）</h3>
+      <ol>
+        <li>「＋ 新しい記録を追加」で今回の面談メモ・次回課題を入力</li>
+        <li><b>💾☁️ 保存</b> → JSONダウンロード＋Cloud保存が同時に完了</li>
+        <li>「✖ 閉じる」→「保存してログオフ」でパスワード画面に戻る</li>
+      </ol>
+
+      <div class="tip-box">
+        <div class="box-t">💡 面談中に別の学生のカルテを呼び出す場合</div>
+        ヘッダーの「☁️ Cloud読込」→ 学籍番号を入力 → 即座に切り替え可能。「学籍番号教えて」と聞くだけでOK。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 流れ5：週次更新 -->
+<div id="flow5">
+  <div class="card">
+    <div class="ch teal">🔄 流れ5：週次定期更新（毎週月曜朝・約5分）</div>
+    <div class="cb">
+      <table>
+        <thead><tr><th>作業</th><th>ツール</th><th>所要時間</th></tr></thead>
+        <tbody>
+          <tr><td>大学システムから最新ExcelをDL</td><td>大学システム</td><td>1分</td></tr>
+          <tr><td>student_master_import.htmlで全件更新</td><td>student_master_import.html</td><td>2〜3分</td></tr>
+          <tr><td>カレンダーに変更があればJSONをGitHubに再アップ</td><td>admin.html → GitHub</td><td>2〜3分</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box" style="margin-top:10px;">
+        マスターデータを更新すると、内定状況・担当者変更・新規学生の追加が全ツールに自動反映されます。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 留学生対応 -->
+<div id="intl" class="page-break">
+  <div class="sec-title"><span class="sec-num blue">補足</span>留学生対応フロー</div>
+  <div class="card">
+    <div class="ch blue">🌐 留学生専用フロー（NO1_intl_multilang.html）</div>
+    <div class="cb">
+      <table>
+        <thead><tr><th>フェーズ</th><th>操作</th><th>ツール</th></tr></thead>
+        <tbody>
+          <tr><td><b>事前準備</b></td><td>intl_qr_generator.htmlで2種類のQRコードを印刷・配布</td><td>intl_qr_generator.html</td></tr>
+          <tr><td><b>学生の操作</b></td><td>QRを読み取り → 言語選択（🇯🇵🇺🇸🇨🇳🇰🇷） → 在留資格・日本語能力等を入力 → メール送信</td><td>NO1_intl_multilang.html</td></tr>
+          <tr><td><b>担当者の操作</b></td><td>一般学生と同じ手順でNO2NO3で処理</td><td>NO2NO3_merged_2026.html</td></tr>
+          <tr><td><b>面談記録</b></td><td>カルテv5で記録（在留資格・ビザ期限はメモ欄に記入）</td><td>karte_v5.html</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box" style="margin-top:10px;">
+        <div class="box-t">📧 留学生からのメールの見分け方</div>
+        件名：【留学生・面談申込】氏名（学籍番号）ゼミ名<br>
+        本文に「在留資格」「在留期限」「日本語能力」の項目が含まれる
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div id="faq">
+  <div class="sec-title"><span class="sec-num">FAQ</span>よくある質問</div>
+  <div class="card">
+    <div class="ch green">❓ よくある質問</div>
+    <div class="cb">
+      <h3>Q. カレンダーを更新したが学生のフォームに反映されない</h3>
+      <p>slots_xxx.jsonをGitHubにアップロードする必要があります。admin.htmlで保存するだけでは他のPCや学生フォームには反映されません。</p>
+
+      <h3>Q. 学生がメールを送ったが届いていない</h3>
+      <p>Gmailが開いたあと「送信」ボタンを押さずに閉じてしまった可能性があります。学生に再送をお願いするか、QRコードのURLを直接メールで送付してください。</p>
+
+      <h3>Q. Cloud保存が動かない</h3>
+      <p>GitHub Pages版（https://）でのみ動作します。ローカルファイル（file://）ではCloud機能は使えません。またFirebaseのセキュリティルールの有効期限が切れていないか確認してください。</p>
+
+      <h3>Q. 2回目以降の学生のカルテが呼び出せない</h3>
+      <p>カルテv5の「③ Cloudから読み込む」で学籍番号を入力してください。初回面談時に保存していれば即座に呼び出せます。学籍番号がわからない場合はマスター検索ツールで確認できます。</p>
+
+      <h3>Q. 留学生フォームのQRコードが読み取れない</h3>
+      <p>QRコードの印刷サイズが小さすぎる可能性があります。A4用紙に2個程度のサイズで印刷してください。intl_qr_generator.htmlの印刷機能を使うと適切なサイズで印刷できます。</p>
+
+      <h3>Q. マスターデータの更新を忘れた場合の影響は？</h3>
+      <p>カルテの学籍番号入力時に古い情報が表示される場合があります。内定済みの学生に誤った情報が表示されることがあるため、週1回の更新を推奨します。</p>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div style="text-align:center;padding:24px 0 12px;color:var(--tl);font-size:0.75rem;border-top:1px solid var(--border);margin-top:8px;">
+    就活の木　システム運用フローマニュアル ／ 多摩大学キャリア支援課 ／ 北山 四郎（キャリ爺）<br>
+    <span style="font-size:0.72rem;margin-top:4px;display:block;">「答えは学生の中にある。私たちはその扉を開くお手伝いをする。——キャリ爺」</span>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// スクロールでサイドバーハイライト
+const links = document.querySelectorAll('.toc-link');
+const sections = document.querySelectorAll('[id]');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id;});
+  links.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+cur)l.classList.add('active');});
+});
+links.forEach(l=>{
+  l.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(l.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+</script>
+</body>
+</html>

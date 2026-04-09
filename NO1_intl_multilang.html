@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>キャリア面談 申込フォーム（留学生用）｜多摩大学 キャリア支援課</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gl:#7db96a;--gp:#e8f5e3;--bg:#f3faf0;
+  --bark:#6b4c2a;--cream:#fdfaf5;--text:#2a2a2a;--tl:#666;
+  --border:#c8dfc2;--shadow:0 4px 24px rgba(45,90,39,0.10);
+  --blue:#2e6bc4;--blue-p:#e4eef9;--red:#e05252;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP','Noto Sans SC','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px;}
+
+/* 言語切り替えバー */
+.lang-bar{background:rgba(0,0,0,0.2);padding:8px 16px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.lang-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;border-radius:20px;padding:4px 14px;font-size:0.78rem;cursor:pointer;transition:all 0.2s;font-family:inherit;}
+.lang-btn:hover{background:rgba(255,255,255,0.3);}
+.lang-btn.active{background:white;color:var(--gd);font-weight:700;}
+
+/* ヘッダー */
+.header{background:linear-gradient(135deg,var(--gd) 0%,var(--bark) 100%);color:white;padding:24px 20px 0;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'🌳';position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:5rem;opacity:0.1;}
+.header h1{font-size:1.1rem;font-weight:700;letter-spacing:0.03em;margin-bottom:4px;}
+.header .h-sub{font-size:0.78rem;opacity:0.8;margin-bottom:4px;}
+.badge{display:inline-block;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);font-size:0.72rem;padding:3px 14px;border-radius:20px;margin:10px 0 20px;}
+
+/* コンテナ */
+.container{max-width:660px;margin:0 auto;padding:20px 14px;}
+
+/* 注意書き */
+.intro-card{background:white;border-left:4px solid var(--gd);border-radius:0 12px 12px 0;padding:14px 18px;margin-bottom:20px;box-shadow:var(--shadow);font-size:0.86rem;line-height:1.85;}
+.intro-card .ja-note{color:var(--tl);font-size:0.78rem;margin-bottom:4px;}
+.input-lang-notice{background:#fff8e1;border:1.5px solid #f0c040;border-radius:10px;padding:10px 14px;margin-bottom:20px;font-size:0.83rem;line-height:1.8;color:#5a4000;}
+.input-lang-notice b{color:#3a2800;}
+
+/* セクション */
+.section{background:white;border-radius:16px;padding:20px 18px;margin-bottom:16px;box-shadow:var(--shadow);}
+.section-title{font-size:0.95rem;font-weight:700;color:var(--gd);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--gp);display:flex;align-items:center;gap:8px;}
+.sec-sub{display:block;font-size:0.72rem;color:var(--tl);font-weight:400;margin-left:4px;}
+
+/* フィールド */
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:0.82rem;font-weight:500;color:var(--gd);margin-bottom:5px;}
+.lbl-main{display:block;}
+.lbl-sub{display:block;font-size:0.72rem;color:var(--tl);font-weight:400;margin-top:1px;}
+.req{color:var(--red);margin-left:4px;font-size:0.72rem;}
+.field input[type=text],.field input[type=email],.field textarea,.field select{
+  width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;
+  font-family:inherit;font-size:0.9rem;color:var(--text);background:var(--cream);
+  transition:border-color 0.2s;-webkit-appearance:none;
+}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--gm);box-shadow:0 0 0 3px rgba(74,140,63,0.12);background:white;}
+.field textarea{min-height:70px;resize:vertical;line-height:1.7;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.field-row{grid-template-columns:1fr;}}
+
+/* ラジオ */
+.radio-group{display:flex;flex-direction:column;gap:6px;margin-top:5px;}
+.radio-item{display:flex;align-items:center;gap:8px;background:white;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:0.83rem;}
+.radio-item:has(input:checked){background:var(--gm);border-color:var(--gm);color:white;}
+.radio-item input{accent-color:var(--gm);}
+
+/* チェックボックス */
+.check-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;}
+.check-item{display:flex;align-items:center;gap:5px;background:white;border:1.5px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:0.82rem;}
+.check-item:has(input:checked){background:var(--gp);border-color:var(--gm);color:var(--gd);}
+
+/* 日程選択 */
+.week-tabs{display:flex;gap:4px;margin-bottom:0;}
+.week-tab{flex:1;padding:9px 4px;border:1.5px solid var(--border);border-radius:8px 8px 0 0;background:var(--gp);font-size:0.78rem;font-weight:500;color:var(--tl);cursor:pointer;text-align:center;transition:all 0.15s;border-bottom:none;}
+.week-tab.active{background:white;color:var(--gd);border-color:var(--gm);font-weight:700;}
+.week-tab-content{border:1.5px solid var(--gm);border-radius:0 8px 8px 8px;padding:14px;background:white;display:none;}
+.week-tab-content.active{display:block;}
+.date-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+@media(max-width:440px){.date-grid{grid-template-columns:repeat(3,1fr);}}
+.date-btn{display:flex;flex-direction:column;align-items:center;padding:8px 4px;border:1.5px solid var(--border);border-radius:10px;background:var(--gp);cursor:pointer;transition:all 0.15s;font-size:0.78rem;}
+.date-btn .d-day{font-size:0.68rem;color:var(--tl);}
+.date-btn .d-num{font-size:1.1rem;font-weight:700;color:var(--gd);}
+.date-btn .d-month{font-size:0.62rem;color:var(--tl);}
+.date-btn:hover:not(.disabled){border-color:var(--gm);background:#d4eece;}
+.date-btn.selected{border-color:var(--bark);background:var(--bark);}
+.date-btn.selected .d-day,.date-btn.selected .d-num,.date-btn.selected .d-month{color:white;}
+.date-btn.disabled{opacity:0.3;cursor:not-allowed;background:#eee;}
+.no-days{text-align:center;padding:20px;font-size:0.83rem;color:var(--tl);}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-nav button{background:var(--gp);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;font-size:1rem;cursor:pointer;color:var(--gd);}
+.cal-nav button:hover{background:var(--gl);color:white;}
+.cal-nav .month-label{font-weight:700;font-size:0.9rem;color:var(--gd);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.day-head{text-align:center;font-size:0.68rem;color:var(--tl);padding:4px 0;font-weight:500;}
+.day-head.sun{color:var(--red);}.day-head.sat{color:var(--blue);}
+.day-cell{text-align:center;padding:7px 2px;font-size:0.82rem;border-radius:6px;cursor:pointer;transition:all 0.12s;}
+.day-cell:hover:not(.disabled):not(.out-of-range):not(.empty){background:var(--gp);}
+.day-cell.today{background:var(--gp);font-weight:700;color:var(--gd);}
+.day-cell.selected{background:var(--bark);color:white;border-radius:6px;}
+.day-cell.disabled,.day-cell.out-of-range{color:#ccc;cursor:not-allowed;}
+.time-panel{margin-top:12px;background:var(--blue-p);border:1.5px solid var(--blue);border-radius:10px;padding:12px;display:none;}
+.time-panel.show{display:block;}
+.tp-label{font-size:0.82rem;font-weight:700;color:var(--blue);margin-bottom:8px;}
+.time-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.time-btn{padding:6px 13px;border:1.5px solid var(--blue);border-radius:8px;background:white;color:var(--blue);font-size:0.82rem;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.time-btn:hover{background:var(--blue);color:white;}
+.wish-summary{margin-top:12px;display:flex;flex-direction:column;gap:6px;}
+.wish-item{display:flex;align-items:center;gap:8px;background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:0.83rem;}
+.wish-item.filled{border-color:var(--gm);background:var(--gp);}
+.w-num{background:var(--gd);color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;}
+
+/* 添付案内 */
+.attach-section{background:#fff8e1;border:1.5px solid #f0c040;border-radius:12px;padding:14px 18px;margin-bottom:16px;}
+.attach-section .at{font-weight:700;color:#5a4000;margin-bottom:8px;font-size:0.88rem;}
+.attach-section ul{padding-left:18px;font-size:0.82rem;color:#7a5c00;line-height:1.9;}
+
+/* 送信 */
+.submit-section{text-align:center;padding:10px 0 0;}
+.submit-btn{display:inline-block;background:var(--bark);color:white;border:none;border-radius:50px;padding:14px 44px;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;transition:background 0.2s;box-shadow:0 4px 16px rgba(107,76,42,0.3);}
+.submit-btn:hover{background:#8a6030;}
+.submit-note{font-size:0.78rem;color:var(--tl);margin-top:10px;line-height:1.7;}
+
+/* フッター */
+.footer{text-align:center;padding:20px;font-size:0.75rem;color:var(--tl);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <!-- 言語切り替えバー -->
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('ja')">🇯🇵 日本語</button>
+    <button class="lang-btn" onclick="setLang('en')">🇺🇸 English</button>
+    <button class="lang-btn" onclick="setLang('zh')">🇨🇳 中文</button>
+    <button class="lang-btn" onclick="setLang('ko')">🇰🇷 한국어</button>
+  </div>
+  <div style="padding:20px 20px 0;">
+    <div style="font-size:1.8rem;margin-bottom:6px;">🌳</div>
+    <p class="h-sub" id="h-sub">キャリア面談 申込フォーム（留学生用・初回）</p>
+    <h1 id="h-title">多摩大学 キャリア支援課</h1>
+    <span class="badge" id="h-badge">留学生 / International Students / 留学生 / 유학생</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 送信先選択 -->
+  <div class="section" style="background:linear-gradient(135deg,#fff8f0,#fdf6ec);border:1.5px solid #f0c040;">
+    <div class="section-title" style="border-bottom-color:#f0c040;">
+      👨‍💼 <span id="s0-title">担当者を選んでください</span>
+      <span class="sec-sub" id="s0-sub">Select your counselor / 请选择咨询老师 / 담당자를 선택해 주세요</span>
+    </div>
+    <div class="field">
+      <select id="dest-select" style="font-size:0.95rem;font-weight:700;border-color:#f0c040;background:white;">
+        <option value="matsuoka">👤 松岡 相談員（matsuoka-h@tama.ac.jp）</option>
+        <option value="career">🏫 キャリア支援課 全体（placement@gr.tama.ac.jp）</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 入力言語の案内 -->
+  <div class="input-lang-notice" id="input-notice">
+    <b>📝 入力について：</b><br>
+    フォームの説明は4言語で表示されます。<br>
+    <b>実際の入力は日本語でお願いします。</b>（氏名・ゼミ名など）<br>
+    <span style="font-size:0.78rem;color:#7a5c00;">
+      Please fill in the form <b>in Japanese</b> (name, seminar, etc.).<br>
+      请用<b>日语</b>填写表格（姓名、研讨班名等）。<br>
+      양식은 <b>일본어</b>로 작성해 주세요（이름, 세미나명 등）。
+    </span>
+  </div>
+
+  <!-- 担当者メッセージ -->
+  <div class="intro-card">
+    <div class="ja-note" id="intro-note">【キャリア支援課より】基本情報・ビザ情報・希望日を一緒に入力していきましょう。</div>
+    <span id="intro-main">送信後、<strong>Gmailが自動で開きます</strong>。送信前に検査結果（PDF）を添付してください。🌱</span>
+  </div>
+
+  <!-- 基本情報 -->
+  <div class="section">
+    <div class="section-title">👤 <span id="s1-title">基本情報</span><span class="sec-sub" id="s1-sub">Basic Information / 基本信息 / 기본 정보</span></div>
+    <div class="field-row">
+      <div class="field">
+        <label><span class="lbl-main" id="l-name">氏名<span class="req">*必須</span></span><span class="lbl-sub" id="l-name-sub">Full Name / 姓名 / 이름</span></label>
+        <input type="text" id="name" placeholder="例：山田 花子">
+      </div>
+      <div class="field">
+        <label><span class="lbl-main" id="l-gakuseki">学籍番号<span class="req">*必須</span></span><span class="lbl-sub" id="l-gakuseki-sub">Student ID / 学号 / 학번</span></label>
+        <input type="text" id="gakuseki" placeholder="例：24311001">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label><span class="lbl-main" id="l-zemi">所属ゼミ</span><span class="lbl-sub" id="l-zemi-sub">Seminar / 研讨班 / 세미나</span></label>
+        <input type="text" id="zemi" placeholder="例：田中ゼミ">
+      </div>
+      <div class="field">
+        <label><span class="lbl-main" id="l-email">大学メールアドレス</span><span class="lbl-sub" id="l-email-sub">University Email / 大学邮箱 / 대학 이메일</span></label>
+        <input type="email" id="email" placeholder="例：24311001ra@tama.ac.jp">
+      </div>
+    </div>
+  </div>
+
+  <!-- 留学生情報 -->
+  <div class="section">
+    <div class="section-title">🌐 <span id="s2-title">留学生情報</span><span class="sec-sub" id="s2-sub">International Student Info / 留学生信息 / 유학생 정보</span></div>
+    <div class="field-row">
+      <div class="field">
+        <label><span class="lbl-main" id="l-country">出身国</span><span class="lbl-sub" id="l-country-sub">Country / 国籍 / 출신국</span></label>
+        <input type="text" id="country" placeholder="例：中国 / China / 中国 / 중국">
+      </div>
+      <div class="field">
+        <label><span class="lbl-main" id="l-native">母語</span><span class="lbl-sub" id="l-native-sub">Native Language / 母语 / 모국어</span></label>
+        <input type="text" id="native" placeholder="例：中国語 / Chinese / 中文 / 중국어">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label><span class="lbl-main" id="l-visa">在留資格</span><span class="lbl-sub" id="l-visa-sub">Residence Status / 在留资格 / 체류 자격</span></label>
+        <select id="visa">
+          <option value="">--- 選択してください ---</option>
+          <option value="留学">留学（Student Visa）</option>
+          <option value="技術・人文知識・国際業務">技術・人文知識・国際業務</option>
+          <option value="特定活動">特定活動（Designated Activities）</option>
+          <option value="永住者">永住者（Permanent Resident）</option>
+          <option value="定住者">定住者（Long-term Resident）</option>
+          <option value="家族滞在">家族滞在（Dependent）</option>
+          <option value="日本国籍">日本国籍</option>
+          <option value="その他・不明">その他・不明</option>
+        </select>
+      </div>
+      <div class="field">
+        <label><span class="lbl-main" id="l-visaexp">在留期限</span><span class="lbl-sub" id="l-visaexp-sub">Visa Expiry / 在留到期 / 체류 만료일</span></label>
+        <input type="text" id="visaexp" placeholder="例：2026-09-30">
+      </div>
+    </div>
+    <div class="field">
+      <label><span class="lbl-main" id="l-jlpt">日本語能力</span><span class="lbl-sub" id="l-jlpt-sub">Japanese Proficiency / 日语能力 / 일본어 능력</span></label>
+      <input type="text" id="jlpt" placeholder="例：JLPT N2 / 日常会話レベル / Beginner">
+    </div>
+    <div class="field">
+      <label><span class="lbl-main" id="l-comm">希望相談言語</span><span class="lbl-sub" id="l-comm-sub">Preferred Consultation Language / 希望咨询语言 / 희망 상담 언어</span></label>
+      <select id="comm">
+        <option value="">--- 選択してください ---</option>
+        <option value="日本語のみ">日本語のみ / Japanese only</option>
+        <option value="主に日本語（英語少し可）">主に日本語（英語少し可）/ Mostly Japanese</option>
+        <option value="英語希望">英語希望 / English preferred</option>
+      </select>
+    </div>
+    <div class="field">
+      <label><span class="lbl-main" id="l-postgrad">卒業後の大きな方向性</span><span class="lbl-sub" id="l-postgrad-sub">Post-Graduation Direction / 毕业后方向 / 졸업 후 방향</span></label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="postgrad" value="日本で就職希望"> <span id="r-pg1">日本で就職希望 / Work in Japan</span></label>
+        <label class="radio-item"><input type="radio" name="postgrad" value="帰国後に就職希望"> <span id="r-pg2">帰国後に就職希望 / Return home & work</span></label>
+        <label class="radio-item"><input type="radio" name="postgrad" value="未定"> <span id="r-pg3">未定 / Undecided</span></label>
+      </div>
+    </div>
+    <div class="field">
+      <label><span class="lbl-main" id="l-parttime">アルバイト経験（週20時間以内）</span><span class="lbl-sub" id="l-parttime-sub">Part-time Work / 打工经历 / 아르바이트 경험</span></label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="parttime" value="現在あり"> <span id="r-pt1">現在あり / Currently working</span></label>
+        <label class="radio-item"><input type="radio" name="parttime" value="過去にあり"> <span id="r-pt2">過去にあり / Past experience</span></label>
+        <label class="radio-item"><input type="radio" name="parttime" value="なし"> <span id="r-pt3">なし / No experience</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 就職活動 -->
+  <div class="section">
+    <div class="section-title">💼 <span id="s3-title">就職活動について</span><span class="sec-sub" id="s3-sub">Career Information / 求职信息 / 취업 활동</span></div>
+    <div class="field">
+      <label><span class="lbl-main" id="l-career">希望する就職先の種類</span><span class="lbl-sub" id="l-career-sub">Type of Employment / 就职方向 / 취업 희망 유형</span></label>
+      <select id="career">
+        <option value="">--- 選択してください ---</option>
+        <option value="日本の一般企業">日本の一般企業 / Work in Japan (General)</option>
+        <option value="外資系企業（日本）">外資系企業（日本）/ Foreign-affiliated in Japan</option>
+        <option value="帰国後に就職">帰国後に就職 / Return home & work</option>
+        <option value="大学院進学">大学院進学 / Graduate school</option>
+        <option value="その他">その他 / Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label><span class="lbl-main" id="l-target">気になる企業名・業界（決まっていれば）</span><span class="lbl-sub" id="l-target-sub">Companies / Industries of Interest / 感兴趣的行业 / 관심 업종</span></label>
+      <input type="text" id="target" placeholder="例：IT企業、製造業、商社など">
+    </div>
+    <div class="field">
+      <label><span class="lbl-main" id="l-status">就活状況</span><span class="lbl-sub" id="l-status-sub">Current Status / 求职状态 / 취업 활동 현황</span></label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="status" value="まだ始めていない"> <span id="r-st1">まだ始めていない / Not started yet</span></label>
+        <label class="radio-item"><input type="radio" name="status" value="企業研究中"> <span id="r-st2">企業研究中 / Researching companies</span></label>
+        <label class="radio-item"><input type="radio" name="status" value="応募・選考中"> <span id="r-st3">応募・選考中 / Applying / in selection</span></label>
+        <label class="radio-item"><input type="radio" name="status" value="内定あり"> <span id="r-st4">内定あり / Received offer(s)</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 相談テーマ -->
+  <div class="section">
+    <div class="section-title">💬 <span id="s4-title">相談したいこと</span><span class="sec-sub" id="s4-sub">Consultation Topics / 咨询主题 / 상담 주제</span></div>
+    <div class="check-grid" id="theme-checks">
+      <label class="check-item"><input type="checkbox" name="theme" value="ビザ・在留資格"> <span class="t-label">🪪 ビザ・在留資格</span></label>
+      <label class="check-item"><input type="checkbox" name="theme" value="外国人採用企業探し"> <span class="t-label">🔍 外国人採用企業探し</span></label>
+      <label class="check-item"><input type="checkbox" name="theme" value="履歴書・ES作成"> <span class="t-label">📝 履歴書・ES作成</span></label>
+      <label class="check-item"><input type="checkbox" name="theme" value="面接対策"> <span class="t-label">🎤 面接対策</span></label>
+      <label class="check-item"><input type="checkbox" name="theme" value="日本の就職活動の流れ"> <span class="t-label">📅 日本の就職活動の流れ</span></label>
+      <label class="check-item"><input type="checkbox" name="theme" value="日本のビジネスマナー"> <span class="t-label">🤝 日本のビジネスマナー</span></label>
+      <label class="check-item"><input type="checkbox" name="theme" value="自己分析・強み発見"> <span class="t-label">🌱 自己分析・強み発見</span></label>
+      <label class="check-item"><input type="checkbox" name="theme" value="その他"> <span class="t-label">💬 その他</span></label>
+    </div>
+    <div class="field">
+      <label><span class="lbl-main" id="l-free">補足・伝えておきたいこと</span><span class="lbl-sub" id="l-free-sub">Additional Notes / 补充说明 / 추가 메모</span></label>
+      <textarea id="free" placeholder="例：どの企業が留学生を採用しているか分からず困っています。"></textarea>
+    </div>
+  </div>
+
+  <!-- 添付案内 -->
+  <div class="attach-section">
+    <div class="at" id="attach-title">📎 検査結果の添付をお願いします</div>
+    <ul>
+      <li id="attach-desc1">Gmailが開いたら、送信前に以下のPDFを添付してください：</li>
+      <li><strong>① VPI職業興味検査</strong>（jobtag - 厚生労働省）</li>
+      <li><strong>② 職業価値観検査</strong>（jobtag）</li>
+      <li id="attach-desc2" style="font-size:0.78rem;color:#7a5c00;margin-top:4px;">Please attach PDF files before clicking Send in Gmail.</li>
+    </ul>
+  </div>
+
+  <!-- 希望日時 -->
+  <div class="section">
+    <div class="section-title">📅 <span id="s5-title">希望日時を選んでください</span><span class="sec-sub" id="s5-sub">Preferred Date & Time / 希望时间 / 희망 일정</span></div>
+    <p style="font-size:0.82rem;color:var(--tl);margin-bottom:14px;line-height:1.7;" id="date-intro">
+      第1〜3希望まで選べます。今週・来週はボタン選択、再来週以降はカレンダーから選択してください。
+    </p>
+    <div class="week-tabs">
+      <div class="week-tab active" id="wtab0" onclick="switchWeekTab(0)"><span id="tab0-label">今週</span></div>
+      <div class="week-tab" id="wtab1" onclick="switchWeekTab(1)"><span id="tab1-label">来週</span></div>
+      <div class="week-tab" id="wtab2" onclick="switchWeekTab(2)"><span id="tab2-label">再来週以降</span></div>
+    </div>
+    <div class="week-tab-content active" id="wcont0"><div class="date-grid" id="grid0"></div></div>
+    <div class="week-tab-content" id="wcont1"><div class="date-grid" id="grid1"></div></div>
+    <div class="week-tab-content" id="wcont2">
+      <div class="cal-nav">
+        <button onclick="calPrev()">&#8249;</button>
+        <span class="month-label" id="calML"></span>
+        <button onclick="calNext()">&#8250;</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <div class="time-panel" id="timePanel">
+      <div class="tp-label" id="tpLabel">時間を選んでください</div>
+      <div class="time-grid" id="timeGrid"></div>
+    </div>
+    <div class="wish-summary">
+      <div class="wish-item" id="wi0"><span class="w-num">1</span><span id="wt0" style="color:var(--tl)">未選択</span></div>
+      <div class="wish-item" id="wi1"><span class="w-num">2</span><span id="wt1" style="color:var(--tl)">未選択</span></div>
+      <div class="wish-item" id="wi2"><span class="w-num">3</span><span id="wt2" style="color:var(--tl)">未選択</span></div>
+    </div>
+  </div>
+
+  <!-- 送信 -->
+  <div class="submit-section">
+    <button class="submit-btn" onclick="sendMail()" id="submit-btn">📧 Gmailで送信する</button>
+    <p class="submit-note" id="submit-note">Gmailが新しいタブで開きます。ファイルを添付してから送信してください。</p>
+  </div>
+</div>
+
+<div class="footer">多摩大学 キャリア支援課 ／ Tama University Career Support Office ／ 就活の木</div>
+
+<script>
+// ===== 送信先設定 =====
+const COUNSELORS = [
+  { id: 'matsuoka', name: '松岡', email: 'matsuoka-h@tama.ac.jp' },
+  { id: 'career',   name: 'キャリア支援課', email: 'placement@gr.tama.ac.jp' },
+];
+function getDest(){
+  const sel = document.getElementById('dest-select');
+  return COUNSELORS.find(c=>c.id===sel.value) || COUNSELORS[0];
+}
+const TANTO_DEPT = '多摩大学キャリア支援課';
+
+// URLパラメータで送信先を自動設定
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const destParam = params.get('dest');
+  if(destParam){
+    const sel = document.getElementById('dest-select');
+    if(sel){
+      const opt = [...sel.options].find(o=>o.value===destParam);
+      if(opt){ sel.value = destParam; }
+    }
+  }
+})();
+
+// ===== 多言語テキスト定義 =====
+const LANGS = {
+  ja: {
+    's0-title': '担当者を選んでください',
+    's0-sub': '松岡相談員 または キャリア支援課全体',
+    'h-sub': 'キャリア面談 申込フォーム（留学生用・初回）',
+    'h-title': '多摩大学 キャリア支援課',
+    'intro-note': '【キャリア支援課より】基本情報・ビザ情報・希望日を一緒に入力していきましょう。',
+    'intro-main': '送信後、<strong>Gmailが自動で開きます</strong>。送信前に検査結果（PDF）を添付してください。🌱',
+    's1-title': '基本情報',
+    's2-title': '留学生情報',
+    's3-title': '就職活動について',
+    's4-title': '相談したいこと',
+    's5-title': '希望日時を選んでください',
+    'l-name': '氏名<span class="req">*必須</span>',
+    'l-gakuseki': '学籍番号<span class="req">*必須</span>',
+    'l-zemi': '所属ゼミ',
+    'l-email': '大学メールアドレス',
+    'l-country': '出身国',
+    'l-native': '母語',
+    'l-visa': '在留資格',
+    'l-visaexp': '在留期限',
+    'l-jlpt': '日本語能力',
+    'l-comm': '希望相談言語',
+    'l-postgrad': '卒業後の大きな方向性',
+    'l-parttime': 'アルバイト経験（週20時間以内）',
+    'l-career': '希望する就職先の種類',
+    'l-target': '気になる企業名・業界',
+    'l-status': '就活状況',
+    'l-free': '補足・伝えておきたいこと',
+    'r-pg1': '日本で就職希望',
+    'r-pg2': '帰国後に就職希望',
+    'r-pg3': '未定',
+    'r-pt1': '現在あり',
+    'r-pt2': '過去にあり',
+    'r-pt3': 'なし',
+    'r-st1': 'まだ始めていない',
+    'r-st2': '企業研究中',
+    'r-st3': '応募・選考中',
+    'r-st4': '内定あり',
+    'attach-title': '📎 検査結果の添付をお願いします',
+    'attach-desc1': 'Gmailが開いたら、送信前に以下のPDFを添付してください：',
+    'tab0-label': '今週',
+    'tab1-label': '来週',
+    'tab2-label': '再来週以降',
+    'date-intro': '第1〜3希望まで選べます。今週・来週はボタン選択、再来週以降はカレンダーから。',
+    'submit-btn': '📧 Gmailで送信する',
+    'submit-note': 'Gmailが新しいタブで開きます。ファイルを添付してから送信してください。',
+    'wish-empty': '未選択',
+    'tp-label-prefix': '時間を選んでください：',
+    'alert-required': '氏名と学籍番号を入力してください。',
+    'alert-date': '希望日時を1つ以上選んでください。',
+    'alert-max': '希望日時は3つまでです。選択済みの日付をタップすると解除できます。',
+    'no-days': 'この週は選択できる日がありません。',
+  },
+  en: {
+    's0-title': 'Select Your Counselor',
+    's0-sub': 'Counselor Matsuoka or Career Support Office',
+    'h-sub': 'Career Counseling Appointment Form (International Students - 1st Visit)',
+    'h-title': 'Tama University Career Support Office',
+    'intro-note': '[From Career Support] Please fill in your basic info, visa status, and preferred dates.',
+    'intro-main': 'After submission, <strong>Gmail will open automatically</strong>. Please attach your assessment results (PDF) before sending. 🌱',
+    's1-title': 'Basic Information',
+    's2-title': 'International Student Info',
+    's3-title': 'Career Information',
+    's4-title': 'Consultation Topics',
+    's5-title': 'Select Preferred Date & Time',
+    'l-name': 'Full Name<span class="req">*Required</span>',
+    'l-gakuseki': 'Student ID<span class="req">*Required</span>',
+    'l-zemi': 'Seminar',
+    'l-email': 'University Email',
+    'l-country': 'Country of Origin',
+    'l-native': 'Native Language',
+    'l-visa': 'Residence Status',
+    'l-visaexp': 'Visa Expiry Date',
+    'l-jlpt': 'Japanese Proficiency',
+    'l-comm': 'Preferred Consultation Language',
+    'l-postgrad': 'Post-Graduation Direction',
+    'l-parttime': 'Part-time Work Experience (within 20hrs/week)',
+    'l-career': 'Type of Employment You Are Aiming For',
+    'l-target': 'Companies / Industries of Interest',
+    'l-status': 'Current Job Search Status',
+    'l-free': 'Additional Notes',
+    'r-pg1': 'Work in Japan',
+    'r-pg2': 'Return home & work',
+    'r-pg3': 'Undecided',
+    'r-pt1': 'Currently working',
+    'r-pt2': 'Past experience',
+    'r-pt3': 'No experience',
+    'r-st1': 'Not started yet',
+    'r-st2': 'Researching companies',
+    'r-st3': 'Applying / in selection',
+    'r-st4': 'Received offer(s)',
+    'attach-title': '📎 Please Attach Your Assessment Results',
+    'attach-desc1': 'When Gmail opens, please attach the following PDFs before sending:',
+    'tab0-label': 'This Week',
+    'tab1-label': 'Next Week',
+    'tab2-label': 'Later',
+    'date-intro': 'You can select up to 3 preferred dates. This week & next: button selection. Later: calendar.',
+    'submit-btn': '📧 Send via Gmail',
+    'submit-note': 'Gmail will open in a new tab. Please attach files before sending.',
+    'wish-empty': 'Not selected',
+    'tp-label-prefix': 'Select time for: ',
+    'alert-required': 'Please enter your name and student ID.',
+    'alert-date': 'Please select at least one preferred date.',
+    'alert-max': 'You can select up to 3 dates. Tap a selected date to deselect.',
+    'no-days': 'No available days this week.',
+  },
+  zh: {
+    's0-title': '请选择咨询老师',
+    's0-sub': '松岡老师 或 就业支援课整体',
+    'h-sub': '职业咨询预约表（留学生用・初次）',
+    'h-title': '多摩大学 就业支援课',
+    'intro-note': '【就业支援课】请填写基本信息、签证信息及希望日期。',
+    'intro-main': '提交后，<strong>Gmail将自动打开</strong>。发送前请附上检查结果（PDF）。🌱',
+    's1-title': '基本信息',
+    's2-title': '留学生信息',
+    's3-title': '求职信息',
+    's4-title': '咨询主题',
+    's5-title': '选择希望时间',
+    'l-name': '姓名<span class="req">*必填</span>',
+    'l-gakuseki': '学号<span class="req">*必填</span>',
+    'l-zemi': '研讨班',
+    'l-email': '大学邮箱',
+    'l-country': '国籍',
+    'l-native': '母语',
+    'l-visa': '在留资格',
+    'l-visaexp': '在留到期日',
+    'l-jlpt': '日语能力',
+    'l-comm': '希望咨询语言',
+    'l-postgrad': '毕业后大方向',
+    'l-parttime': '打工经历（每周20小时以内）',
+    'l-career': '希望就职类型',
+    'l-target': '感兴趣的企业・行业',
+    'l-status': '求职状态',
+    'l-free': '补充说明',
+    'r-pg1': '在日本就职',
+    'r-pg2': '回国就职',
+    'r-pg3': '未定',
+    'r-pt1': '目前有打工',
+    'r-pt2': '有过打工经历',
+    'r-pt3': '没有打工经历',
+    'r-st1': '尚未开始',
+    'r-st2': '调研中',
+    'r-st3': '申请・面试中',
+    'r-st4': '已收到录用通知',
+    'attach-title': '📎 请附上检查结果',
+    'attach-desc1': 'Gmail打开后，发送前请附上以下PDF：',
+    'tab0-label': '本周',
+    'tab1-label': '下周',
+    'tab2-label': '下下周以后',
+    'date-intro': '最多可选3个希望时间。本周・下周：按钮选择；下下周以后：日历选择。',
+    'submit-btn': '📧 通过Gmail发送',
+    'submit-note': 'Gmail将在新标签页打开，请附上文件后再发送。',
+    'wish-empty': '未选择',
+    'tp-label-prefix': '请选择时间：',
+    'alert-required': '请输入姓名和学号。',
+    'alert-date': '请至少选择一个希望时间。',
+    'alert-max': '最多选择3个日期。点击已选日期可取消。',
+    'no-days': '本周没有可选的日期。',
+  },
+  ko: {
+    's0-title': '담당자를 선택해 주세요',
+    's0-sub': '마츠오카 상담원 또는 취업지원과 전체',
+    'h-sub': '취업 상담 예약 신청서（유학생용・초회）',
+    'h-title': '다마대학 취업지원과',
+    'intro-note': '【취업지원과】기본 정보・비자 정보・희망 일정을 함께 입력해 주세요。',
+    'intro-main': '제출 후 <strong>Gmail이 자동으로 열립니다</strong>. 전송 전에 검사 결과（PDF）를 첨부해 주세요。🌱',
+    's1-title': '기본 정보',
+    's2-title': '유학생 정보',
+    's3-title': '취업 활동',
+    's4-title': '상담 주제',
+    's5-title': '희망 일정 선택',
+    'l-name': '이름<span class="req">*필수</span>',
+    'l-gakuseki': '학번<span class="req">*필수</span>',
+    'l-zemi': '소속 세미나',
+    'l-email': '대학 이메일',
+    'l-country': '출신국',
+    'l-native': '모국어',
+    'l-visa': '체류 자격',
+    'l-visaexp': '체류 만료일',
+    'l-jlpt': '일본어 능력',
+    'l-comm': '희망 상담 언어',
+    'l-postgrad': '졸업 후 방향',
+    'l-parttime': '아르바이트 경험（주 20시간 이내）',
+    'l-career': '희망 취업 유형',
+    'l-target': '관심 기업・업종',
+    'l-status': '취업 활동 현황',
+    'l-free': '추가 메모',
+    'r-pg1': '일본 취업 희망',
+    'r-pg2': '귀국 후 취업',
+    'r-pg3': '미정',
+    'r-pt1': '현재 아르바이트 중',
+    'r-pt2': '경험 있음',
+    'r-pt3': '경험 없음',
+    'r-st1': '아직 시작 안 함',
+    'r-st2': '기업 조사 중',
+    'r-st3': '지원・전형 중',
+    'r-st4': '내정 있음',
+    'attach-title': '📎 검사 결과를 첨부해 주세요',
+    'attach-desc1': 'Gmail이 열리면 전송 전에 다음 PDF를 첨부해 주세요：',
+    'tab0-label': '이번 주',
+    'tab1-label': '다음 주',
+    'tab2-label': '다다음 주 이후',
+    'date-intro': '제1〜3지망까지 선택 가능합니다. 이번 주・다음 주는 버튼 선택, 그 이후는 캘린더에서 선택해 주세요。',
+    'submit-btn': '📧 Gmail로 보내기',
+    'submit-note': 'Gmail이 새 탭에서 열립니다. 파일을 첨부한 후 전송해 주세요.',
+    'wish-empty': '미선택',
+    'tp-label-prefix': '시간을 선택해 주세요：',
+    'alert-required': '이름과 학번을 입력해 주세요.',
+    'alert-date': '희망 일정을 하나 이상 선택해 주세요.',
+    'alert-max': '희망 일정은 3개까지입니다. 선택한 날짜를 다시 탭하면 취소됩니다.',
+    'no-days': '이번 주에 선택 가능한 날이 없습니다.',
+  }
+};
+
+let currentLang = 'ja';
+
+function setLang(lang){
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('onclick')==="setLang('"+lang+"')");
+  });
+  const T = LANGS[lang];
+  for(const [id, val] of Object.entries(T)){
+    const el = document.getElementById(id);
+    if(el) el.innerHTML = val;
+  }
+  // wish-emptyを更新
+  [0,1,2].forEach(i=>{
+    const wt = document.getElementById('wt'+i);
+    if(wt && !wishes[i]) wt.textContent = T['wish-empty'];
+  });
+  // カレンダー再描画
+  renderWeekGrid('grid0',0);
+  renderWeekGrid('grid1',1);
+  renderCal();
+}
+
+// ===== カレンダーロジック =====
+const HOLIDAYS = new Set(['2026-01-01','2026-01-12','2026-02-11','2026-02-23','2026-03-20','2026-04-29','2026-05-03','2026-05-04','2026-05-05','2026-05-06','2026-07-20','2026-08-11','2026-09-21','2026-09-22','2026-09-23','2026-10-12','2026-11-03','2026-11-23']);
+const DAYS = {ja:['日','月','火','水','木','金','土'],en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],zh:['日','一','二','三','四','五','六'],ko:['일','월','화','수','목','금','토']};
+const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+const TIMES = ['10:00','10:30','11:00','11:30','12:00','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30'];
+
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function isHol(d){return HOLIDAYS.has(ymd(d));}
+function isWE(d){return d.getDay()===0||d.getDay()===6;}
+function isDis(d){const t=new Date();t.setHours(0,0,0,0);return d<t||isWE(d)||isHol(d);}
+function dLabel(d){const days=DAYS[currentLang]||DAYS.ja;return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+'('+days[d.getDay()]+')';}
+function getMon(d){const r=new Date(d);r.setHours(0,0,0,0);const dw=r.getDay();r.setDate(r.getDate()+(dw===0?-6:1-dw));return r;}
+
+let pendingDate=null;
+let wishes=[null,null,null];
+const today=new Date();today.setHours(0,0,0,0);
+const thisMon=getMon(today);
+const nextNextMon=new Date(thisMon);nextNextMon.setDate(thisMon.getDate()+14);
+let calY=nextNextMon.getFullYear(),calM=nextNextMon.getMonth();
+
+function switchWeekTab(i){
+  [0,1,2].forEach(j=>{
+    document.getElementById('wtab'+j).classList.toggle('active',i===j);
+    document.getElementById('wcont'+j).classList.toggle('active',i===j);
+  });
+  document.getElementById('timePanel').classList.remove('show');
+}
+
+function renderWeekGrid(gridId,offset){
+  const days=DAYS[currentLang]||DAYS.ja;
+  const mon=new Date(thisMon);mon.setDate(thisMon.getDate()+offset*7);
+  const grid=document.getElementById(gridId);grid.innerHTML='';
+  let has=false;
+  for(let i=0;i<5;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
+    const btn=document.createElement('div');
+    btn.className='date-btn'+(isDis(d)?' disabled':'');
+    btn.dataset.iso=ymd(d);btn.dataset.label=dLabel(d);
+    btn.innerHTML='<span class="d-day">'+days[d.getDay()]+'</span><span class="d-num">'+d.getDate()+'</span><span class="d-month">'+(d.getMonth()+1)+'</span>';
+    if(!isDis(d)){btn.addEventListener('click',()=>onDateClick(btn,d));has=true;}
+    if(wishes.some(w=>w&&w.iso===ymd(d)))btn.classList.add('selected');
+    grid.appendChild(btn);
+  }
+  if(!has)grid.innerHTML='<div class="no-days">'+(LANGS[currentLang]['no-days']||'選択できる日がありません')+'</div>';
+}
+
+function renderCal(){
+  const days=DAYS[currentLang]||DAYS.ja;
+  document.getElementById('calML').textContent=calY+'年 '+MONTHS[calM];
+  const grid=document.getElementById('calGrid');grid.innerHTML='';
+  days.forEach((d,i)=>{const el=document.createElement('div');el.className='day-head'+(i===0?' sun':i===6?' sat':'');el.textContent=d;grid.appendChild(el);});
+  const first=new Date(calY,calM,1),last=new Date(calY,calM+1,0);
+  for(let i=0;i<first.getDay();i++){const el=document.createElement('div');el.className='day-cell empty';grid.appendChild(el);}
+  for(let dd=1;dd<=last.getDate();dd++){
+    const d=new Date(calY,calM,dd);const el=document.createElement('div');
+    let cls='day-cell';
+    const oor=d<nextNextMon,dis=isDis(d)||oor;
+    if(d.toDateString()===today.toDateString())cls+=' today';
+    if(dis)cls+=(oor?' out-of-range':' disabled');
+    if(wishes.some(w=>w&&w.iso===ymd(d)))cls+=' selected';
+    el.className=cls;el.textContent=dd;
+    if(!dis)el.addEventListener('click',()=>onCalClick(d));
+    grid.appendChild(el);
+  }
+}
+function calPrev(){calM--;if(calM<0){calM=11;calY--;}renderCal();}
+function calNext(){calM++;if(calM>11){calM=0;calY++;}renderCal();}
+
+function onDateClick(btn,d){
+  const iso=ymd(d);
+  const ei=wishes.findIndex(w=>w&&w.iso===iso);
+  if(ei!==-1){wishes[ei]=null;btn.classList.remove('selected');updateWish();if(pendingDate&&pendingDate.iso===iso){pendingDate=null;document.getElementById('timePanel').classList.remove('show');}return;}
+  if(wishes.filter(w=>w).length>=3){alert(LANGS[currentLang]['alert-max']);return;}
+  pendingDate={iso,label:btn.dataset.label,isCal:false};
+  document.getElementById('tpLabel').textContent=(LANGS[currentLang]['tp-label-prefix']||'')+btn.dataset.label;
+  renderTimes();document.getElementById('timePanel').classList.add('show');
+  document.getElementById('timePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function onCalClick(d){
+  const iso=ymd(d);
+  const ei=wishes.findIndex(w=>w&&w.iso===iso);
+  if(ei!==-1){wishes[ei]=null;updateWish();renderCal();if(pendingDate&&pendingDate.iso===iso){pendingDate=null;document.getElementById('timePanel').classList.remove('show');}return;}
+  if(wishes.filter(w=>w).length>=3){alert(LANGS[currentLang]['alert-max']);return;}
+  pendingDate={iso,label:dLabel(d),isCal:true};
+  document.getElementById('tpLabel').textContent=(LANGS[currentLang]['tp-label-prefix']||'')+dLabel(d);
+  renderTimes();document.getElementById('timePanel').classList.add('show');
+  document.getElementById('timePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function renderTimes(){
+  const grid=document.getElementById('timeGrid');grid.innerHTML='';
+  TIMES.forEach(t=>{const btn=document.createElement('button');btn.className='time-btn';btn.textContent=t;btn.onclick=()=>onTime(t);grid.appendChild(btn);});
+}
+function onTime(t){
+  if(!pendingDate)return;
+  const ei=wishes.findIndex(w=>w===null);if(ei===-1)return;
+  wishes[ei]={iso:pendingDate.iso,label:pendingDate.label+' '+t};
+  if(!pendingDate.isCal)document.querySelectorAll('.date-btn').forEach(b=>{if(b.dataset.iso===pendingDate.iso)b.classList.add('selected');});
+  else renderCal();
+  pendingDate=null;document.getElementById('timePanel').classList.remove('show');updateWish();
+}
+function updateWish(){
+  const emptyMsg=LANGS[currentLang]['wish-empty']||'未選択';
+  wishes.forEach((w,i)=>{
+    const item=document.getElementById('wi'+i),txt=document.getElementById('wt'+i);
+    if(w){item.classList.add('filled');txt.style.color='';txt.textContent=w.label;}
+    else{item.classList.remove('filled');txt.style.color='var(--tl)';txt.textContent=emptyMsg;}
+  });
+}
+
+// ===== 送信処理 =====
+function getR(name){const el=document.querySelector('input[name="'+name+'"]:checked');return el?el.value:'';}
+function getCB(name){return[...document.querySelectorAll('input[name="'+name+'"]:checked')].map(e=>e.value).join(', ');}
+
+function sendMail(){
+  const T=LANGS[currentLang];
+  const name=document.getElementById('name').value.trim();
+  const gakuseki=document.getElementById('gakuseki').value.trim();
+  if(!name||!gakuseki){alert(T['alert-required']);return;}
+  if(wishes.filter(w=>w).length<1){alert(T['alert-date']);return;}
+
+  const zemi=document.getElementById('zemi').value.trim()||'―';
+  const email=document.getElementById('email').value.trim()||'―';
+  const country=document.getElementById('country').value.trim()||'―';
+  const native=document.getElementById('native').value.trim()||'―';
+  const visa=document.getElementById('visa').value||'―';
+  const visaexp=document.getElementById('visaexp').value.trim()||'―';
+  const jlpt=document.getElementById('jlpt').value.trim()||'―';
+  const comm=document.getElementById('comm').value||'―';
+  const postgrad=getR('postgrad')||'―';
+  const parttime=getR('parttime')||'―';
+  const career=document.getElementById('career').value||'―';
+  const target=document.getElementById('target').value.trim()||'―';
+  const status=getR('status')||'―';
+  const themes=getCB('theme')||'―';
+  const free=document.getElementById('free').value.trim()||'―';
+  const w1=wishes[0]?wishes[0].label:'―';
+  const w2=wishes[1]?wishes[1].label:'―';
+  const w3=wishes[2]?wishes[2].label:'―';
+
+  const dest = getDest();
+  const DEST = dest.email;
+  const TANTO_NAME = dest.name;
+
+  const subject='【留学生・面談申込】'+name+'（'+gakuseki+'）'+zemi;
+  const body=
+    TANTO_DEPT+'　'+TANTO_NAME+' 様\n\n'
+   +'はじめまして。'+zemi+'の'+name+'と申します。\n'
+   +'面談のご予約をお願いしたくご連絡いたします。\n\n'
+   +'━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
+   +'■ 基本情報\n'
+   +'氏名：'+name+'\n'
+   +'学籍番号：'+gakuseki+'\n'
+   +'所属ゼミ：'+zemi+'\n'
+   +'メールアドレス：'+email+'\n\n'
+   +'■ 留学生情報\n'
+   +'出身国：'+country+'　母語：'+native+'\n'
+   +'在留資格：'+visa+'（期限：'+visaexp+'）\n'
+   +'日本語能力：'+jlpt+'\n'
+   +'希望相談言語：'+comm+'\n'
+   +'卒業後の方向性：'+postgrad+'\n'
+   +'アルバイト経験：'+parttime+'\n\n'
+   +'■ 就職活動\n'
+   +'就職希望タイプ：'+career+'\n'
+   +'気になる企業・業界：'+target+'\n'
+   +'就活状況：'+status+'\n\n'
+   +'■ 相談したいこと\n'+themes+'\n\n'
+   +'■ 補足\n'+free+'\n\n'
+   +'━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
+   +'■ 面談希望日時\n'
+   +'第1希望：'+w1+'\n'
+   +'第2希望：'+w2+'\n'
+   +'第3希望：'+w3+'\n'
+   +'━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n'
+   +'ご確認のほど、よろしくお願いいたします。\n\n'
+   +'───────────────\n'
+   +zemi+'　'+name+'\n'
+   +'学籍番号：'+gakuseki+'\n'
+   +'E-mail：'+email+'\n'
+   +'───────────────';
+
+  const url='https://mail.google.com/mail/?view=cm&fs=1'
+    +'&to='+encodeURIComponent(DEST)
+    +'&su='+encodeURIComponent(subject)
+    +'&body='+encodeURIComponent(body);
+  window.open(url,'_blank');
+  setTimeout(()=>{
+    const ok=confirm('Gmailは開きましたか？\nDid Gmail open? / Gmail打开了吗？ / Gmail이 열렸나요？\n\nOKを押すとメールアプリで開きます。');
+    if(ok)window.location.href='mailto:'+DEST+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  },1200);
+}
+
+// 初期化
+renderWeekGrid('grid0',0);
+renderWeekGrid('grid1',1);
+renderCal();
+</script>
+</body>
+</html>

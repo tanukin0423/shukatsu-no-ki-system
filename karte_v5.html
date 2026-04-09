@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面談カルテv5｜多摩大学 キャリア支援課</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+/* ログイン画面 */
+#loginScreen{
+  position:fixed;inset:0;background:#eef4eb;z-index:99999;
+  display:flex;align-items:center;justify-content:center;
+}
+.login-box{
+  background:white;border-radius:16px;padding:40px 36px;
+  box-shadow:0 4px 24px rgba(45,90,39,0.15);
+  text-align:center;width:320px;
+}
+.login-box h2{color:#2d5a27;font-size:1.1rem;margin-bottom:6px;}
+.login-box p{color:#888;font-size:0.8rem;margin-bottom:20px;}
+.login-box input{
+  width:100%;padding:10px 14px;border:1.5px solid #d0e4c8;
+  border-radius:8px;font-size:1rem;margin-bottom:12px;
+  font-family:inherit;outline:none;
+}
+.login-box input:focus{border-color:#4a8c3f;}
+.login-box button.login-btn{
+  width:100%;padding:10px;background:#2d5a27;color:white;
+  border:none;border-radius:8px;font-size:1rem;cursor:pointer;
+  font-family:inherit;font-weight:700;
+}
+.login-box button.login-btn:hover{background:#4a8c3f;}
+.hint-toggle{
+  font-size:0.78rem;color:#4a8c3f;cursor:pointer;
+  margin-bottom:14px;display:block;text-decoration:underline;
+}
+.hint-text{
+  font-size:0.78rem;color:#6b4c2a;background:#fdf6ec;
+  border-radius:6px;padding:8px 12px;margin-bottom:14px;
+  display:none;
+}
+.login-error{color:#e53935;font-size:0.8rem;margin-top:8px;display:none;}
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gl:#7db96a;--gp:#e8f5e3;
+  --bark:#6b4c2a;--cream:#fdfaf5;--text:#2a2a2a;--tl:#888;
+  --border:#d0e4c8;--shadow:0 2px 16px rgba(45,90,39,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:#eef4eb;color:var(--text);min-height:100vh;}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.ov.hide{display:none;}
+.mb{background:white;border-radius:20px;overflow:hidden;max-width:500px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.mh{background:var(--gd);color:white;padding:22px 28px 18px;}
+.mh.blue{background:#1a3a6b;}
+.mh .ico{font-size:1.8rem;margin-bottom:5px;}
+.mh h2{font-family:'Noto Serif JP',serif;font-size:1.1rem;font-weight:700;}
+.mh p{font-size:0.75rem;opacity:0.8;margin-top:3px;}
+.mbody{padding:22px 28px;}
+.mopt{border:2px solid var(--border);border-radius:12px;padding:13px 16px;cursor:pointer;transition:all 0.2s;display:flex;align-items:flex-start;gap:11px;background:var(--cream);margin-bottom:9px;}
+.mopt:hover,.mopt.sel{border-color:var(--gm);background:var(--gp);}
+.mopt .ico{font-size:1.3rem;flex-shrink:0;margin-top:2px;}
+.mopt .ttl{font-size:0.88rem;font-weight:700;color:var(--gd);margin-bottom:2px;}
+.mopt .dsc{font-size:0.73rem;color:var(--tl);line-height:1.6;}
+.mfa{display:none;margin-top:8px;}
+.mfa.show{display:block;}
+.fil-lbl{display:flex;align-items:center;gap:8px;border:2px dashed var(--border);border-radius:9px;padding:10px 14px;cursor:pointer;font-size:0.82rem;color:var(--tl);transition:all 0.2s;background:white;}
+.fil-lbl:hover{border-color:var(--gm);color:var(--gd);}
+.mbtn{width:100%;padding:12px;background:var(--gd);color:white;border:none;border-radius:9px;font-family:'Noto Sans JP',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;margin-top:12px;}
+.mbtn:hover{background:var(--gm);}
+.mbtn.blue{background:#1a3a6b;}
+.mbtn.blue:hover{background:#2e5090;}
+.mbtn-row{display:flex;gap:8px;margin-top:14px;}
+.mbtn-cancel{flex:1;padding:11px;background:white;border:1.5px solid var(--border);border-radius:9px;font-family:inherit;font-size:0.86rem;cursor:pointer;color:var(--tl);}
+.warn-box{background:#fff3cd;border:1.5px solid #f0c040;border-radius:9px;padding:11px 14px;font-size:0.8rem;line-height:1.85;margin-bottom:14px;}
+.warn-title{font-weight:700;color:#856404;margin-bottom:5px;}
+.std-row{padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;margin-bottom:5px;font-size:0.8rem;background:white;display:flex;align-items:center;justify-content:space-between;}
+.std-row.sel{border-color:var(--gm);background:var(--gp);}
+.match-badge{background:var(--gm);color:white;font-size:0.67rem;padding:1px 7px;border-radius:20px;}
+.warn-badge{color:#c0392b;font-size:0.67rem;}
+.mnote{text-align:center;font-size:0.7rem;color:var(--tl);margin-top:8px;}
+.fil-inp{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:6px 10px;font-family:'Noto Sans JP',sans-serif;font-size:0.82rem;background:white;color:var(--text);}
+.fil-inp:focus{outline:none;border-color:var(--gm);}
+.kh{background:var(--gd);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.2);}
+.kht{display:flex;align-items:stretch;min-height:65px;}
+.kha{width:6px;background:var(--gl);flex-shrink:0;}
+.khm{flex:1;padding:9px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.khn{font-family:'Noto Serif JP',serif;font-size:1.35rem;font-weight:700;color:white;}
+.khe{font-size:0.67rem;color:var(--gl);letter-spacing:0.1em;margin-bottom:3px;}
+.khmt{font-size:0.72rem;color:rgba(255,255,255,0.7);margin-top:2px;display:flex;gap:9px;flex-wrap:wrap;}
+.khr{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.khbadge{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:white;font-size:0.67rem;padding:2px 9px;border-radius:20px;}
+.khdate{font-size:0.67rem;color:rgba(255,255,255,0.55);}
+.khac{background:rgba(0,0,0,0.15);padding:7px 18px;display:flex;gap:7px;justify-content:flex-end;align-items:center;border-top:1px solid rgba(255,255,255,0.08);}
+.sst{font-size:0.7rem;color:rgba(255,255,255,0.5);margin-right:auto;}
+.hb{padding:5px 14px;border:none;border-radius:20px;font-family:'Noto Sans JP',sans-serif;font-size:0.74rem;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.hb-g{background:var(--gl);color:white;}.hb-g:hover{background:var(--gm);}
+.hb-b{background:var(--bark);color:white;}.hb-b:hover{background:#8a6030;}
+.hb-n{background:#1a3a6b;color:white;}.hb-n:hover{background:#2e5090;}
+.hb-gh{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.2);}.hb-gh:hover{background:rgba(255,255,255,0.2);}
+.hb-r{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.15);font-size:0.7rem;}
+.main{max-width:900px;margin:0 auto;padding:18px 14px;display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.full{grid-column:1/-1;}
+.card{background:white;border-radius:13px;overflow:hidden;box-shadow:var(--shadow);}
+.ch{padding:9px 15px;font-size:0.8rem;font-weight:700;display:flex;align-items:center;gap:6px;}
+.ch.g{background:var(--gd);color:white;}.ch.b{background:var(--bark);color:white;}
+.ch.m{background:var(--gm);color:white;}.ch.es{background:linear-gradient(135deg,var(--gd),var(--gm));color:white;}
+.cb{padding:13px 15px;}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px;}
+.ii{background:var(--cream);border:1.5px solid var(--border);border-radius:7px;padding:7px 9px;}
+.il{font-size:0.66rem;color:var(--tl);margin-bottom:2px;}
+.iv{font-size:0.82rem;font-weight:500;line-height:1.5;}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0;}
+.tag{background:var(--gp);border:1.5px solid var(--border);border-radius:5px;padding:2px 8px;font-size:0.72rem;color:var(--gd);font-weight:500;}
+.tag.warn{background:#fff3cd;border-color:#f0c040;color:#856404;}
+.wlist{display:flex;flex-direction:column;gap:5px;margin-top:6px;}
+.wi{display:flex;align-items:center;gap:7px;background:var(--cream);border:1.5px solid var(--border);border-radius:7px;padding:6px 10px;font-size:0.79rem;}
+.wn{background:var(--gd);color:white;border-radius:50%;width:17px;height:17px;display:flex;align-items:center;justify-content:center;font-size:0.63rem;font-weight:700;flex-shrink:0;}
+.ff{margin-bottom:9px;}
+.fl{font-size:0.69rem;color:var(--tl);margin-bottom:3px;font-weight:500;}
+.fi{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-family:'Noto Sans JP',sans-serif;font-size:0.82rem;background:var(--cream);color:var(--text);transition:border-color 0.2s;}
+.fi:focus{outline:none;border-color:var(--gm);box-shadow:0 0 0 3px rgba(74,140,63,0.1);background:white;}
+textarea.fi{min-height:66px;resize:vertical;line-height:1.7;}
+textarea.fi.tall{min-height:88px;}
+.rrow{display:flex;gap:9px;margin-bottom:5px;}
+.rl{display:flex;align-items:center;gap:5px;font-size:0.79rem;cursor:pointer;}
+.rl input{accent-color:var(--gm);}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.vi{border:1.5px solid var(--border);border-radius:7px;padding:9px 11px;background:var(--cream);margin-bottom:8px;}
+.vt{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.vtl{font-size:0.77rem;font-weight:700;color:var(--gd);}
+.vck{display:flex;align-items:center;gap:5px;font-size:0.72rem;color:var(--gm);font-weight:600;}
+.me{border:1.5px solid var(--border);border-radius:9px;overflow:hidden;background:var(--cream);}
+.meh{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--gp);border-bottom:1.5px solid var(--border);}
+.mebadge{background:var(--bark);color:white;font-size:0.69rem;padding:2px 9px;border-radius:20px;font-weight:700;}
+.medate{border:1px solid var(--border);border-radius:5px;padding:2px 7px;font-size:0.77rem;font-family:inherit;background:white;color:var(--gd);font-weight:500;width:170px;}
+.medate:focus{outline:none;border-color:var(--gm);}
+.medel{background:none;border:none;cursor:pointer;font-size:0.82rem;opacity:0.45;padding:2px 5px;}
+.medel:hover{opacity:1;background:#fee;}
+.meah{padding:5px 10px;background:#fff9e6;border-top:1.5px solid #f0c040;font-size:0.7rem;font-weight:700;color:var(--bark);}
+.esbadge{font-size:0.69rem;padding:2px 8px;border-radius:20px;font-weight:700;color:white;}
+.esb{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:white;padding:3px 11px;border-radius:20px;font-size:0.69rem;cursor:pointer;font-family:inherit;}
+.esb.ora{background:#c8860a;border:none;font-weight:700;}
+.cc{font-size:0.67rem;color:var(--tl);text-align:right;margin-top:3px;}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--gd);color:white;padding:11px 18px;border-radius:11px;font-size:0.82rem;box-shadow:0 4px 20px rgba(0,0,0,0.2);display:none;z-index:999;max-width:320px;line-height:1.5;}
+.kf{max-width:900px;margin:4px auto 0;padding:5px 14px;font-size:0.67rem;color:var(--tl);display:flex;justify-content:space-between;}
+@media(max-width:640px){.main{grid-template-columns:1fr;}.full{grid-column:1;}.fg2{grid-template-columns:1fr;}.khn{font-size:1.1rem;}}
+/* 音声入力ボタン */
+.voice-wrap{position:relative;display:flex;align-items:flex-start;gap:6px;}
+.voice-wrap textarea,.voice-wrap input{flex:1;}
+.voice-btn{flex-shrink:0;width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;background:#e8f5e3;color:#2d5a27;transition:all 0.2s;margin-top:2px;box-shadow:0 1px 3px rgba(0,0,0,0.15);}
+.voice-btn:hover{background:#c5e8b0;}
+.voice-btn.recording{background:#e53935;color:white;animation:pulse 1s infinite;}
+.voice-btn.recording::after{content:'';position:absolute;width:38px;height:38px;border-radius:50%;border:2px solid #e53935;animation:ripple 1s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+@keyframes ripple{0%{transform:scale(1);opacity:1;}100%{transform:scale(1.5);opacity:0;}}
+.hb-tooltip-wrap{position:relative;display:inline-block;}
+.hb-tooltip{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);color:white;font-size:0.68rem;padding:5px 10px;border-radius:7px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s;z-index:999;line-height:1.5;}
+.hb-tooltip-wrap:hover .hb-tooltip{opacity:1;}
+.hb-tooltip::before{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:rgba(0,0,0,0.8);}
+
+/* AI機能パネル */
+.ai-panel{background:linear-gradient(135deg,#1a237e 0%,#283593 100%);border-radius:13px;overflow:hidden;margin-bottom:13px;}
+.ai-panel-header{padding:10px 16px;color:white;font-weight:700;font-size:0.85rem;display:flex;align-items:center;gap:8px;}
+.ai-panel-body{padding:14px 16px;background:rgba(255,255,255,0.05);}
+.ai-key-row{display:flex;gap:8px;margin-bottom:12px;align-items:center;}
+.ai-key-input{flex:1;padding:8px 12px;border:1.5px solid rgba(255,255,255,0.2);border-radius:8px;font-family:inherit;font-size:0.82rem;background:rgba(255,255,255,0.1);color:white;}
+.ai-key-input::placeholder{color:rgba(255,255,255,0.4);}
+.ai-key-input:focus{outline:none;border-color:rgba(255,255,255,0.5);}
+.ai-btn-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+@media(max-width:640px){.ai-btn-grid{grid-template-columns:1fr;}}
+.ai-func-btn{padding:10px 8px;border:1.5px solid rgba(255,255,255,0.25);border-radius:10px;background:rgba(255,255,255,0.1);color:white;font-family:inherit;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;text-align:center;line-height:1.5;}
+.ai-func-btn:hover{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.5);}
+.ai-func-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.ai-func-btn .ai-icon{font-size:1.3rem;display:block;margin-bottom:3px;}
+.ai-result{background:rgba(255,255,255,0.95);border-radius:9px;padding:14px;color:#2a2a2a;font-size:0.84rem;line-height:1.8;display:none;position:relative;}
+.ai-result.show{display:block;}
+.ai-result-title{font-weight:700;color:#1a237e;margin-bottom:8px;font-size:0.85rem;}
+.ai-result-copy{position:absolute;top:10px;right:10px;background:#1a237e;color:white;border:none;border-radius:6px;padding:4px 10px;font-size:0.72rem;cursor:pointer;font-family:inherit;}
+.ai-loading{text-align:center;color:rgba(255,255,255,0.7);padding:16px;font-size:0.85rem;}
+.ai-key-hint{font-size:0.72rem;color:rgba(255,255,255,0.5);line-height:1.6;}
+.ai-key-hint a{color:rgba(255,255,255,0.7);}
+.key-toggle{background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);border-radius:6px;padding:3px 10px;font-size:0.72rem;cursor:pointer;font-family:inherit;}
+.key-toggle:hover{background:rgba(255,255,255,0.1);}
+#voiceStatus{position:fixed;bottom:20px;right:20px;background:#2d5a27;color:white;padding:8px 16px;border-radius:20px;font-size:0.8rem;display:none;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
+.sec-save-btn{background:#c8860a;border:none;color:white;padding:3px 11px;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;margin-left:auto;transition:all 0.2s;white-space:nowrap;}
+.sec-save-btn:hover{background:#a06d08;}
+.sec-save-btn.es-style{background:#c8860a;border:none;}
+.memo-add-box{background:#fffbf0;border:1.5px solid #f0c040;border-radius:8px;padding:9px 12px;margin-top:8px;}
+.memo-add-lbl{font-size:0.69rem;font-weight:700;color:#856404;margin-bottom:5px;}
+.memo-add-ta{min-height:54px;background:white;}
+.prompt-copy-btn{margin-top:7px;background:#c8860a;color:white;border:none;border-radius:20px;padding:4px 14px;font-size:0.72rem;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.prompt-copy-btn:hover{background:#a06d08;}
+</style>
+</head>
+<body>
+
+<!-- ログイン画面 -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div style="font-size:2rem;margin-bottom:8px;">🌳</div>
+    <h2>面談カルテ v5</h2>
+    <p>多摩大学 キャリア支援課</p>
+    <input type="password" id="loginPw" placeholder="パスワードを入力" autocomplete="off">
+    <span class="hint-toggle" id="hintToggle">💡 ヒントを見る</span>
+    <div class="hint-text" id="hintText">k○r○g○ + 年号（西暦4桁）</div>
+    <button class="login-btn" id="loginBtn">ログイン</button>
+    <div class="login-error" id="loginError">❌ パスワードが違います</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var PW = 'karigu2026';
+  var screen = document.getElementById('loginScreen');
+  var pwInput = document.getElementById('loginPw');
+  var loginBtn = document.getElementById('loginBtn');
+  var hintToggle = document.getElementById('hintToggle');
+  var hintText = document.getElementById('hintText');
+  var loginError = document.getElementById('loginError');
+
+  // セッション中はログイン維持
+  if(sessionStorage.getItem('karte_auth')==='ok'){
+    screen.style.display='none';
+  }
+
+  hintToggle.addEventListener('click',function(){
+    hintText.style.display = hintText.style.display==='block' ? 'none' : 'block';
+    hintToggle.textContent = hintText.style.display==='block' ? '💡 ヒントを隠す' : '💡 ヒントを見る';
+  });
+
+  function tryLogin(){
+    if(pwInput.value === PW){
+      sessionStorage.setItem('karte_auth','ok');
+      screen.style.display='none';
+      loginError.style.display='none';
+    } else {
+      loginError.style.display='block';
+      pwInput.value='';
+      pwInput.focus();
+    }
+  }
+
+  loginBtn.addEventListener('click', tryLogin);
+  pwInput.addEventListener('keydown', function(e){ if(e.key==='Enter') tryLogin(); });
+})();
+</script>
+
+<!-- 起動モーダル -->
+<div class="ov" id="startModal">
+  <div class="mb">
+    <div class="mh">
+      <div class="ico">🌳</div>
+      <h2>面談準備カルテ</h2>
+      <p>多摩大学 キャリア支援課 ／ 就活の木</p>
+    </div>
+    <div class="mbody">
+      <div class="mopt" id="opt1">
+        <div class="ico">📋</div>
+        <div>
+          <div class="ttl">① アンケートCSVを読み込む</div>
+          <div class="dsc">NO2で出力したCSVから学生情報を自動転記します。初回面談前に使用してください。</div>
+          <div class="mfa" id="area1">
+            <label class="fil-lbl">
+              <span>📂</span><span id="csvLabel">CSVファイルを選択…</span>
+              <input type="file" accept=".csv" id="csvFile" style="display:none;">
+            </label>
+            <div id="csvList" style="margin-top:7px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="mopt" id="opt2">
+        <div class="ico">💾</div>
+        <div>
+          <div class="ttl">② 保存済みJSONを読み込む（ローカル）</div>
+          <div class="dsc">前回保存したJSONファイルを読み込みます。学籍番号で本人確認を行います。</div>
+          <div class="mfa" id="area2">
+            <label class="fil-lbl">
+              <span>📂</span><span id="jsonLabel">JSONファイルを選択…</span>
+              <input type="file" accept=".json" id="jsonFile" style="display:none;">
+            </label>
+            <div id="jsonInfo" style="margin-top:6px;font-size:0.77rem;color:var(--gd);display:none;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="mopt" id="opt_cloud">
+        <div class="ico">☁️</div>
+        <div>
+          <div class="ttl">③ Cloudから読み込む（学籍番号で検索）</div>
+          <div class="dsc">面談中でもOK。学籍番号を入力するだけで即座に呼び出せます。</div>
+          <div class="mfa" id="area_cloud">
+            <div style="margin-top:8px;">
+              <div style="font-size:0.72rem;color:var(--tl);margin-bottom:3px;font-weight:500;">学籍番号 <span style="color:#c0392b;">*必須</span></div>
+              <input class="fil-inp" id="cloudGakuseki" placeholder="例：23311001">
+              <button id="cloudLoadBtn" style="margin-top:8px;width:100%;padding:9px;background:#1565c0;color:white;border:none;border-radius:8px;font-family:inherit;font-size:0.85rem;font-weight:700;cursor:pointer;">☁️ Cloudから読み込む</button>
+              <div id="cloudLoadInfo" style="margin-top:6px;font-size:0.77rem;color:var(--gd);display:none;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mopt" id="opt3">
+        <div class="ico">✏️</div>
+        <div>
+          <div class="ttl">④ 新規で手入力する</div>
+          <div class="dsc">空白のカルテから始めます。アンケートが届いたら後からCSVで補完できます。</div>
+          <div class="mfa" id="area3">
+            <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+              <div style="grid-column:1/-1;">
+                <div style="font-size:0.72rem;color:var(--tl);margin-bottom:3px;font-weight:500;">氏名 <span style="color:#c0392b;">*必須</span></div>
+                <input class="fil-inp" id="newName" placeholder="例：田中 花子">
+              </div>
+              <div>
+                <div style="font-size:0.72rem;color:var(--tl);margin-bottom:3px;font-weight:500;">学籍番号 <span style="color:#c0392b;">*必須</span></div>
+                <input class="fil-inp" id="newGakuseki" placeholder="例：23311001">
+              </div>
+              <div>
+                <div style="font-size:0.72rem;color:var(--tl);margin-bottom:3px;font-weight:500;">学年</div>
+                <select class="fil-inp" id="newGrade">
+                  <option value="">選択</option>
+                  <option value="3年生">3年生</option>
+                  <option value="4年生">4年生</option>
+                  <option value="その他">その他</option>
+                </select>
+              </div>
+              <div>
+                <div style="font-size:0.72rem;color:var(--tl);margin-bottom:3px;font-weight:500;">所属ゼミ</div>
+                <input class="fil-inp" id="newZemi" placeholder="例：○○ゼミ">
+              </div>
+              <div style="grid-column:1/-1;">
+                <div style="font-size:0.72rem;color:var(--tl);margin-bottom:3px;font-weight:500;">大学メールアドレス</div>
+                <input class="fil-inp" id="newEmail" placeholder="例：23311001ra@tama.ac.jp">
+              </div>
+              <div style="grid-column:1/-1;">
+                <div style="font-size:0.72rem;color:var(--tl);margin-bottom:3px;font-weight:500;">希望進路</div>
+                <select class="fil-inp" id="newCareer">
+                  <option value="">選択してください</option>
+                  <option value="就職（一般企業）">就職（一般企業）</option>
+                  <option value="就職（公務員）">就職（公務員）</option>
+                  <option value="進学">進学</option>
+                  <option value="未定">未定</option>
+                </select>
+              </div>
+              <div style="grid-column:1/-1;">
+                <div style="font-size:0.72rem;color:var(--tl);margin-bottom:3px;font-weight:500;">活動状況</div>
+                <select class="fil-inp" id="newStatus">
+                  <option value="">選択してください</option>
+                  <option value="まだ何もしていない">まだ何もしていない</option>
+                  <option value="自己分析中">自己分析中</option>
+                  <option value="企業研究中">企業研究中</option>
+                  <option value="ES作成中">ES作成中</option>
+                  <option value="選考中">選考中</option>
+                </select>
+              </div>
+            </div>
+            <div style="background:var(--gp);border-radius:7px;padding:7px 10px;font-size:0.72rem;color:var(--gd);margin-top:8px;">
+              💡 アンケートが届いたら後から「📋 CSV追加読み込み」で補完できます
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="mbtn" id="startBtn">カルテを開く →</button>
+      <div class="mnote">いずれの場合も後から追記・変更できます</div>
+    </div>
+  </div>
+</div>
+
+<!-- CSV追加読み込みモーダル -->
+<div class="ov hide" id="csvModal">
+  <div class="mb">
+    <div class="mh blue">
+      <div class="ico">📋</div>
+      <h2>アンケートCSV 追加読み込み</h2>
+      <p>後から届いたアンケートデータを読み込みます</p>
+    </div>
+    <div class="mbody">
+      <div class="warn-box">
+        <div class="warn-title">⚠️ 読み込み前にご確認ください</div>
+        <strong>上書きされる項目：</strong>希望進路・活動状況・志望先・相談テーマ・希望日時・確定日時・ステータス・自由記入<br>
+        <strong>保持される項目：</strong>面談記録・ES素材帳・追記欄・検査メモ<br><br>
+        ※手入力した基本情報は<strong>上書きされます。</strong>新旧データをよく確認してから続けてください。
+      </div>
+      <label class="fil-lbl">
+        <span>📂</span><span id="csvModalLabel">CSVファイルを選択…</span>
+        <input type="file" accept=".csv" id="csvModalFile" style="display:none;">
+      </label>
+      <div id="csvModalList" style="margin-top:9px;display:none;">
+        <div style="font-size:0.73rem;color:var(--tl);margin-bottom:5px;">
+          学生を選択してください
+          <span style="color:#c0392b;font-weight:700;">（カルテの学生と一致するか確認）</span>
+        </div>
+        <div id="csvModalRows"></div>
+      </div>
+      <div class="mbtn-row">
+        <button class="mbtn-cancel" id="csvModalCancel">キャンセル</button>
+        <button class="mbtn blue" id="csvModalApply" style="flex:2;margin-top:0;">上書きして読み込む</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ヘッダー -->
+<div class="kh">
+  <div class="kht">
+    <div class="kha"></div>
+    <div class="khm">
+      <div>
+        <div class="khe">🌳 面談準備カルテ ／ 多摩大学 キャリア支援課</div>
+        <div class="khn" id="hName">（学生名）</div>
+        <div class="khmt">
+          <span id="hZemi">―</span>
+          <span id="hGrade">―</span>
+          <span id="hGakuseki">―</span>
+          <span id="hEmail">―</span>
+        </div>
+      </div>
+      <div class="khr">
+        <span class="khbadge" id="hConfirmed">面談日時未確定</span>
+        <span class="khdate" id="hDate">作成日：―</span>
+      </div>
+    </div>
+  </div>
+  <div class="khac">
+    <span class="sst" id="saveStatus">💾 未保存</span>
+    <button class="hb hb-r" id="reloadBtn">🔄 最初から</button>
+    <div class="hb-tooltip-wrap">
+      <button class="hb hb-n" id="csvModalBtn">📋 CSV追加読み込み</button>
+      <div class="hb-tooltip">NO2で出力したCSVで学生情報を補完します</div>
+    </div>
+    <button class="hb hb-gh" id="printBtn">🖨 印刷</button>
+    <button class="hb" style="background:#c8860a;color:white;font-weight:700;" id="saveBtn">💾☁️ 保存</button>
+    <button class="hb" style="background:#1565c0;color:white;" id="fbLoadBtn">☁️ Cloud読込</button>
+    <button class="hb" style="background:#c0392b;color:white;font-weight:700;" id="closeBtn">✖ 閉じる</button>
+    <button id="saveAsBtn" style="display:none;"></button>
+    <button id="fbSaveBtn" style="display:none;"></button>
+  </div>
+</div>
+
+<!-- メイン -->
+<div class="main">
+
+  <div class="card">
+    <div class="ch g" style="display:flex;align-items:center;">📋 基本情報<button class="sec-save-btn" onclick="saveAll()">💾☁️ 保存</button></div>
+    <div class="cb">
+      <div class="ig">
+        <div class="ii"><div class="il">希望進路</div><div class="iv" id="iCareer">―</div></div>
+        <div class="ii"><div class="il">活動状況</div><div class="iv" id="iStatus">―</div></div>
+        <div class="ii"><div class="il">志望先・業界</div><div class="iv" id="iTarget">―</div></div>
+        <div class="ii"><div class="il">希望職種</div><div class="iv" id="iJobs">―</div></div>
+      </div>
+
+      <!-- サポート希望・判定バッジ -->
+      <div id="supportInfoArea" style="display:none;background:var(--cream);border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;margin:8px 0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+          <span style="font-size:0.72rem;font-weight:700;color:var(--tl);">サポート希望</span>
+          <span id="iSupport" style="font-size:0.82rem;font-weight:700;">―</span>
+          <span style="font-size:0.72rem;font-weight:700;color:var(--tl);margin-left:8px;">進み具合</span>
+          <span id="iProgress" style="font-size:0.82rem;">―</span>
+          <span id="iTypeBadge" style="margin-left:auto;padding:3px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;display:none;"></span>
+        </div>
+        <div id="iAnxietyArea" style="display:none;">
+          <div style="font-size:0.72rem;color:var(--tl);margin-bottom:4px;font-weight:700;">不安チェック</div>
+          <div id="iAnxiety" class="tags"></div>
+        </div>
+      </div>
+
+      <div class="il">履修科目</div>
+      <div class="tags" id="iSubjects"><span class="tag">―</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch g" style="display:flex;align-items:center;">💬 相談テーマ・希望日時<button class="sec-save-btn" onclick="saveAll()">💾☁️ 保存</button></div>
+    <div class="cb">
+      <div class="il">相談したいこと</div>
+      <div class="tags" id="iThemes"><span class="tag">―</span></div>
+      <div class="wlist" id="iWishes">
+        <div class="wi"><span class="wn">1</span>―</div>
+        <div class="wi"><span class="wn">2</span>―</div>
+        <div class="wi"><span class="wn">3</span>―</div>
+      </div>
+      <div style="margin-top:8px;">
+        <div class="fl">面談確定日時</div>
+        <input class="fi" id="confirmedDate" placeholder="例：2026年4月8日（水）10:30">
+      </div>
+      <div style="margin-top:6px;">
+        <div class="fl">自由記入（アンケートより）</div>
+        <div id="iFree" style="font-size:0.79rem;background:var(--cream);border-left:3px solid var(--gl);padding:5px 9px;border-radius:0 5px 5px 0;line-height:1.7;">―</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="ch m" style="display:flex;align-items:center;">📊 検査結果（受領確認・メモ）<button class="sec-save-btn" onclick="saveAll()">💾☁️ 保存</button></div>
+    <div class="cb">
+      <div class="vi">
+        <div class="vt">
+          <span class="vtl">📊 職業興味検査（VPI）</span>
+          <label class="vck"><input type="checkbox" id="vpiCheck"> 受領済み</label>
+        </div>
+        <input class="fi" id="vpiMemo" placeholder="結果メモ（例：社会的・芸術的が高い）">
+      </div>
+      <div class="vi">
+        <div class="vt">
+          <span class="vtl">💡 仕事価値観検査</span>
+          <label class="vck"><input type="checkbox" id="valueCheck"> 受領済み</label>
+        </div>
+        <input class="fi" id="valueMemo" placeholder="結果メモ（例：達成・他者への影響が上位）">
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="ch b" style="display:flex;align-items:center;">📝 面談中 追記欄（ヒアリング情報）<button class="sec-save-btn" onclick="saveAll()">💾☁️ 保存</button></div>
+    <div class="cb">
+      <div class="fg2">
+        <div class="ff"><div class="fl">ゼミの内容・テーマ</div><input class="fi" id="zemiContent" placeholder="例：マーケティング・消費者行動"></div>
+        <div class="ff">
+          <div class="fl">アルバイト経験</div>
+          <div class="rrow"><label class="rl"><input type="radio" name="baito" value="あり"> あり</label><label class="rl"><input type="radio" name="baito" value="なし"> なし</label></div>
+          <input class="fi" id="baitoDetail" placeholder="職種・期間（例：カフェスタッフ・2年）">
+        </div>
+        <div class="ff">
+          <div class="fl">部活・サークル経験</div>
+          <div class="rrow"><label class="rl"><input type="radio" name="club" value="あり"> あり</label><label class="rl"><input type="radio" name="club" value="なし"> なし</label></div>
+          <input class="fi" id="clubDetail" placeholder="種類・役割（例：バスケ部・副部長）">
+        </div>
+        <div class="ff"><div class="fl">趣味・好きなこと</div><input class="fi" id="hobby" placeholder="例：読書・旅行・料理"></div>
+        <div class="ff"><div class="fl">特技・得意なこと</div><input class="fi" id="skill" placeholder="例：人前で話すこと・データ分析"></div>
+        <div class="ff"><div class="fl">保有資格・取得予定</div><input class="fi" id="license" placeholder="例：普通自動車免許・TOEIC 700点"></div>
+        <div class="ff"><div class="fl">PC・ITスキル</div><input class="fi" id="pcSkill" placeholder="例：Excel・Word（基本）・Python（学習中）"></div>
+        <div class="ff"><div class="fl">語学・その他スキル</div><input class="fi" id="langSkill" placeholder="例：英語（TOEIC 650）・中国語（日常会話）"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="ch b" style="display:flex;align-items:center;">
+      🗒 面談記録（時系列）
+      <button id="addMemoBtn" style="margin-left:auto;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:white;padding:3px 13px;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;">＋ 新しい記録を追加</button>
+    </div>
+    <div class="cb" id="memoContainer" style="display:flex;flex-direction:column;gap:10px;"></div>
+    <div style="padding:10px 15px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+      <button class="sec-save-btn" style="padding:6px 18px;font-size:0.8rem;" onclick="saveAll()">💾☁️ 保存</button>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="ch es" style="display:flex;align-items:center;">
+      ✏️ ES素材帳（エントリーシート対策）
+      <div style="margin-left:auto;display:flex;gap:5px;">
+        <button class="esb" id="copyBtn">📋 ４大質問コピー</button>
+        <button class="esb ora" id="promptBtn">🤖 AIプロンプト生成</button>
+      </div>
+    </div>
+    <div class="cb" style="display:flex;flex-direction:column;gap:13px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+          <span class="esbadge" style="background:var(--gd);">📚 ガクチカ①（学業）</span>
+          <span style="font-size:0.69rem;color:var(--tl);">S+STAR+F&amp;C 六段論法</span>
+        </div>
+        <textarea class="fi tall" id="gaku1" placeholder="学業で力を入れたことを記入…"></textarea>
+        <div class="cc" id="c1">0文字</div>
+        <div class="memo-add-box">
+          <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
+          <textarea class="fi memo-add-ta" id="gaku1memo" placeholder="例：3回目面談で判明・数字が出た・失敗談も語れるようになった…"></textarea>
+          <button class="prompt-copy-btn" onclick="copyPrompt('gaku1','gaku1memo','ガクチカ①（学業）','S+STAR+F&C 六段論法・400字以内')">📋 ブラッシュアッププロンプトをコピー</button>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+          <span class="esbadge" style="background:var(--bark);">☕ ガクチカ②（学業以外）</span>
+          <span style="font-size:0.69rem;color:var(--tl);">S+STAR+F&amp;C 六段論法</span>
+        </div>
+        <textarea class="fi tall" id="gaku2" placeholder="学業以外で力を入れたことを記入…"></textarea>
+        <div class="cc" id="c2">0文字</div>
+        <div class="memo-add-box">
+          <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
+          <textarea class="fi memo-add-ta" id="gaku2memo" placeholder="例：アルバイトでリーダー経験あり・具体的なエピソードが増えた…"></textarea>
+          <button class="prompt-copy-btn" onclick="copyPrompt('gaku2','gaku2memo','ガクチカ②（学業以外）','S+STAR+F&C 六段論法・400字以内')">📋 ブラッシュアッププロンプトをコピー</button>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+          <span class="esbadge" style="background:var(--gm);">🌟 自己PR</span>
+          <span style="font-size:0.69rem;color:var(--tl);">PREP＋TA</span>
+        </div>
+        <textarea class="fi tall" id="selfpr" placeholder="自己PRを記入…"></textarea>
+        <div class="cc" id="c3">0文字</div>
+        <div class="memo-add-box">
+          <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
+          <textarea class="fi memo-add-ta" id="selfprmemo" placeholder="例：粘り強さが強み・チームをまとめる場面が多い…"></textarea>
+          <button class="prompt-copy-btn" onclick="copyPrompt('selfpr','selfprmemo','自己PR','PREP+TA形式・300字以内')">📋 ブラッシュアッププロンプトをコピー</button>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+          <span class="esbadge" style="background:#1a3a6b;">🧭 企業選びの軸・志望動機の素材</span>
+          <span style="font-size:0.69rem;color:var(--tl);">結論先行→きっかけ→動機→共感→仕事→将来像</span>
+        </div>
+        <textarea class="fi tall" id="jiku" placeholder="企業選びの軸・志望動機につながる素材を記入…"></textarea>
+        <div class="cc" id="c4">0文字</div>
+        <div class="memo-add-box">
+          <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
+          <textarea class="fi memo-add-ta" id="jikumemo" placeholder="例：幼少期の体験が動機の根っこ・業界への共感ポイントが明確になった…"></textarea>
+          <button class="prompt-copy-btn" onclick="copyPrompt('jiku','jikumemo','志望動機・企業選びの軸','結論先行→きっかけ→動機→共感→仕事→将来像・400字以内')">📋 ブラッシュアッププロンプトをコピー</button>
+        </div>
+      </div>
+      <div style="background:var(--gp);border-radius:9px;padding:10px 13px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--gd);margin-bottom:5px;">💬 カウンセラーコメント・添削メモ</div>
+        <textarea class="fi" id="counselorMemo" style="background:white;min-height:63px;" placeholder="添削のポイント・気づきなど…"></textarea>
+      </div>
+      <div style="margin-top:12px;display:flex;justify-content:flex-end;">
+        <button class="sec-save-btn es-style" style="padding:6px 18px;font-size:0.8rem;" onclick="saveAll()">💾☁️ 保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI機能パネル -->
+  <div class="card full">
+    <div class="ch" style="background:linear-gradient(135deg,#1a237e,#283593);color:white;">
+      🤖 AI面談サポート（Claude API連携）
+      <span style="margin-left:auto;font-size:0.72rem;opacity:0.7;">APIキーを入力して使用</span>
+    </div>
+    <div class="cb" style="background:#f0f0fa;">
+      <div class="ai-panel">
+        <div class="ai-panel-header">
+          🔑 APIキー設定
+          <button class="key-toggle" id="keyToggle" onclick="toggleKeyVis()">表示</button>
+        </div>
+        <div class="ai-panel-body">
+          <div class="ai-key-row">
+            <input type="password" class="ai-key-input" id="aiApiKey"
+              placeholder="sk-ant-api03-... （Anthropic APIキー）">
+            <button class="ai-func-btn" style="white-space:nowrap;padding:8px 14px;" onclick="saveApiKey()">💾 保存</button>
+          </div>
+          <div class="ai-key-hint">
+            💡 APIキーは <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> で取得できます（新規登録で$5分無料）。<br>
+            キーはこのブラウザのSessionStorageにのみ保存され、タブを閉じると消えます。GitHubには送信されません。
+          </div>
+        </div>
+      </div>
+
+      <!-- 3つのAI機能ボタン -->
+      <div class="ai-btn-grid">
+        <button class="ai-func-btn" id="aiBtnES" onclick="aiAction('es')">
+          <span class="ai-icon">✨</span>
+          ガクチカを<br>ブラッシュアップ
+        </button>
+        <button class="ai-func-btn" id="aiBtnQA" onclick="aiAction('qa')">
+          <span class="ai-icon">🎤</span>
+          想定問答を<br>作成する
+        </button>
+        <button class="ai-func-btn" id="aiBtnResearch" onclick="aiAction('research')">
+          <span class="ai-icon">🔍</span>
+          企業を<br>調べる
+        </button>
+      </div>
+
+      <!-- 企業名入力（企業調査時のみ） -->
+      <div id="researchInputArea" style="display:none;margin-bottom:10px;">
+        <input type="text" id="researchCompany" class="ai-key-input"
+          style="width:100%;margin-bottom:0;"
+          placeholder="調べたい企業名を入力（例：トヨタ自動車、〇〇信用金庫）">
+      </div>
+
+      <!-- AI結果表示エリア -->
+      <div class="ai-result" id="aiResult">
+        <div class="ai-result-title" id="aiResultTitle"></div>
+        <button class="ai-result-copy" onclick="copyAiResult()">📋 コピー</button>
+        <div id="aiResultBody"></div>
+      </div>
+      <div class="ai-loading" id="aiLoading" style="display:none;">
+        🤖 Claudeが考えています... しばらくお待ちください
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="kf">
+  <span>多摩大学 キャリア支援課 ／ 面談準備カルテ</span>
+  <span id="footerName">―</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+var selOpt=0, csvRows=[], selCSVIdx=-1, jsonData=null, modalRows=[], selModalIdx=-1;
+
+function g(id){return document.getElementById(id);}
+
+function toast(msg){
+  var t=g('toast');
+  t.textContent=msg;
+  t.style.display='block';
+  setTimeout(function(){t.style.display='none';},4000);
+}
+
+function parseLine(line){
+  var res=[],cur='',inQ=false,Q=34,COMMA=44;
+  for(var i=0;i<line.length;i++){
+    var c=line.charCodeAt(i);
+    if(c===Q){inQ=!inQ;}
+    else if(c===COMMA&&!inQ){res.push(cur);cur='';}
+    else{cur+=line[i];}
+  }
+  res.push(cur);
+  return res;
+}
+
+function parseCSV(text){
+  if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
+  var lines=text.trim().split('\n');
+  if(lines.length<2)return[];
+  var hdrs=parseLine(lines[0]);
+  return lines.slice(1).map(function(l){
+    var v=parseLine(l),o={};
+    hdrs.forEach(function(h,j){o[h]=v[j]||'';});
+    return o;
+  }).filter(function(r){return r['氏名'];});
+}
+
+function readFile(input,cb){
+  var f=input.files[0];
+  if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){cb(e.target.result);};
+  r.readAsText(f,'utf-8');
+}
+
+function doCopy(text,msg){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){toast(msg);}).catch(function(){fbCopy(text,msg);});
+  }else{fbCopy(text,msg);}
+}
+
+function fbCopy(text,msg){
+  var ta=document.createElement('textarea');
+  ta.value=text;
+  ta.style.cssText='position:fixed;top:-9999px;left:-9999px;';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');toast(msg);}
+  catch(e){showDialog(text);}
+  document.body.removeChild(ta);
+}
+
+function showDialog(text){
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  var box=document.createElement('div');
+  box.style.cssText='background:white;border-radius:14px;padding:22px;max-width:580px;width:100%;display:flex;flex-direction:column;gap:11px;';
+  var ttl=document.createElement('div');
+  ttl.style.cssText='font-weight:700;color:#2d5a27;';
+  ttl.textContent='Ctrl+A → Ctrl+C でコピーしてください';
+  var ta=document.createElement('textarea');
+  ta.style.cssText='min-height:250px;padding:11px;border:1.5px solid #c8dfc2;border-radius:7px;font-size:0.77rem;line-height:1.7;resize:none;';
+  ta.readOnly=true;ta.value=text;
+  var btn=document.createElement('button');
+  btn.style.cssText='background:#2d5a27;color:white;border:none;border-radius:20px;padding:9px 22px;cursor:pointer;align-self:flex-end;font-family:inherit;';
+  btn.textContent='閉じる';
+  btn.addEventListener('click',function(){document.body.removeChild(ov);});
+  box.appendChild(ttl);box.appendChild(ta);box.appendChild(btn);
+  ov.appendChild(box);document.body.appendChild(ov);
+  setTimeout(function(){ta.select();},100);
+}
+
+function buildList(container,rows,curGaku,onSel){
+  container.innerHTML='';
+  rows.forEach(function(s,i){
+    var isM=s['学籍番号']&&s['学籍番号']===curGaku;
+    var div=document.createElement('div');
+    div.className='std-row'+(isM?' sel':'');
+    var ns=document.createElement('span');
+    var b=document.createElement('strong');
+    b.textContent=s['氏名'];
+    ns.appendChild(b);
+    ns.appendChild(document.createTextNode('　'+(s['ゼミ']||'')+'ゼミ　'+(s['学籍番号']||'')));
+    var badge=document.createElement('span');
+    badge.className=isM?'match-badge':'warn-badge';
+    badge.textContent=isM?'✅ 一致':'⚠️ 別の学生';
+    div.appendChild(ns);div.appendChild(badge);
+    div.addEventListener('click',(function(idx,el){
+      return function(){
+        container.querySelectorAll('.std-row').forEach(function(d){d.classList.remove('sel');});
+        el.classList.add('sel');
+        onSel(idx);
+      };
+    })(i,div));
+    container.appendChild(div);
+  });
+}
+
+function fillInfo(s){
+  g('hName').textContent=s['氏名']||'（氏名なし）';
+  g('hZemi').textContent='🏫 '+(s['ゼミ']||'―')+'ゼミ';
+  g('hGrade').textContent='🎓 '+(s['学年']||'―');
+  g('hGakuseki').textContent='🆔 '+(s['学籍番号']||'―');
+  g('hEmail').textContent='📧 '+(s['大学メール']||'―');
+  g('hDate').textContent='作成日：'+new Date().toLocaleDateString('ja-JP');
+  g('iCareer').textContent=s['希望進路']||'―';
+  g('iStatus').textContent=s['活動状況']||'―';
+  g('iTarget').textContent=s['志望先']||'―';
+  g('iJobs').textContent=s['希望職種']||'―';
+
+  // サポート希望・進み具合・不安チェック・判定バッジ
+  var support=s['サポート希望']||'';
+  var progress=s['進み具合']||'';
+  var anxiety=s['不安なこと']||'';
+  var supportArea=g('supportInfoArea');
+  if(support||progress||anxiety){
+    supportArea.style.display='block';
+    g('iSupport').textContent=support||'―';
+    g('iProgress').textContent=progress||'―';
+
+    // 不安チェック表示
+    var anxietyArea=g('iAnxietyArea');
+    if(anxiety && anxiety!=='―'){
+      anxietyArea.style.display='block';
+      g('iAnxiety').innerHTML=anxiety.split('、').map(function(a){
+        return '<span class="tag'+(a==='特に不安なし（順調です）'?' ':" warn")+'" style="font-size:0.72rem;">'+a+'</span>';
+      }).join('');
+    } else { anxietyArea.style.display='none'; }
+
+    // 判定バッジ
+    var badge=g('iTypeBadge');
+    badge.style.display='inline-block';
+    var isSelfOk=(support==='自分でできる！サポート不要')&&(progress==='順調（内定あり・複数選考中）')&&(anxiety===''||anxiety==='特に不安なし（順調です）');
+    var isWarning=(support==='基本は自分でやりたい'||support==='自分でできる！サポート不要')&&anxiety&&anxiety!=='特に不安なし（順調です）';
+    var isAlert=isWarning&&(progress==='ほとんど動けていない'||progress==='あまり進んでいない');
+    if(isAlert){
+      badge.textContent='🚨 要注意・早期介入';
+      badge.style.cssText+='background:#fdecea;color:#c0392b;border:1.5px solid #c0392b;';
+    } else if(isWarning){
+      badge.textContent='⚠️ Bタイプ候補・要フォロー';
+      badge.style.cssText+='background:#fff8e1;color:#c8860a;border:1.5px solid #c8860a;';
+    } else if(isSelfOk){
+      badge.textContent='✅ Aタイプ・自走できている';
+      badge.style.cssText+='background:#e8f5e3;color:#2d5a27;border:1.5px solid #7db96a;';
+    } else {
+      badge.style.display='none';
+    }
+  } else { supportArea.style.display='none'; }
+  var subs=(s['履修科目']||'').split(/[、,，]/).filter(Boolean);
+  g('iSubjects').innerHTML=subs.length?subs.map(function(t){return'<span class="tag">'+t.trim()+'</span>';}).join(''):'<span class="tag">―</span>';
+  var thms=(s['相談テーマ']||'').split(/[、,，]/).filter(Boolean);
+  g('iThemes').innerHTML=thms.length?thms.map(function(t){return'<span class="tag'+(t.indexOf('わからない')>=0?' warn':'')+'">'+ t.trim()+'</span>';}).join(''):'<span class="tag">―</span>';
+  var confirmed=s['確定日時']?s['確定日時'].trim():'';
+  g('iWishes').innerHTML=[s['第1希望'],s['第2希望'],s['第3希望']].map(function(w,i){
+    var isConfirmed=confirmed&&w&&w.trim()===confirmed;
+    var mark=isConfirmed?'<span style="color:#4a8c3f;font-weight:700;margin-left:6px;">✅ 確定</span>':'';
+    return'<div class="wi"><span class="wn">'+(i+1)+'</span>'+(w||'未選択')+mark+'</div>';
+  }).join('');
+  g('iFree').textContent=s['相談詳細']||'―';
+  g('footerName').textContent=(s['氏名']||'―')+' ／ '+(s['学籍番号']||'―');
+  // 確定日時・ステータスをCSVから自動読み込み
+  if(s['確定日時']&&s['確定日時'].trim()){
+    g('confirmedDate').value=s['確定日時'].trim();
+    g('hConfirmed').textContent='✅ '+s['確定日時'].trim();
+    g('hConfirmed').style.background='rgba(74,140,63,0.4)';
+  }
+  if(s['ステータス']&&s['ステータス'].trim()){
+    var st=s['ステータス'].trim();
+    var badge=g('hConfirmed');
+    if(st==='確定済み'){
+      badge.style.background='rgba(74,140,63,0.4)';
+      badge.style.borderColor='rgba(74,140,63,0.6)';
+    } else if(st==='調整中'){
+      badge.style.background='rgba(224,122,40,0.35)';
+      badge.style.borderColor='rgba(224,122,40,0.6)';
+      if(!s['確定日時'])badge.textContent='⚠️ 調整中';
+    }
+  }
+}
+
+function restoreJSON(d){
+  fillInfo({'氏名':d.name,'ゼミ':d.zemi,'学年':d.grade,'学籍番号':d.gakuseki,'大学メール':d.email,'希望進路':d.career,'活動状況':d.status,'志望先':d.target,'希望職種':d.jobs,'履修科目':d.subjects,'相談テーマ':d.themes,'第1希望':d.w1,'第2希望':d.w2,'第3希望':d.w3,'相談詳細':d.free,'サポート希望':d.support||'','進み具合':d.progress||'','不安なこと':d.anxiety||''});
+  if(d.confirmedDate){g('confirmedDate').value=d.confirmedDate;g('hConfirmed').textContent='✅ '+d.confirmedDate;}
+  if(d.vpiCheck)g('vpiCheck').checked=true;
+  if(d.valueCheck)g('valueCheck').checked=true;
+  ['vpiMemo','valueMemo','zemiContent','baitoDetail','clubDetail','hobby','skill','license','pcSkill','langSkill','gaku1','gaku2','selfpr','jiku','counselorMemo','gaku1memo','gaku2memo','selfprmemo','jikumemo'].forEach(function(id){if(d[id])g(id).value=d[id];});
+  ['baito','club'].forEach(function(n){
+    if(d['r_'+n]){var el=document.querySelector('input[name="'+n+'"][value="'+d['r_'+n]+'"]');if(el)el.checked=true;}
+  });
+  if(d.memos&&d.memos.length)d.memos.forEach(function(m){addMemo(m);});
+  [['gaku1','c1'],['gaku2','c2'],['selfpr','c3'],['jiku','c4']].forEach(function(p){if(g(p[0]))g(p[1]).textContent=g(p[0]).value.length+'文字';});
+  g('saveStatus').textContent='💾 最終保存：'+d._savedAt;
+  g('hDate').textContent='作成日：'+(d.createdAt||'―');
+}
+
+function addMemo(data){
+  var container=g('memoContainer');
+  var count=container.querySelectorAll('.me').length+1;
+  var idx=data?(data.idx||count):Date.now();
+  var date=data?(data.date||''):new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+  var memo=data?(data.memo||''):'';
+  var action=data?(data.action||''):'';
+
+  var wrap=document.createElement('div');
+  wrap.className='me';wrap.dataset.idx=idx;
+
+  var hd=document.createElement('div');hd.className='meh';
+  var left=document.createElement('div');left.style.cssText='display:flex;align-items:center;gap:7px;';
+  var badge=document.createElement('span');badge.className='mebadge';badge.textContent=count+'回目';
+  var di=document.createElement('input');di.className='medate';di.value=date;di.placeholder='面談日';
+  left.appendChild(badge);left.appendChild(di);
+  var del=document.createElement('button');del.className='medel';del.textContent='🗑';
+  del.addEventListener('click',(function(w){return function(){if(!confirm('この面談記録を削除しますか？'))return;w.remove();container.querySelectorAll('.me').forEach(function(e,i){var b=e.querySelector('.mebadge');if(b)b.textContent=(i+1)+'回目';});};})(wrap));
+  hd.appendChild(left);hd.appendChild(del);wrap.appendChild(hd);
+
+  var mta=document.createElement('textarea');mta.className='fi';mta.style.cssText='min-height:76px;border-radius:0;border:none;border-top:1px solid var(--border);';mta.placeholder='面談メモ・所感…';mta.value=memo;wrap.appendChild(mta);
+  var ah=document.createElement('div');ah.className='meah';ah.textContent='✅ 次回アクション';wrap.appendChild(ah);
+  var ata=document.createElement('textarea');ata.className='fi';ata.style.cssText='min-height:48px;border-radius:0;border:none;border-top:1px solid var(--border);';ata.placeholder='次回の課題…';ata.value=action;wrap.appendChild(ata);
+
+  container.appendChild(wrap);
+  if(!data)wrap.scrollIntoView({behavior:'smooth'});
+}
+
+function saveJSON(withDate){
+  var name=g('hName').textContent.trim();
+  var gakuseki=g('hGakuseki').textContent.replace('🆔 ','').trim();
+  if(!gakuseki||gakuseki==='―'){
+    var inp=prompt('学籍番号を入力してください（ファイル識別に使用します）：');
+    if(!inp)return;
+    gakuseki=inp.trim();
+    g('hGakuseki').textContent='🆔 '+gakuseki;
+  }
+  var now=new Date().toLocaleString('ja-JP');
+  var memos=[];
+  g('memoContainer').querySelectorAll('.me').forEach(function(e){
+    var di=e.querySelector('.medate');var tas=e.querySelectorAll('textarea');
+    memos.push({idx:e.dataset.idx,date:di?di.value:'',memo:tas[0]?tas[0].value:'',action:tas[1]?tas[1].value:''});
+  });
+  var data={
+    gakuseki:gakuseki,name:name,_savedAt:now,
+    createdAt:g('hDate').textContent.replace('作成日：',''),
+    zemi:g('hZemi').textContent.replace('🏫 ','').replace('ゼミ',''),
+    grade:g('hGrade').textContent.replace('🎓 ',''),
+    email:g('hEmail').textContent.replace('📧 ',''),
+    confirmedDate:g('confirmedDate').value,
+    career:g('iCareer').textContent,status:g('iStatus').textContent,
+    target:g('iTarget').textContent,jobs:g('iJobs').textContent,
+    support:g('iSupport')?g('iSupport').textContent:'',
+    progress:g('iProgress')?g('iProgress').textContent:'',
+    anxiety:g('iAnxiety')?g('iAnxiety').textContent.replace(/\s+/g,''):'',
+    subjects:Array.from(g('iSubjects').querySelectorAll('.tag')).map(function(t){return t.textContent;}).join('、'),
+    themes:Array.from(g('iThemes').querySelectorAll('.tag')).map(function(t){return t.textContent;}).join('、'),
+    w1:'',w2:'',w3:'',free:g('iFree').textContent,
+    vpiCheck:g('vpiCheck').checked,valueCheck:g('valueCheck').checked,
+    vpiMemo:g('vpiMemo').value,valueMemo:g('valueMemo').value,
+    zemiContent:g('zemiContent').value,baitoDetail:g('baitoDetail').value,
+    clubDetail:g('clubDetail').value,hobby:g('hobby').value,
+    skill:g('skill').value,license:g('license').value,
+    pcSkill:g('pcSkill').value,langSkill:g('langSkill').value,
+    r_baito:(document.querySelector('input[name="baito"]:checked')||{}).value||'',
+    r_club:(document.querySelector('input[name="club"]:checked')||{}).value||'',
+    memos:memos,
+    gaku1:g("gaku1").value,gaku2:g("gaku2").value,
+    selfpr:g("selfpr").value,jiku:g("jiku").value,
+    counselorMemo:g("counselorMemo").value,gaku1memo:g("gaku1memo")?g("gaku1memo").value:"",gaku2memo:g("gaku2memo")?g("gaku2memo").value:"",selfprmemo:g("selfprmemo")?g("selfprmemo").value:"",jikumemo:g("jikumemo")?g("jikumemo").value:""
+  };
+  var wishes=g('iWishes').querySelectorAll('.wi');
+  if(wishes[0])data.w1=wishes[0].textContent.replace('1','').trim();
+  if(wishes[1])data.w2=wishes[1].textContent.replace('2','').trim();
+  if(wishes[2])data.w3=wishes[2].textContent.replace('3','').trim();
+
+  var fname=withDate
+    ? 'カルテデータ_'+gakuseki+'_'+new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')+'.json'
+    : 'カルテデータ_'+gakuseki+'.json';
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download=fname;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+  g('saveStatus').textContent='💾 最終保存：'+now;
+  toast('💾 '+fname+' を保存しました！\n学生フォルダに保存してください。');
+
+// Firebase用：データ収集・復元のグローバル公開
+window._collectJSON = function(){
+  var name=g('hName').textContent.trim();
+  var gakuseki=g('hGakuseki').textContent.replace('🆔 ','').trim();
+  if(!gakuseki||gakuseki==='―') return null;
+  var memos=[];
+  g('memoContainer').querySelectorAll('.me').forEach(function(e){
+    var di=e.querySelector('.medate');var tas=e.querySelectorAll('textarea');
+    memos.push({idx:e.dataset.idx,date:di?di.value:'',memo:tas[0]?tas[0].value:'',action:tas[1]?tas[1].value:''});
+  });
+  return {
+    gakuseki:gakuseki,name:name,
+    zemiContent:g('zemiContent').value,baitoDetail:g('baitoDetail').value,
+    clubDetail:g('clubDetail').value,hobby:g('hobby').value,
+    skill:g('skill').value,license:g('license').value,
+    pcSkill:g('pcSkill').value,langSkill:g('langSkill').value,
+    vpiMemo:g('vpiMemo').value,valueMemo:g('valueMemo').value,
+    confirmedDate:g('confirmedDate').value,
+    support:g('iSupport')?g('iSupport').textContent:'',
+    progress:g('iProgress')?g('iProgress').textContent:'',
+    anxiety:g('iAnxiety')?g('iAnxiety').textContent.replace(/\s+/g,''):'',
+    memos:memos,
+    gaku1:g('gaku1').value,gaku2:g('gaku2').value,
+    selfpr:g('selfpr').value,jiku:g('jiku').value,
+    counselorMemo:g('counselorMemo').value
+  };
+};
+window._restoreJSON = function(data){ restoreJSON(data); };
+}
+
+// ===== saveAll: JSON + Cloud 同時保存 =====
+function saveAll(){
+  saveJSON(false);
+  var fbBtn = document.getElementById('fbSaveBtn');
+  if(fbBtn) fbBtn.click();
+}
+
+// ===== AI機能（Claude API連携） =====
+function saveApiKey(){
+  var key = document.getElementById('aiApiKey').value.trim();
+  if(!key){ toast('⚠️ APIキーを入力してください'); return; }
+  sessionStorage.setItem('ai_api_key', key);
+  toast('✅ APIキーを保存しました（このセッション中のみ有効）');
+}
+
+function toggleKeyVis(){
+  var inp = document.getElementById('aiApiKey');
+  var btn = document.getElementById('keyToggle');
+  if(inp.type==='password'){ inp.type='text'; btn.textContent='隠す'; }
+  else { inp.type='password'; btn.textContent='表示'; }
+}
+
+function getApiKey(){
+  var key = sessionStorage.getItem('ai_api_key') || document.getElementById('aiApiKey').value.trim();
+  return key;
+}
+
+function getStudentInfo(){
+  var name = document.getElementById('hName') ? document.getElementById('hName').textContent.trim() : '';
+  var zemi = document.getElementById('hZemi') ? document.getElementById('hZemi').textContent.replace('🏫 ','').replace('ゼミ','') : '';
+  var gaku1 = document.getElementById('gaku1') ? document.getElementById('gaku1').value.trim() : '';
+  var gaku2 = document.getElementById('gaku2') ? document.getElementById('gaku2').value.trim() : '';
+  var selfpr = document.getElementById('selfpr') ? document.getElementById('selfpr').value.trim() : '';
+  var jiku = document.getElementById('jiku') ? document.getElementById('jiku').value.trim() : '';
+  var career = document.getElementById('iCareer') ? document.getElementById('iCareer').textContent.trim() : '';
+  var target = document.getElementById('iTarget') ? document.getElementById('iTarget').textContent.trim() : '';
+  return {name,zemi,gaku1,gaku2,selfpr,jiku,career,target};
+}
+
+async function aiAction(type){
+  // 企業調査エリアの表示切り替え
+  var resArea = document.getElementById('researchInputArea');
+  resArea.style.display = type==='research' ? 'block' : 'none';
+
+  var key = getApiKey();
+  if(!key){
+    alert('APIキーを入力してください。\nconsole.anthropic.com で取得できます。');
+    return;
+  }
+
+  var s = getStudentInfo();
+  var prompt = '';
+  var title = '';
+
+  if(type==='es'){
+    if(!s.gaku1 && !s.gaku2){
+      alert('ES素材帳にガクチカを入力してから実行してください。'); return;
+    }
+    title = '✨ ガクチカ ブラッシュアップ結果';
+    prompt =
+      'あなたは就職活動のESを添削するプロのキャリアカウンセラーです。\n' +
+      '以下の学生のガクチカ素材をブラッシュアップしてください。\n\n' +
+      '【学生情報】\n' +
+      '氏名：' + (s.name||'―') + '\n' +
+      'ゼミ：' + (s.zemi||'―') + '\n' +
+      '志望先：' + (s.target||'―') + '\n\n' +
+      (s.gaku1 ? '【ガクチカ①（学業）素材】\n' + s.gaku1 + '\n\n' : '') +
+      (s.gaku2 ? '【ガクチカ②（学業以外）素材】\n' + s.gaku2 + '\n\n' : '') +
+      '【お願い】\n' +
+      '・S+STAR+F&C（状況→課題→行動→結果→学び→貢献）の構成でブラッシュアップしてください。\n' +
+      '・「積極的に」「一生懸命」などの抽象表現は避けてください。\n' +
+      '・等身大の言葉で、盛りすぎないようにしてください。\n' +
+      '・400字以内にまとめてください。\n' +
+      '・改善のポイントも最後に3点簡潔に教えてください。';
+
+  } else if(type==='qa'){
+    title = '🎤 想定問答集';
+    var company = document.getElementById('researchCompany') ? document.getElementById('researchCompany').value.trim() : '';
+    prompt =
+      'あなたは就職面接対策のプロのキャリアカウンセラーです。\n' +
+      '以下の学生向けに面接の想定問答を作成してください。\n\n' +
+      '【学生情報】\n' +
+      '氏名：' + (s.name||'―') + '\n' +
+      'ゼミ：' + (s.zemi||'―') + '\n' +
+      '志望先：' + (s.target||'―') + '\n' +
+      '希望進路：' + (s.career||'―') + '\n\n' +
+      (s.gaku1 ? '【ガクチカ①素材】\n' + s.gaku1 + '\n\n' : '') +
+      (s.selfpr ? '【自己PR素材】\n' + s.selfpr + '\n\n' : '') +
+      (s.jiku ? '【志望動機素材】\n' + s.jiku + '\n\n' : '') +
+      '【お願い】\n' +
+      '・よく聞かれる質問10問と、この学生に合った回答例を作成してください。\n' +
+      '・回答は等身大で、具体的なエピソードを交えてください。\n' +
+      '・難易度：標準的な質問5問＋深堀り質問3問＋意外な質問2問の構成にしてください。';
+
+  } else if(type==='research'){
+    var company = document.getElementById('researchCompany').value.trim();
+    if(!company){ alert('調べたい企業名を入力してください。'); return; }
+    title = '🔍 企業リサーチ結果：' + company;
+    prompt =
+      'あなたは就職活動支援のプロです。\n' +
+      '以下の企業について、就職活動をしている学生向けに調べてまとめてください。\n\n' +
+      '【調査対象企業】' + company + '\n\n' +
+      '【まとめてほしい内容】\n' +
+      '1. 企業概要（事業内容・規模・特徴）\n' +
+      '2. この企業の強み・魅力\n' +
+      '3. 学生が気をつけるべき点・注意事項\n' +
+      '4. 採用で重視されそうな人物像\n' +
+      '5. ES・面接で使えるキーワード\n' +
+      '6. 志望動機に盛り込めるポイント\n\n' +
+      '就職活動中の学生が参考にしやすい形でまとめてください。';
+  }
+
+  // ローディング表示
+  document.getElementById('aiLoading').style.display = 'block';
+  document.getElementById('aiResult').classList.remove('show');
+  ['aiBtnES','aiBtnQA','aiBtnResearch'].forEach(function(id){
+    var btn = document.getElementById(id);
+    if(btn) btn.disabled = true;
+  });
+
+  try{
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    var data = await response.json();
+
+    if(data.error){
+      throw new Error(data.error.message);
+    }
+
+    var resultText = data.content && data.content[0] ? data.content[0].text : '結果を取得できませんでした。';
+
+    document.getElementById('aiResultTitle').textContent = title;
+    document.getElementById('aiResultBody').innerHTML = resultText.replace(/\n/g,'<br>');
+    document.getElementById('aiResult').classList.add('show');
+
+  } catch(e){
+    var msg = e.message || String(e);
+    if(msg.includes('401') || msg.includes('auth')){
+      alert('❌ APIキーが無効です。\nconsole.anthropic.comで確認してください。');
+    } else if(msg.includes('429')){
+      alert('⚠️ 利用制限に達しました。しばらくしてから再試行してください。');
+    } else {
+      alert('❌ エラーが発生しました：\n' + msg);
+    }
+  } finally {
+    document.getElementById('aiLoading').style.display = 'none';
+    ['aiBtnES','aiBtnQA','aiBtnResearch'].forEach(function(id){
+      var btn = document.getElementById(id);
+      if(btn) btn.disabled = false;
+    });
+  }
+}
+
+function copyAiResult(){
+  var body = document.getElementById('aiResultBody');
+  if(!body) return;
+  var text = body.innerText;
+  navigator.clipboard.writeText(text).then(function(){
+    toast('📋 AIの回答をコピーしました！');
+  });
+}
+
+// セッション保存済みキーを復元
+document.addEventListener('DOMContentLoaded', function(){
+  var saved = sessionStorage.getItem('ai_api_key');
+  if(saved) document.getElementById('aiApiKey').value = saved;
+});
+
+// ===== ブラッシュアッププロンプトコピー =====
+function copyPrompt(mainId, memoId, label, format){
+  var main = g(mainId) ? g(mainId).value.trim() : '';
+  var memo = g(memoId) ? g(memoId).value.trim() : '';
+  var name = g('hName') ? g('hName').textContent.trim() : '学生';
+  if(!main){ toast('⚠️ '+label+'の本文が未入力です。'); return; }
+  var prompt =
+    '以下の学生のES素材をブラッシュアップしてください。\n\n' +
+    '【対象項目】' + label + '（' + format + '）\n' +
+    '【学生名】' + name + '\n\n' +
+    '【現在の本文】\n' + main + '\n\n' +
+    (memo ? '【面談で判明した補足情報】\n' + memo + '\n\n' : '') +
+    '【お願い】\n' +
+    '・本文と補足情報を統合して、指定のフォーマットで書き直してください。\n' +
+    '・抽象的な表現（「積極的に」「一生懸命」など）は避けてください。\n' +
+    '・学生本人の言葉のトーンを大切にしてください。\n' +
+    '・等身大の表現で、盛りすぎないようにしてください。';
+  doCopy(prompt, '📋 ' + label + 'のプロンプトをコピーしました！\nClaudeに貼り付けてください。');
+}
+
+function copyShidai(){
+  var v=function(id){return g(id)?g(id).value:'（未記入）';};
+  doCopy('■ 学業で力を入れたこと\n'+v('gaku1')+'\n\n■ 学業以外で力を入れたこと\n'+v('gaku2')+'\n\n■ 自己PR\n'+v('selfpr')+'\n\n■ 企業選びの軸・志望動機\n'+v('jiku'),'📋 ４大質問をコピーしました！');
+}
+
+function genPrompt(){
+  var name=g('hName').textContent.trim();
+  var zemi=g('hZemi').textContent.replace('🏫 ','');
+  var grade=g('hGrade').textContent.replace('🎓 ','');
+  var v=function(id){return g(id)?g(id).value.trim():'（未記入）';};
+  var mt='';
+  g('memoContainer').querySelectorAll('.me').forEach(function(e,i){
+    var di=e.querySelector('.medate');var tas=e.querySelectorAll('textarea');
+    mt+='【'+(i+1)+'回目 '+(di?di.value:'')+'】\n'+(tas[0]?tas[0].value.trim():'')+'\n次回アクション：'+(tas[1]?tas[1].value.trim():'')+'\n\n';
+  });
+  var cm=v('counselorMemo');
+  var p='あなたはキャリアカウンセラーのアシスタントです。\n以下の情報をもとに４大質問を添削・ブラッシュアップしてください。\n\n'
+    +'━━━━━━━━━━━━━━━━━━━━━━━━\n【学生情報】\n氏名：'+name+'　'+zemi+'　'+grade+'\n'
+    +'━━━━━━━━━━━━━━━━━━━━━━━━\n\n【面談記録（時系列）】\n'
+    +'優先順位：①学生の強み・エピソード ②４大質問への指摘 ③その他は参考程度\n'
+    +'VPI・価値観は参考のみ。学生の言葉・経験を活かした等身大の文章にしてください。\n\n'
+    +(mt||'（面談記録なし）\n')
+    +(cm&&cm!=='（未記入）'?'\n【カウンセラーコメント】\n'+cm+'\n':'')
+    +'\n━━━━━━━━━━━━━━━━━━━━━━━━\n【現在の４大質問】\n\n'
+    +'■ ガクチカ①（学業）\n'+v('gaku1')+'\n\n■ ガクチカ②（学業以外）\n'+v('gaku2')
+    +'\n\n■ 自己PR\n'+v('selfpr')+'\n\n■ 企業選びの軸・志望動機の素材\n'+v('jiku')
+    +'\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n【添削フレームワーク】\n\n'
+    +'●ガクチカ①② → S+STAR+F&C 六段論法\nS:Summary T:Theme A:Action R:Result（数字） F:Feeling C:Challenge\n\n'
+    +'●自己PR → PREP＋TA\nP:Point R:Reason E:Example P:Point T:To A:Appeal\n\n'
+    +'●志望動機 → 結論先行\n①結論 ②きっかけ ③動機 ④共感ポイント ⑤取り組みたい仕事 ⑥将来像\n\n'
+    +'●全体共通：論理性確保を最優先。具体的な数字・エピソードを使い200〜400字でまとめてください。\n\n'
+    +'━━━━━━━━━━━━━━━━━━━━━━━━\n【出力形式】\n各質問：ブラッシュアップ版＋【構成チェック】を出力。最後に全体コメントを記載。';
+  doCopy(p,'🤖 AIプロンプトをコピーしました！');
+}
+
+// イベント登録
+document.addEventListener('DOMContentLoaded',function(){
+
+  // 起動モーダル選択肢
+  [1,2,3].forEach(function(n){
+    var el=g('opt'+n);
+    if(!el)return;
+    el.addEventListener('click',function(e){
+      if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||e.target.tagName==='TEXTAREA')return;
+      [1,2,3].forEach(function(i){
+        var o=g('opt'+i);if(o)o.classList.remove('sel');
+        var a=g('area'+i);if(a)a.classList.remove('show');
+      });
+      // cloud選択も解除
+      var oc=g('opt_cloud');if(oc)oc.classList.remove('sel');
+      var ac=g('area_cloud');if(ac)ac.classList.remove('show');
+      el.classList.add('sel');
+      var area=g('area'+n);if(area)area.classList.add('show');
+      selOpt=n;
+    });
+  });
+
+  // opt_cloud（③ Cloudから読み込む）
+  var optCloud=g('opt_cloud');
+  if(optCloud){
+    optCloud.addEventListener('click',function(e){
+      if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;
+      [1,2,3].forEach(function(i){
+        var o=g('opt'+i);if(o)o.classList.remove('sel');
+        var a=g('area'+i);if(a)a.classList.remove('show');
+      });
+      optCloud.classList.add('sel');
+      var ac=g('area_cloud');if(ac)ac.classList.add('show');
+      selOpt='cloud';
+    });
+  }
+
+  // CSVファイル（起動時）
+  g('csvFile').addEventListener('change',function(e){
+    readFile(e.target,function(text){
+      csvRows=parseCSV(text);
+      g('csvLabel').textContent=e.target.files[0].name;
+      var list=g('csvList');
+      list.innerHTML='<div style="font-size:0.73rem;color:var(--tl);margin-bottom:5px;">学生を選択してください</div>';
+      var rows=document.createElement('div');
+      buildList(rows,csvRows,'',function(idx){selCSVIdx=idx;});
+      list.appendChild(rows);
+    });
+  });
+
+  // JSONファイル
+  g('jsonFile').addEventListener('change',function(e){
+    readFile(e.target,function(text){
+      try{
+        jsonData=JSON.parse(text);
+        g('jsonLabel').textContent=e.target.files[0].name;
+        var info=g('jsonInfo');
+        info.style.display='block';
+        info.textContent='✅ '+jsonData.name+'（'+jsonData.gakuseki+'）　保存日時：'+jsonData._savedAt;
+      }catch(ex){alert('JSONファイルの読み込みに失敗しました。');}
+    });
+  });
+
+  // カルテを開く
+  g('startBtn').addEventListener('click',function(){
+    if(selOpt===0){alert('操作を選択してください。');return;}
+    if(selOpt===1){
+      if(selCSVIdx<0){alert('学生を選択してください。');return;}
+      fillInfo(csvRows[selCSVIdx]);
+      // Cloud自動マージ：過去データがあれば重ねて読み込む
+      var gaku=(csvRows[selCSVIdx]['学籍番号']||'').trim();
+      if(gaku && window._autoCloudMerge) window._autoCloudMerge(gaku);
+    }else if(selOpt===2){
+      if(!jsonData){alert('JSONファイルを選択してください。');return;}
+      var inp=prompt('本人確認のため学籍番号を入力してください：');
+      if(!inp||inp.trim()!==jsonData.gakuseki){alert('学籍番号が一致しません。\n正しいJSONファイルを選択してください。');return;}
+      restoreJSON(jsonData);
+    }else if(selOpt===3){
+      var name=(g('newName').value||'').trim();
+      var gaku=(g('newGakuseki').value||'').trim();
+      if(!name||!gaku){alert('氏名と学籍番号は必須です。');return;}
+      fillInfo({
+        '氏名':name,'学籍番号':gaku,
+        '学年':g('newGrade').value||'3年生',
+        'ゼミ':(g('newZemi').value||'').trim(),
+        '大学メール':(g('newEmail').value||'').trim(),
+        '希望進路':g('newCareer').value||'―',
+        '活動状況':g('newStatus').value||'―',
+        '志望先':'','希望職種':'','履修科目':'',
+        '相談テーマ':'','第1希望':'','第2希望':'','第3希望':'','相談詳細':''
+      });
+    }
+    g('startModal').classList.add('hide');
+  });
+
+  // 最初から
+  g('reloadBtn').addEventListener('click',function(){
+    if(confirm('最初からやり直しますか？\n未保存のデータは失われます。'))location.reload();
+  });
+
+  // 印刷
+  g('printBtn').addEventListener('click',function(){window.print();});
+
+  // JSON保存
+  // 💾☁️ 保存ボタン（JSON+Cloud統合）
+  g('saveBtn').addEventListener('click', function(){ saveAll(); });
+  // closeBtn：保存確認してログオフ
+  g('closeBtn').addEventListener('click', function(){
+    var choice = confirm('閉じる前に保存しますか？\n\n【OK】保存してからログオフ\n【キャンセル】キャンセル');
+    if(choice){
+      saveAll();
+      setTimeout(function(){
+        sessionStorage.removeItem('karte_auth');
+        location.reload();
+      }, 1500);
+    } else {
+      if(confirm('保存しないでログオフしますか？\nデータは失われます。')){
+        sessionStorage.removeItem('karte_auth');
+        location.reload();
+      }
+    }
+  });
+
+  // 面談記録追加
+  g('addMemoBtn').addEventListener('click',function(){addMemo(null);});
+
+  // ４大質問コピー
+  g('copyBtn').addEventListener('click',copyShidai);
+
+  // AIプロンプト
+  g('promptBtn').addEventListener('click',genPrompt);
+
+  // 文字数カウント
+  [['gaku1','c1'],['gaku2','c2'],['selfpr','c3'],['jiku','c4']].forEach(function(p){
+    var el=g(p[0]);
+    if(el)el.addEventListener('input',function(){g(p[1]).textContent=el.value.length+'文字';});
+  });
+
+  // 確定日時
+  g('confirmedDate').addEventListener('input',function(){
+    g('hConfirmed').textContent=this.value?'✅ '+this.value:'面談日時未確定';
+  });
+
+  // CSV追加読み込みモーダル
+  g('csvModalBtn').addEventListener('click',function(){
+    g('csvModal').classList.remove('hide');
+    g('csvModalLabel').textContent='CSVファイルを選択…';
+    g('csvModalList').style.display='none';
+    g('csvModalRows').innerHTML='';
+    g('csvModalFile').value='';
+    selModalIdx=-1;modalRows=[];
+  });
+  g('csvModalCancel').addEventListener('click',function(){g('csvModal').classList.add('hide');});
+  g('csvModalFile').addEventListener('change',function(e){
+    readFile(e.target,function(text){
+      modalRows=parseCSV(text);
+      g('csvModalLabel').textContent=e.target.files[0].name;
+      g('csvModalList').style.display='block';
+      var curGaku=g('hGakuseki').textContent.replace('🆔 ','').trim();
+      buildList(g('csvModalRows'),modalRows,curGaku,function(idx){selModalIdx=idx;});
+    });
+  });
+  g('csvModalApply').addEventListener('click',function(){
+    if(selModalIdx<0){alert('学生を選択してください。');return;}
+    var s=modalRows[selModalIdx];
+    var cur=g('hGakuseki').textContent.replace('🆔 ','').trim();
+    if(cur&&cur!=='―'&&s['学籍番号']!==cur){
+      if(!confirm('⚠️ 学籍番号が一致しません！\n現在：'+cur+'\n選択：'+s['学籍番号']+'\n\nそれでも読み込みますか？'))return;
+    }
+    fillInfo(s);
+    g('csvModal').classList.add('hide');
+    toast('📋 アンケートデータを読み込みました。\n面談記録・ES欄は保持されています。');
+  });
+
+});// DOMContentLoaded
+
+})();// IIFE
+</script>
+<div id="voiceStatus">🎙️ 録音中…話してください</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const FB = {
+  apiKey:            "AIzaSyBTxRgOvPYOmacVfJkEjLLgI2K-ASnZbq4",
+  authDomain:        "career-board-4a3f8.firebaseapp.com",
+  projectId:         "career-board-4a3f8",
+  storageBucket:     "career-board-4a3f8.firebasestorage.app",
+  messagingSenderId: "235913147040",
+  appId:             "1:235913147040:web:39c20d95267e2777ef4fc5"
+};
+
+const app = initializeApp(FB);
+const db  = getFirestore(app);
+
+// collectJSON は既存のグローバル関数
+function getKarteData(){
+  return window._collectJSON ? window._collectJSON() : null;
+}
+function restoreKarteData(data){
+  if(window._restoreJSON) window._restoreJSON(data);
+}
+
+// ☁️ Cloud保存
+document.getElementById('fbSaveBtn').addEventListener('click', async function(){
+  const data = getKarteData();
+  if(!data){ return; } // saveAllから呼ばれる場合は静かに失敗
+  const gakuseki = data.gakuseki;
+  if(!gakuseki){ return; }
+  try{
+    await setDoc(doc(db,'karte', gakuseki), {
+      ...data,
+      _cloudSavedAt: new Date().toLocaleString('ja-JP')
+    });
+    document.getElementById('saveStatus').textContent = '☁️ Cloud保存済み：' + new Date().toLocaleString('ja-JP');
+    // トーストで静かに通知
+    var t = document.getElementById('toast');
+    if(t){ t.textContent='☁️ Cloudに保存しました（'+gakuseki+'）'; t.style.display='block'; setTimeout(function(){t.style.display='none';},3000); }
+  }catch(e){
+    console.error('Cloud保存失敗:', e);
+  }
+});
+
+// ☁️ Cloud読込
+document.getElementById('fbLoadBtn').addEventListener('click', async function(){
+  const gakuseki = prompt('学籍番号を入力してください（例：2401023）');
+  if(!gakuseki) return;
+  await loadFromCloud(gakuseki);
+});
+
+// CSV読み込み後のCloud自動マージ
+window._autoCloudMerge = async function(gakuseki){
+  try{
+    const snap = await getDoc(doc(db,'karte', gakuseki));
+    if(!snap.exists()) return; // 初回面談なら何もしない
+    const data = snap.data();
+    // ES・面談記録・補足メモなどをマージ（基本情報はCSV優先）
+    restoreKarteData(data);
+    // 小さなトーストで通知（alertは使わない）
+    var t = document.getElementById('toast');
+    if(t){
+      t.textContent = '☁️ 過去のカルテデータをCloudから自動読み込みしました（'+gakuseki+'）';
+      t.style.display='block';
+      setTimeout(function(){ t.style.display='none'; }, 4000);
+    }
+  }catch(e){
+    console.warn('Cloud自動マージ失敗:', e);
+  }
+};
+  const info = document.getElementById('cloudLoadInfo');
+  try{
+    const snap = await getDoc(doc(db,'karte', gakuseki));
+    if(!snap.exists()){
+      if(info){ info.style.display='block'; info.style.color='#c0392b'; info.textContent='⚠️ データが見つかりません：'+gakuseki; }
+      else alert('⚠️ 該当する学生のデータがCloudに見つかりません。\n学籍番号：'+gakuseki);
+      return;
+    }
+    const data = snap.data();
+    restoreKarteData(data);
+    // モーダルを閉じる
+    var ov = document.querySelector('.ov');
+    if(ov) ov.classList.add('hide');
+    alert('✅ Cloudから読み込みました！\n学籍番号：'+gakuseki+'\n保存日時：'+(data._cloudSavedAt||'不明'));
+  }catch(e){
+    alert('❌ Cloud読み込みに失敗しました。\n'+e.message);
+  }
+}
+
+// 起動モーダルのcloudLoadBtn
+const cloudLoadBtn = document.getElementById('cloudLoadBtn');
+if(cloudLoadBtn){
+  cloudLoadBtn.addEventListener('click', async function(){
+    const gakuseki = document.getElementById('cloudGakuseki').value.trim();
+    if(!gakuseki){ alert('学籍番号を入力してください'); return; }
+    const info = document.getElementById('cloudLoadInfo');
+    if(info){ info.style.display='block'; info.style.color='#888'; info.textContent='読み込み中…'; }
+    await loadFromCloud(gakuseki);
+  });
+}
+</script>
+
+<script>
+// ===== 自動バックアップ（3分ごと・ローカルストレージ） =====
+setInterval(function(){
+  if(!window._collectJSON) return;
+  var data = window._collectJSON();
+  if(!data || !data.gakuseki) return;
+  try{
+    localStorage.setItem('karte_backup_' + data.gakuseki, JSON.stringify(data));
+    var now = new Date().toLocaleTimeString('ja-JP');
+    console.log('🔄 自動バックアップ完了：' + now);
+    // ステータス表示を一瞬更新
+    var st = document.getElementById('saveStatus');
+    if(st){
+      var prev = st.textContent;
+      st.textContent = '🔄 自動バックアップ：' + now;
+      setTimeout(function(){ st.textContent = prev; }, 3000);
+    }
+  }catch(e){ console.warn('自動バックアップ失敗:', e); }
+}, 3 * 60 * 1000); // 3分
+
+// ===== 閉じる・ページ離脱の警告 =====
+var _saved = false;
+// 保存ボタンが押されたらフラグを立てる
+document.addEventListener('DOMContentLoaded', function(){
+  ['saveBtn','saveAsBtn','fbSaveBtn'].forEach(function(id){
+    var btn = document.getElementById(id);
+    if(btn) btn.addEventListener('click', function(){ _saved = true; setTimeout(function(){ _saved = false; }, 5000); });
+  });
+});
+window.addEventListener('beforeunload', function(e){
+  if(!window._collectJSON) return;
+  var data = window._collectJSON();
+  if(!data || !data.gakuseki) return; // 未読み込みなら警告不要
+  if(_saved) return;
+  e.preventDefault();
+  e.returnValue = '保存されていないデータがあります。ページを離れますか？';
+});
+</script>
+<script>
+// ===== 音声入力機能 =====
+(function(){
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    console.warn('このブラウザは音声入力に対応していません');
+    return;
+  }
+
+  var currentBtn = null;
+  var currentTarget = null;
+  var recognition = null;
+
+  function createRecognition(target, btn){
+    var r = new SpeechRecognition();
+    r.lang = 'ja-JP';
+    r.continuous = true;
+    r.interimResults = true;
+
+    var baseText = target.value;
+    if(baseText && !baseText.endsWith('\n')) baseText += '\n';
+
+    r.onresult = function(e){
+      var interim = '';
+      var final = '';
+      for(var i = e.resultIndex; i < e.results.length; i++){
+        if(e.results[i].isFinal){
+          final += e.results[i][0].transcript;
+        } else {
+          interim += e.results[i][0].transcript;
+        }
+      }
+      if(final) baseText += final;
+      target.value = baseText + interim;
+      target.scrollTop = target.scrollHeight;
+    };
+
+    r.onerror = function(e){
+      console.error('音声認識エラー:', e.error);
+      stopRecording(btn);
+    };
+
+    r.onend = function(){
+      if(btn.classList.contains('recording')){
+        // 途切れた場合は自動再開
+        try{ r.start(); }catch(ex){}
+      }
+    };
+
+    return r;
+  }
+
+  function stopRecording(btn){
+    if(recognition){ try{ recognition.stop(); }catch(ex){} recognition = null; }
+    if(btn){ btn.classList.remove('recording'); btn.title='音声入力'; btn.textContent='🎙️'; }
+    document.getElementById('voiceStatus').style.display='none';
+    currentBtn = null;
+    currentTarget = null;
+  }
+
+  window.toggleVoice = function(btn){
+    // ボタンの兄弟要素（textarea or input）を直接取得
+    var wrap = btn.parentNode;
+    var target = null;
+    for(var i=0;i<wrap.childNodes.length;i++){
+      var n=wrap.childNodes[i];
+      if(n.tagName==='TEXTAREA'||n.tagName==='INPUT'){target=n;break;}
+    }
+    if(!target){ console.error('target not found'); return; }
+
+    // 別のボタンが録音中なら止める
+    if(currentBtn && currentBtn !== btn){
+      stopRecording(currentBtn);
+    }
+
+    if(btn.classList.contains('recording')){
+      stopRecording(btn);
+    } else {
+      recognition = createRecognition(target, btn);
+      currentBtn = btn;
+      currentTarget = target;
+      btn.classList.add('recording');
+      btn.title='録音停止';
+      btn.textContent='⏹️';
+      document.getElementById('voiceStatus').style.display='block';
+      try{ recognition.start(); }catch(ex){ stopRecording(btn); }
+    }
+  };
+
+  // ページを離れるとき停止
+  window.addEventListener('beforeunload', function(){ stopRecording(currentBtn); });
+
+  // テキストエリア・input要素に音声ボタンを自動付与
+  function wrapWithVoice(el){
+    if(el.closest('.voice-wrap')) return; // 既にラップ済み
+    var wrap = document.createElement('div');
+    wrap.className = 'voice-wrap';
+    el.parentNode.insertBefore(wrap, el);
+    wrap.appendChild(el);
+    var btn = document.createElement('button');
+    btn.className = 'voice-btn';
+    btn.type = 'button';
+    btn.title = '音声入力';
+    btn.textContent = '🎙️';
+    btn.setAttribute('onclick','toggleVoice(this)');
+    wrap.appendChild(btn);
+  }
+
+  // DOMが安定してから付与
+  function attachVoiceBtns(){
+    // 固定テキストエリア
+    var ids = ['vpiMemo','valueMemo','zemiContent','baitoDetail','clubDetail',
+               'hobby','skill','license','pcSkill','langSkill',
+               'gaku1','gaku2','selfpr','jiku','counselorMemo'];
+    ids.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) wrapWithVoice(el);
+    });
+  }
+
+  // 面談記録（動的生成）にも対応：MutationObserver
+  var observer = new MutationObserver(function(mutations){
+    mutations.forEach(function(m){
+      m.addedNodes.forEach(function(node){
+        if(node.nodeType===1){
+          node.querySelectorAll('textarea').forEach(function(ta){
+            wrapWithVoice(ta);
+          });
+        }
+      });
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    attachVoiceBtns();
+    var container = document.getElementById('memoContainer');
+    if(container) observer.observe(container, {childList:true, subtree:true});
+  });
+})();
+</script>
+</body>
+</html>

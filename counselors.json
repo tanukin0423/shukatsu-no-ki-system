@@ -1,0 +1,38 @@
+{
+  "updatedAt": "2026-03-26",
+  "workHours": {
+    "start": "10:00",
+    "end": "17:00",
+    "days": [1, 2, 3, 4, 5]
+  },
+  "counselors": [
+    {
+      "id": "kitayama",
+      "name": "北山 四郎",
+      "email": "kitayama@tama.ac.jp",
+      "dept": "キャリア支援課",
+      "active": true
+    },
+    {
+      "id": "soudan-a",
+      "name": "相談員A",
+      "email": "soudan-a@tama.ac.jp",
+      "dept": "キャリア支援課",
+      "active": true
+    },
+    {
+      "id": "soudan-b",
+      "name": "相談員B",
+      "email": "soudan-b@tama.ac.jp",
+      "dept": "キャリア支援課",
+      "active": true
+    },
+    {
+      "id": "soudan-c",
+      "name": "相談員C",
+      "email": "soudan-c@tama.ac.jp",
+      "dept": "キャリア支援課",
+      "active": true
+    }
+  ]
+}

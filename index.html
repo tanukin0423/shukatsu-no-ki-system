@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面談予約フォーム｜多摩大学 キャリア支援課</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gl:#7db96a;--gp:#e8f5e3;--gbg:#f3faf0;
+  --bark:#6b4c2a;--cream:#fdfaf5;
+  --text:#2a2a2a;--tl:#888;--border:#c8dfc2;
+  --shadow:0 4px 24px rgba(45,90,39,0.10);
+  --blue:#185FA5;--blue-pale:#E6F1FB;
+  --red:#A32D2D;--amber:#BA7517;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--gbg);color:var(--text);min-height:100vh;padding:0 0 60px;}
+
+/* ヘッダー */
+.header{background:var(--gd);color:white;padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.header-tree{font-size:2rem;margin-bottom:4px;}
+.header h1{font-family:'Noto Serif JP',serif;font-size:1.15rem;font-weight:700;position:relative;}
+.header p{font-size:0.75rem;opacity:0.8;margin-top:4px;position:relative;}
+
+/* コンテナ */
+.container{max-width:560px;margin:0 auto;padding:20px 16px;}
+
+/* セクション */
+.section{background:white;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:var(--shadow);}
+.section-title{font-size:0.95rem;font-weight:700;color:var(--gd);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.section-title .icon{font-size:1.1rem;}
+
+/* ステップ表示 */
+.step-bar{display:flex;justify-content:center;gap:8px;padding:16px 0 4px;margin-bottom:4px;}
+.step-item{display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0.4;transition:opacity 0.3s;}
+.step-item.active{opacity:1;}
+.step-item.done{opacity:0.7;}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--gm);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:var(--gd);background:white;}
+.step-item.active .step-dot{background:var(--gd);color:white;border-color:var(--gd);}
+.step-item.done .step-dot{background:var(--gm);color:white;border-color:var(--gm);}
+.step-label{font-size:0.62rem;color:var(--gd);white-space:nowrap;}
+.step-line{width:30px;height:2px;background:var(--border);margin-top:14px;}
+
+/* フィールド */
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:0.82rem;font-weight:700;color:var(--gd);margin-bottom:5px;}
+.field label .req{color:var(--red);margin-left:3px;font-size:0.72rem;}
+.field input,.field select,.field textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:0.9rem;color:var(--text);transition:border-color 0.15s;background:white;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gm);}
+.field textarea{min-height:80px;resize:vertical;}
+.field-note{font-size:0.72rem;color:var(--tl);margin-top:4px;line-height:1.6;}
+
+/* 選択カード（初回/2回目） */
+.type-cards{display:flex;gap:10px;margin-bottom:4px;}
+.type-card{flex:1;padding:16px 10px;border:2px solid var(--border);border-radius:12px;cursor:pointer;text-align:center;transition:all 0.15s;background:var(--cream);}
+.type-card:hover{border-color:var(--gm);background:var(--gp);}
+.type-card.selected{border-color:var(--gd);background:var(--gp);}
+.type-card .tc-icon{font-size:1.6rem;margin-bottom:6px;}
+.type-card .tc-title{font-size:0.9rem;font-weight:700;color:var(--gd);}
+.type-card .tc-desc{font-size:0.72rem;color:var(--tl);margin-top:3px;line-height:1.5;}
+.type-card.second .tc-title{color:var(--blue);}
+.type-card.second.selected{border-color:var(--blue);background:var(--blue-pale);}
+
+/* チェックボックス */
+.check-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.check-item{display:flex;align-items:center;gap:6px;background:var(--gp);border:1px solid var(--border);border-radius:7px;padding:5px 10px;cursor:pointer;font-size:0.8rem;transition:all 0.15s;}
+.check-item:hover{border-color:var(--gm);}
+.check-item input{accent-color:var(--gd);width:15px;height:15px;}
+.check-item.selected{background:var(--gp);border-color:var(--gd);}
+
+/* ラジオ */
+.radio-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.radio-item{display:flex;align-items:center;gap:6px;background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:7px 13px;cursor:pointer;font-size:0.83rem;transition:all 0.15s;}
+.radio-item:hover{border-color:var(--gm);}
+.radio-item input{accent-color:var(--gd);width:15px;height:15px;}
+
+/* タブ（週選択） */
+.week-tabs{display:flex;gap:3px;margin-bottom:0;}
+.week-tab{flex:1;padding:7px 4px;border:1.5px solid var(--border);border-radius:7px 7px 0 0;background:var(--gp);font-size:0.72rem;font-weight:700;color:var(--tl);cursor:pointer;text-align:center;transition:all 0.15s;border-bottom:none;font-family:'Noto Sans JP',sans-serif;}
+.week-tab.active{background:white;color:var(--gd);border-color:var(--gm);}
+.week-tab-content{border:1.5px solid var(--gm);border-radius:0 0 8px 8px;padding:12px;background:white;display:none;margin-bottom:12px;}
+.week-tab-content.active{display:block;}
+
+/* 日付ボタン */
+.date-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px;}
+@media(max-width:400px){.date-grid{grid-template-columns:repeat(3,1fr);}}
+.date-btn{display:flex;flex-direction:column;align-items:center;padding:7px 3px;border:1.5px solid var(--border);border-radius:9px;background:var(--gp);cursor:pointer;transition:all 0.15s;font-family:'Noto Sans JP',sans-serif;}
+.date-btn .d-day{font-size:0.6rem;color:var(--tl);}
+.date-btn .d-num{font-size:1rem;font-weight:700;color:var(--gd);}
+.date-btn .d-mon{font-size:0.58rem;color:var(--tl);}
+.date-btn:hover:not(.disabled):not(.blocked){border-color:var(--gm);background:#d4eece;}
+.date-btn.selected{border-color:var(--bark);background:var(--bark);}
+.date-btn.selected .d-day,.date-btn.selected .d-num,.date-btn.selected .d-mon{color:white;}
+.date-btn.disabled{opacity:0.3;cursor:not-allowed;background:#eee;}
+.date-btn.blocked{background:#fff0f0;border-color:#f0c0c0;cursor:not-allowed;}
+.date-btn.blocked .d-day,.date-btn.blocked .d-num,.date-btn.blocked .d-mon{color:#e08080;}
+.no-days{text-align:center;padding:14px;font-size:0.8rem;color:var(--tl);}
+
+/* 時間パネル */
+.time-panel{background:var(--cream);border:1px solid var(--border);border-radius:9px;padding:12px;margin-bottom:10px;display:none;}
+.time-panel-label{font-size:0.78rem;font-weight:700;color:var(--gd);margin-bottom:8px;}
+.time-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:6px;}
+.time-btn{padding:7px 4px;border:1.5px solid var(--border);border-radius:8px;background:white;font-size:0.78rem;cursor:pointer;text-align:center;transition:all 0.15s;color:var(--text);font-family:'Noto Sans JP',sans-serif;}
+.time-btn:hover:not(.blocked-time){background:var(--gp);border-color:var(--gm);}
+.time-btn.selected{background:var(--gm);color:white;border-color:var(--gm);font-weight:700;}
+.time-btn.blocked-time{background:#fff0f0;border-color:#f0c0c0;color:#e08080;cursor:not-allowed;}
+
+/* カレンダー（再来週以降） */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-nav button{background:var(--gp);border:1px solid var(--border);border-radius:7px;width:32px;height:32px;font-size:1rem;cursor:pointer;color:var(--gd);}
+.cal-nav .month-label{font-weight:700;font-size:0.9rem;color:var(--gd);}
+.cal-grid-7{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-head{text-align:center;font-size:0.68rem;color:var(--tl);padding:3px 0;font-weight:700;}
+.cal-head.sun{color:#e05252;} .cal-head.sat{color:#4a7cc7;}
+.cal-cell{text-align:center;padding:5px 2px;border-radius:7px;font-size:0.82rem;cursor:pointer;transition:all 0.15s;min-height:30px;display:flex;align-items:center;justify-content:center;border:1.5px solid transparent;}
+.cal-cell:hover:not(.cal-dis):not(.cal-blocked){background:var(--gp);border-color:var(--gl);}
+.cal-cell.cal-sel{background:var(--gm);color:white;border-color:var(--gm);font-weight:700;}
+.cal-cell.cal-dis{color:#ddd;cursor:not-allowed;}
+.cal-cell.cal-blocked{background:#fff0f0;color:#e08080;cursor:not-allowed;}
+.cal-cell.cal-today{border-color:var(--gl);color:var(--gd);font-weight:700;}
+.cal-cell.sun-c{color:#e05252;} .cal-cell.sat-c{color:#4a7cc7;}
+.cal-cell.sun-c.cal-dis,.cal-cell.sat-c.cal-dis{color:#ddd;}
+
+/* 選択サマリー */
+.wish-summary{margin-top:12px;display:flex;flex-direction:column;gap:6px;}
+.wish-item{display:flex;align-items:center;gap:8px;background:var(--gp);border:1.5px solid var(--border);border-radius:9px;padding:8px 13px;font-size:0.82rem;transition:all 0.2s;}
+.wish-item.filled{border-color:var(--gm);background:#d4eece;}
+.wish-num{background:var(--gd);color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;flex-shrink:0;}
+.wish-text{color:var(--tl);}
+.wish-item.filled .wish-text{color:var(--gd);font-weight:500;}
+.wish-remove{margin-left:auto;background:none;border:none;color:#999;cursor:pointer;font-size:0.8rem;padding:0 4px;}
+
+/* ナビボタン */
+.nav-row{display:flex;gap:10px;margin-top:16px;}
+.nav-btn{flex:1;padding:13px;border:none;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.nav-btn.primary{background:var(--gd);color:white;box-shadow:0 4px 14px rgba(45,90,39,0.3);}
+.nav-btn.primary:hover{background:var(--gm);transform:translateY(-1px);}
+.nav-btn.secondary{background:white;border:1.5px solid var(--border);color:var(--tl);}
+.nav-btn.secondary:hover{border-color:var(--gm);color:var(--gd);}
+
+/* 送信ボタン */
+.submit-btn{width:100%;padding:15px;background:var(--gd);color:white;border:none;border-radius:50px;font-family:'Noto Sans JP',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(45,90,39,0.3);letter-spacing:0.05em;transition:all 0.2s;}
+.submit-btn:hover{background:var(--gm);transform:translateY(-2px);}
+
+/* 添付案内 */
+.attach-box{background:#fff9e6;border:2px solid #f0c040;border-radius:12px;padding:14px 16px;margin-bottom:14px;}
+.attach-title{font-size:0.88rem;font-weight:700;color:#856404;margin-bottom:8px;}
+.attach-item{display:flex;align-items:flex-start;gap:8px;font-size:0.8rem;color:#5a4000;line-height:1.7;margin-bottom:6px;padding:7px 10px;background:white;border-radius:7px;border:1px solid #f0c040;}
+
+/* フッター */
+.footer{text-align:center;padding:20px;font-size:0.72rem;color:var(--tl);}
+
+/* ローディング */
+.loading{text-align:center;padding:20px;color:var(--tl);font-size:0.85rem;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tree">🌳</div>
+  <h1>面談予約フォーム</h1>
+  <p>多摩大学 キャリア支援課</p>
+</div>
+
+<div class="container">
+
+  <!-- ステップバー -->
+  <div class="step-bar" id="stepBar">
+    <div class="step-item active" id="step0">
+      <div class="step-dot">1</div>
+      <div class="step-label">担当選択</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item" id="step1">
+      <div class="step-dot">2</div>
+      <div class="step-label">基本情報</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item" id="step2">
+      <div class="step-dot">3</div>
+      <div class="step-label">日程選択</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item" id="step3">
+      <div class="step-dot">4</div>
+      <div class="step-label">確認・送信</div>
+    </div>
+  </div>
+
+  <!-- ===== STEP 0: 担当・種別選択 ===== -->
+  <div id="panelStep0">
+    <div class="section">
+      <div class="section-title"><span class="icon">👤</span>担当の先生を選んでください</div>
+      <div class="field">
+        <label>担当相談員<span class="req">*必須</span></label>
+        <div id="counselorLoading" class="loading">読み込み中...</div>
+        <select id="selCounselor" style="display:none;" onchange="onCounselorChange()">
+          <option value="">-- 選択してください --</option>
+        </select>
+        <div class="field-note">担当の先生が分からない場合は北山 四郎を選んでください。</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="icon">📋</span>相談の種類を選んでください</div>
+      <div class="type-cards">
+        <div class="type-card" id="cardFirst" onclick="selectType('first')">
+          <div class="tc-icon">🌱</div>
+          <div class="tc-title">初回相談</div>
+          <div class="tc-desc">はじめての面談<br>就活の基本から相談できます</div>
+        </div>
+        <div class="type-card second" id="cardSecond" onclick="selectType('second')">
+          <div class="tc-icon">🔄</div>
+          <div class="tc-title">2回目以降</div>
+          <div class="tc-desc">2回目以降の面談<br>ES添削・面接対策など</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn primary" onclick="goStep(1)" id="btnStep0Next" disabled
+        style="opacity:0.5;">次へ → 基本情報の入力</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 1: 基本情報 ===== -->
+  <div id="panelStep1" style="display:none;">
+    <div class="section">
+      <div class="section-title"><span class="icon">📝</span>基本情報</div>
+      <div class="field"><label>所属ゼミ<span class="req">*必須</span></label>
+        <input type="text" id="fZemi" placeholder="例：山田ゼミ"></div>
+      <div class="field"><label>学年<span class="req">*必須</span></label>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="grade" value="1年生">1年生</label>
+          <label class="radio-item"><input type="radio" name="grade" value="2年生">2年生</label>
+          <label class="radio-item"><input type="radio" name="grade" value="3年生">3年生</label>
+          <label class="radio-item"><input type="radio" name="grade" value="4年生">4年生</label>
+          <label class="radio-item"><input type="radio" name="grade" value="その他">その他</label>
+        </div>
+      </div>
+      <div class="field"><label>氏名<span class="req">*必須</span></label>
+        <input type="text" id="fName" placeholder="例：多摩 太郎"></div>
+      <div class="field"><label>学籍番号<span class="req">*必須</span></label>
+        <input type="text" id="fGakuseki" placeholder="例：24311001"></div>
+      <div class="field"><label>大学メールアドレス<span class="req">*必須</span></label>
+        <input type="email" id="fEmail" placeholder="例：24311001ta@tama.ac.jp"></div>
+      <div class="field"><label>電話番号</label>
+        <input type="tel" id="fTel" placeholder="例：090-1234-5678"></div>
+    </div>
+
+    <!-- 初回のみ表示 -->
+    <div class="section" id="sectionFirst">
+      <div class="section-title"><span class="icon">💼</span>就職活動の状況</div>
+      <div class="field"><label>希望進路</label>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="career" value="就職（一般）">就職（一般）</label>
+          <label class="radio-item"><input type="radio" name="career" value="就職（公務員）">公務員</label>
+          <label class="radio-item"><input type="radio" name="career" value="進学">進学</label>
+          <label class="radio-item"><input type="radio" name="career" value="未定">未定</label>
+        </div>
+      </div>
+      <div class="field"><label>活動状況</label>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="jobstatus" value="まだ何もしていない">まだ何もしていない</label>
+          <label class="radio-item"><input type="radio" name="jobstatus" value="自己分析中">自己分析中</label>
+          <label class="radio-item"><input type="radio" name="jobstatus" value="企業研究中">企業研究中</label>
+          <label class="radio-item"><input type="radio" name="jobstatus" value="ES作成中">ES作成中</label>
+          <label class="radio-item"><input type="radio" name="jobstatus" value="面接中">面接中</label>
+        </div>
+      </div>
+
+      <!-- サポート希望度 -->
+      <div class="field">
+        <label>キャリア支援課のサポートについて</label>
+        <div class="radio-group" id="supportGroup">
+          <label class="radio-item"><input type="radio" name="support" value="積極的にサポートを受けたい" onchange="onSupportChange()">🙋 積極的にサポートを受けたい</label>
+          <label class="radio-item"><input type="radio" name="support" value="必要なときだけ相談したい" onchange="onSupportChange()">🤝 必要なときだけ相談したい</label>
+          <label class="radio-item"><input type="radio" name="support" value="基本は自分でやりたい" onchange="onSupportChange()">💪 基本は自分でやりたい</label>
+          <label class="radio-item"><input type="radio" name="support" value="自分でできる！サポート不要" onchange="onSupportChange()">🏃 自分でできる！サポート不要</label>
+        </div>
+      </div>
+
+      <!-- 不安チェック（「自分でやりたい・不要」選択時のみ表示） -->
+      <div class="field" id="anxietySection" style="display:none;background:#fff8e1;border:1.5px solid #f0c040;border-radius:10px;padding:12px 14px;">
+        <label style="color:#5a4000;">💡 そうなんですね！今、不安に感じていることはありますか？（複数選択可）</label>
+        <div class="check-group" id="anxietyGroup" style="margin-top:8px;">
+          <label class="check-item"><input type="checkbox" name="anxiety" value="特に不安なし（順調です）">😊 特に不安なし（順調）</label>
+          <label class="check-item"><input type="checkbox" name="anxiety" value="自己分析がまだできていない">🤔 自己分析ができていない</label>
+          <label class="check-item"><input type="checkbox" name="anxiety" value="どの企業・業界を受ければいいか分からない">🔍 企業・業界選びが分からない</label>
+          <label class="check-item"><input type="checkbox" name="anxiety" value="ES・履歴書の書き方が不安">📝 ESの書き方が不安</label>
+          <label class="check-item"><input type="checkbox" name="anxiety" value="面接対策ができていない">🎤 面接対策ができていない</label>
+          <label class="check-item"><input type="checkbox" name="anxiety" value="就活の全体スケジュールが分からない">📅 就活スケジュールが分からない</label>
+          <label class="check-item"><input type="checkbox" name="anxiety" value="インターンシップに参加できていない">🏢 インターンに参加できていない</label>
+          <label class="check-item"><input type="checkbox" name="anxiety" value="SPI・筆記対策ができていない">📊 SPI対策ができていない</label>
+          <label class="check-item"><input type="checkbox" name="anxiety" value="何から始めればいいか分からない">😰 何から始めればいいか分からない</label>
+        </div>
+      </div>
+
+      <!-- 進み具合 -->
+      <div class="field">
+        <label>現在の就活の進み具合</label>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="progress" value="順調（内定あり・複数選考中）">🌟 順調（内定あり・複数選考中）</label>
+          <label class="radio-item"><input type="radio" name="progress" value="まあまあ進んでいる">👍 まあまあ進んでいる</label>
+          <label class="radio-item"><input type="radio" name="progress" value="あまり進んでいない">😐 あまり進んでいない</label>
+          <label class="radio-item"><input type="radio" name="progress" value="ほとんど動けていない">😟 ほとんど動けていない</label>
+        </div>
+      </div>
+      <div class="field"><label>相談したいこと</label>
+        <div class="check-group" id="themesGroup">
+          <label class="check-item"><input type="checkbox" value="自己分析">自己分析</label>
+          <label class="check-item"><input type="checkbox" value="業界・企業研究">業界・企業研究</label>
+          <label class="check-item"><input type="checkbox" value="ES・履歴書作成">ES・履歴書作成</label>
+          <label class="check-item"><input type="checkbox" value="面接対策">面接対策</label>
+          <label class="check-item"><input type="checkbox" value="就活の進め方全般">就活の進め方全般</label>
+          <label class="check-item"><input type="checkbox" value="SPI・筆記対策">SPI・筆記対策</label>
+          <label class="check-item"><input type="checkbox" value="自分に向いている仕事がわからない">向いている仕事がわからない</label>
+          <label class="check-item"><input type="checkbox" value="内定後の悩み">内定後の悩み</label>
+          <label class="check-item"><input type="checkbox" value="その他">その他</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2回目以降のみ表示 -->
+    <div class="section" id="sectionSecond" style="display:none;">
+      <div class="section-title"><span class="icon">💬</span>今回の相談内容</div>
+      <div class="field"><label>相談種別<span class="req">*必須</span></label>
+        <div class="check-group">
+          <label class="check-item"><input type="checkbox" name="consultType" value="ES添削">ES添削</label>
+          <label class="check-item"><input type="checkbox" name="consultType" value="面接対策">面接対策</label>
+          <label class="check-item"><input type="checkbox" name="consultType" value="企業研究">企業研究</label>
+          <label class="check-item"><input type="checkbox" name="consultType" value="就活全般">就活全般</label>
+          <label class="check-item"><input type="checkbox" name="consultType" value="内定後の悩み">内定後の悩み</label>
+          <label class="check-item"><input type="checkbox" name="consultType" value="その他">その他</label>
+        </div>
+      </div>
+      <div class="field"><label>面接の種類（面接対策の場合）</label>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="interviewType" value="一次面接">一次面接</label>
+          <label class="radio-item"><input type="radio" name="interviewType" value="二次面接">二次面接</label>
+          <label class="radio-item"><input type="radio" name="interviewType" value="最終面接">最終面接</label>
+          <label class="radio-item"><input type="radio" name="interviewType" value="グループディスカッション">GD</label>
+        </div>
+      </div>
+      <div class="field"><label>応募中の企業名</label>
+        <input type="text" id="fCompany" placeholder="例：株式会社○○"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="icon">✏️</span>自由記入</div>
+      <div class="field">
+        <textarea id="fFree" placeholder="気になっていることや聞いてみたいことを自由に書いてください。"></textarea>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn secondary" onclick="goStep(0)">← 戻る</button>
+      <button class="nav-btn primary" onclick="goStep(2)">次へ → 日程選択</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 2: 日程選択 ===== -->
+  <div id="panelStep2" style="display:none;">
+    <div class="section">
+      <div class="section-title"><span class="icon">📅</span>面談希望日時（第1〜第3希望）</div>
+      <p style="font-size:0.78rem;color:var(--tl);margin-bottom:14px;">
+        希望する週のタブを選んで日付をクリックしてください。
+        <span style="color:var(--red);">赤い日付は予約できません。</span>
+      </p>
+
+      <!-- 週タブ -->
+      <div class="week-tabs">
+        <div class="week-tab active" id="wtab0" onclick="switchWeekTab(0)">今週</div>
+        <div class="week-tab" id="wtab1" onclick="switchWeekTab(1)">来週</div>
+        <div class="week-tab" id="wtab2" onclick="switchWeekTab(2)">再来週</div>
+        <div class="week-tab" id="wtab3" onclick="switchWeekTab(3)">以降</div>
+      </div>
+      <div class="week-tab-content active" id="wcont0"><div class="date-grid" id="grid0"></div></div>
+      <div class="week-tab-content" id="wcont1"><div class="date-grid" id="grid1"></div></div>
+      <div class="week-tab-content" id="wcont2"><div class="date-grid" id="grid2"></div></div>
+      <div class="week-tab-content" id="wcont3">
+        <div class="cal-nav">
+          <button onclick="calPrev()">‹</button>
+          <span class="month-label" id="calMonthLabel"></span>
+          <button onclick="calNext()">›</button>
+        </div>
+        <div class="cal-grid-7" id="calGrid7"></div>
+      </div>
+
+      <!-- 時間パネル -->
+      <div class="time-panel" id="timePanel">
+        <div class="time-panel-label" id="timePanelLabel">時間帯を選んでください</div>
+        <div class="time-grid" id="timeGrid"></div>
+      </div>
+
+      <!-- 選択サマリー -->
+      <div class="wish-summary" id="wishSummary">
+        <div class="wish-item" id="wi0"><span class="wish-num">1</span><span class="wish-text" id="wt0">未選択</span></div>
+        <div class="wish-item" id="wi1"><span class="wish-num">2</span><span class="wish-text" id="wt1">未選択</span></div>
+        <div class="wish-item" id="wi2"><span class="wish-num">3</span><span class="wish-text" id="wt2">未選択</span></div>
+      </div>
+    </div>
+
+    <!-- 初回のみ：VPI検査案内 -->
+    <div class="attach-box" id="attachBox">
+      <div class="attach-title">📎 送信前に忘れずに！検査を受けてPDFを準備してください</div>
+      <div class="attach-item">📊 <div><strong>職業興味検査（VPI）</strong><br>
+        <a href="https://shigoto.mhlw.go.jp/User/Search/Top" target="_blank" style="color:var(--gd);font-weight:700;">🔗 jobtag 職業興味検査（厚生労働省）</a><br>
+        結果をPDFでダウンロードして、メール送信時に添付してください。</div></div>
+      <div class="attach-item">💡 <div><strong>仕事価値観検査</strong><br>
+        <a href="https://shigoto.mhlw.go.jp/User/ExplainMyself/Step2" target="_blank" style="color:var(--gd);font-weight:700;">🔗 jobtag 仕事価値観検査（厚生労働省）</a><br>
+        結果をPDFでダウンロードして、メール送信時に添付してください。</div></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn secondary" onclick="goStep(1)">← 戻る</button>
+      <button class="nav-btn primary" onclick="goStep(3)">次へ → 内容を確認する</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 3: 確認・送信 ===== -->
+  <div id="panelStep3" style="display:none;">
+    <div class="section">
+      <div class="section-title"><span class="icon">✅</span>入力内容の確認</div>
+      <div id="confirmContent" style="font-size:0.85rem;line-height:2;"></div>
+    </div>
+    <div class="section" style="text-align:center;">
+      <p style="font-size:0.78rem;color:var(--tl);margin-bottom:14px;">
+        「メールで送信する」を押すとGmailが開きます。<br>
+        初回の方は検査結果PDFを添付してから送信してください。
+      </p>
+      <button class="submit-btn" onclick="sendMail()">📧 メールで送信する</button>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn secondary" onclick="goStep(2)">← 戻る</button>
+    </div>
+  </div>
+
+</div>
+<div class="footer">多摩大学 キャリア支援課</div>
+
+<script>
+// ===== 定数 =====
+// GitHubのraw URLに変更してください
+const BASE_URL = './';
+const DAYS = ['日','月','火','水','木','金','土'];
+const MONTHS_JP = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+const HOLIDAYS = new Set([
+  '2026-01-01','2026-01-12','2026-02-11','2026-02-23','2026-03-20',
+  '2026-04-29','2026-05-03','2026-05-04','2026-05-05','2026-05-06',
+  '2026-07-20','2026-08-11','2026-09-21','2026-09-22','2026-09-23',
+  '2026-10-12','2026-11-03','2026-11-23','2026-12-23'
+]);
+
+// ===== 状態 =====
+let currentStep = 0;
+let selectedType = '';       // 'first' or 'second'
+let selectedCounselor = null; // 相談員オブジェクト
+let blockedSlots = new Set(); // ブロックされているスロット
+let counselors = [];
+
+let pendingDate = null;
+let wishes = [null, null, null]; // [{iso, label, time}]
+const today = new Date(); today.setHours(0,0,0,0);
+const thisMon = getMonday(today);
+const thirdMon = new Date(thisMon); thirdMon.setDate(thisMon.getDate()+14);
+let calYear = thirdMon.getFullYear(), calMonth = thirdMon.getMonth();
+
+// ===== 初期化 =====
+window.addEventListener('load', function() {
+  loadCounselors();
+  renderWeekGrid(0, 'grid0');
+  renderWeekGrid(1, 'grid1');
+  renderWeekGrid(2, 'grid2');
+  renderCalGrid();
+  // URLパラメータで相談員を自動選択
+  checkUrlParam();
+});
+
+function checkUrlParam() {
+  const params = new URLSearchParams(window.location.search);
+  const cId = params.get('c');
+  if (!cId) return;
+  // 少し待ってから相談員を自動選択（データ読み込み完了後）
+  setTimeout(function() {
+    const sel = document.getElementById('selCounselor');
+    if (!sel) return;
+    // プルダウンの選択肢からIDを探す
+    for (let i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === cId) {
+        sel.value = cId;
+        sel.disabled = true; // 変更できないようにロック
+        onCounselorChange();
+        // ロック中の視覚表示
+        sel.style.background = '#e8f5e3';
+        sel.style.borderColor = '#2d5a27';
+        sel.style.fontWeight = '700';
+        // 案内文を追加
+        var note = document.createElement('div');
+        note.style.cssText = 'font-size:0.75rem;color:#2d5a27;margin-top:5px;font-weight:700;';
+        note.textContent = '✅ 担当の先生が設定されています（変更不可）';
+        sel.parentElement.appendChild(note);
+        break;
+      }
+    }
+  }, 800);
+}
+
+// ===== 相談員データ読み込み =====
+async function loadCounselors() {
+  try {
+    // localStorageから読み込む（admin.htmlで設定したデータ）
+    const saved = localStorage.getItem('counselors_data');
+    if (saved) {
+      const data = JSON.parse(saved);
+      counselors = (data.counselors || []).filter(function(c){ return c.active; });
+    } else {
+      // デフォルトデータ
+      counselors = [
+        {id:'kitayama', name:'北山 四郎', email:'kitayama@tama.ac.jp', dept:'キャリア支援課', active:true},
+        {id:'soudan-a', name:'相談員A', email:'soudan-a@tama.ac.jp', dept:'キャリア支援課', active:true},
+        {id:'soudan-b', name:'相談員B', email:'soudan-b@tama.ac.jp', dept:'キャリア支援課', active:true},
+        {id:'soudan-c', name:'相談員C', email:'soudan-c@tama.ac.jp', dept:'キャリア支援課', active:true},
+      ];
+    }
+    renderCounselorSelect();
+  } catch(e) {
+    document.getElementById('counselorLoading').textContent = 'データの読み込みに失敗しました。';
+  }
+}
+
+function renderCounselorSelect() {
+  const sel = document.getElementById('selCounselor');
+  sel.innerHTML = '<option value="">-- 選択してください --</option>' +
+    counselors.map(function(c){
+      return '<option value="'+c.id+'">'+c.name+'（'+c.dept+'）</option>';
+    }).join('');
+  document.getElementById('counselorLoading').style.display = 'none';
+  sel.style.display = 'block';
+}
+
+async function onCounselorChange() {
+  const id = document.getElementById('selCounselor').value;
+  selectedCounselor = counselors.find(function(c){ return c.id === id; }) || null;
+  blockedSlots = new Set();
+  if (id) {
+    try {
+      const saved = localStorage.getItem('slots_'+id);
+      if (saved) {
+        const slots = JSON.parse(saved);
+        Object.keys(slots).forEach(function(k){
+          if(slots[k]===false) blockedSlots.add(k);
+        });
+      }
+    } catch(e) {}
+    renderWeekGrid(0,'grid0'); renderWeekGrid(1,'grid1');
+    renderWeekGrid(2,'grid2'); renderCalGrid();
+  }
+  checkStep0();
+}
+
+function checkStep0() {
+  const ok = selectedCounselor && selectedType;
+  const btn = document.getElementById('btnStep0Next');
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '0.5';
+}
+
+// ===== 種別選択 =====
+function selectType(type) {
+  selectedType = type;
+  document.getElementById('cardFirst').classList.toggle('selected', type==='first');
+  document.getElementById('cardSecond').classList.toggle('selected', type==='second');
+  checkStep0();
+}
+
+// ===== ステップ移動 =====
+function goStep(n) {
+  if (n===1) {
+    if (!selectedCounselor) { alert('担当の先生を選んでください。'); return; }
+    if (!selectedType) { alert('相談の種類を選んでください。'); return; }
+  }
+  if (n===2) {
+    if (!validateStep1()) return;
+  }
+  if (n===3) {
+    if (wishes.filter(function(w){ return w; }).length === 0) {
+      alert('希望日時を少なくとも1つ選んでください。'); return;
+    }
+    buildConfirm();
+  }
+  currentStep = n;
+  ['panelStep0','panelStep1','panelStep2','panelStep3'].forEach(function(id,i){
+    document.getElementById(id).style.display = i===n ? 'block' : 'none';
+  });
+  for(let i=0;i<4;i++){
+    const s=document.getElementById('step'+i);
+    s.className='step-item'+(i===n?' active':i<n?' done':'');
+  }
+  // 初回/2回目以降の表示切替
+  document.getElementById('sectionFirst').style.display = selectedType==='first'?'block':'none';
+  document.getElementById('sectionSecond').style.display = selectedType==='second'?'block':'none';
+  document.getElementById('attachBox').style.display = selectedType==='first'?'block':'none';
+  window.scrollTo(0,0);
+}
+
+// ===== バリデーション =====
+function validateStep1() {
+  if (!document.getElementById('fZemi').value.trim()) { alert('ゼミを入力してください。'); return false; }
+  if (!document.querySelector('input[name="grade"]:checked')) { alert('学年を選択してください。'); return false; }
+  if (!document.getElementById('fName').value.trim()) { alert('氏名を入力してください。'); return false; }
+  if (!document.getElementById('fGakuseki').value.trim()) { alert('学籍番号を入力してください。'); return false; }
+  if (!document.getElementById('fEmail').value.trim()) { alert('メールアドレスを入力してください。'); return false; }
+  return true;
+}
+
+// ===== カレンダーユーティリティ =====
+function getMonday(d) {
+  const r=new Date(d); r.setHours(0,0,0,0);
+  const dw=r.getDay();
+  r.setDate(r.getDate()+(dw===0?-6:1-dw));
+  return r;
+}
+
+function ymd(d) {
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function isHoliday(d) { return HOLIDAYS.has(ymd(d)); }
+function isDisabled(d) { return d<today||d.getDay()===0||d.getDay()===6||isHoliday(d); }
+
+function dateLabel(d) {
+  return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DAYS[d.getDay()]+'）';
+}
+
+function isBlocked(d, time) {
+  return blockedSlots.has(ymd(d)+' '+time);
+}
+
+function getTimes() {
+  const s=[];
+  for(let h=10;h<=16;h++){
+    s.push(String(h).padStart(2,'0')+':00');
+    if(h<16) s.push(String(h).padStart(2,'0')+':30');
+  }
+  s.push('16:30');
+  return s;
+}
+
+// ===== 週タブ切り替え =====
+function switchWeekTab(idx) {
+  [0,1,2,3].forEach(function(i){
+    document.getElementById('wtab'+i).classList.toggle('active',i===idx);
+    document.getElementById('wcont'+i).classList.toggle('active',i===idx);
+  });
+  document.getElementById('timePanel').style.display='none';
+}
+
+// ===== 週ボタングリッド =====
+function renderWeekGrid(offset, gridId) {
+  const mon=new Date(thisMon); mon.setDate(thisMon.getDate()+offset*7);
+  const grid=document.getElementById(gridId);
+  if(!grid) return;
+  grid.innerHTML='';
+  let hasDay=false;
+  for(let i=0;i<5;i++){
+    const d=new Date(mon); d.setDate(mon.getDate()+i);
+    const dis=isDisabled(d);
+    const btn=document.createElement('div');
+    btn.className='date-btn'+(dis?' disabled':'');
+    btn.dataset.iso=ymd(d);
+    btn.dataset.label=dateLabel(d);
+    btn.innerHTML='<span class="d-day">'+DAYS[d.getDay()]+'</span>'+
+      '<span class="d-num">'+d.getDate()+'</span>'+
+      '<span class="d-mon">'+(d.getMonth()+1)+'月</span>';
+    if(!dis){
+      btn.addEventListener('click',function(){ onDateClick(d, btn); });
+      hasDay=true;
+    }
+    if(wishes.some(function(w){ return w&&w.iso===ymd(d); })) btn.classList.add('selected');
+    grid.appendChild(btn);
+  }
+  if(!hasDay) grid.innerHTML='<div class="no-days">この週は予約可能な日がありません。</div>';
+}
+
+// ===== カレンダー（再来週以降） =====
+function renderCalGrid() {
+  const grid=document.getElementById('calGrid7');
+  if(!grid) return;
+  document.getElementById('calMonthLabel').textContent=calYear+'年 '+MONTHS_JP[calMonth];
+  grid.innerHTML='';
+  DAYS.forEach(function(d,i){
+    const h=document.createElement('div');
+    h.className='cal-head'+(i===0?' sun':i===6?' sat':'');
+    h.textContent=d; grid.appendChild(h);
+  });
+  const first=new Date(calYear,calMonth,1);
+  const last=new Date(calYear,calMonth+1,0);
+  for(let i=0;i<first.getDay();i++){
+    const e=document.createElement('div'); e.className='cal-cell cal-dis'; grid.appendChild(e);
+  }
+  for(let dd=1;dd<=last.getDate();dd++){
+    const d=new Date(calYear,calMonth,dd);
+    const el=document.createElement('div');
+    const beforeRange=d<thirdMon;
+    const dis=isDisabled(d)||beforeRange;
+    let cls='cal-cell';
+    if(d.toDateString()===today.toDateString()) cls+=' cal-today';
+    if(d.getDay()===0) cls+=' sun-c';
+    if(d.getDay()===6) cls+=' sat-c';
+    if(dis){ cls+=' cal-dis'; }
+    else if(wishes.some(function(w){ return w&&w.iso===ymd(d); })){ cls+=' cal-sel'; }
+    el.className=cls; el.textContent=dd;
+    if(!dis) el.addEventListener('click',function(){ onCalClick(d); });
+    grid.appendChild(el);
+  }
+}
+
+function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalGrid(); }
+function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalGrid(); }
+
+// ===== 日付クリック =====
+function onDateClick(d, btn) {
+  const iso=ymd(d);
+  const ei=wishes.findIndex(function(w){ return w&&w.iso===iso; });
+  if(ei!==-1){ wishes[ei]=null; btn.classList.remove('selected'); updateWishSummary(); document.getElementById('timePanel').style.display='none'; return; }
+  if(wishes.filter(function(w){ return w; }).length>=3){ alert('希望日は3つまでです。外したい日をもう一度タップしてください。'); return; }
+  pendingDate={iso:iso,label:dateLabel(d),d:d};
+  showTimePanel(d);
+}
+
+function onCalClick(d) {
+  const iso=ymd(d);
+  const ei=wishes.findIndex(function(w){ return w&&w.iso===iso; });
+  if(ei!==-1){ wishes[ei]=null; updateWishSummary(); renderCalGrid(); document.getElementById('timePanel').style.display='none'; return; }
+  if(wishes.filter(function(w){ return w; }).length>=3){ alert('希望日は3つまでです。外したい日をもう一度クリックしてください。'); return; }
+  pendingDate={iso:iso,label:dateLabel(d),d:d,isCal:true};
+  showTimePanel(d);
+}
+
+// ===== 時間パネル =====
+function showTimePanel(d) {
+  const panel=document.getElementById('timePanel');
+  document.getElementById('timePanelLabel').textContent=dateLabel(d)+'　の時間帯を選んでください';
+  const grid=document.getElementById('timeGrid');
+  grid.innerHTML='';
+  getTimes().forEach(function(t){
+    const btn=document.createElement('button');
+    const blocked=isBlocked(d,t);
+    btn.className='time-btn'+(blocked?' blocked-time':'');
+    btn.textContent=t;
+    if(!blocked){
+      btn.onclick=function(){ onTimeClick(t); };
+    }
+    grid.appendChild(btn);
+  });
+  panel.style.display='block';
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function onTimeClick(t) {
+  if(!pendingDate) return;
+  const ei=wishes.findIndex(function(w){ return !w; });
+  if(ei===-1) return;
+  wishes[ei]={iso:pendingDate.iso, label:pendingDate.label+' '+t, time:t};
+  // ボタンをselectedに
+  document.querySelectorAll('.date-btn').forEach(function(b){
+    if(b.dataset.iso===pendingDate.iso) b.classList.add('selected');
+  });
+  if(pendingDate.isCal) renderCalGrid();
+  pendingDate=null;
+  document.getElementById('timePanel').style.display='none';
+  updateWishSummary();
+}
+
+// ===== 希望サマリー更新 =====
+function updateWishSummary() {
+  wishes.forEach(function(w,i){
+    const item=document.getElementById('wi'+i);
+    const txt=document.getElementById('wt'+i);
+    if(w){
+      item.classList.add('filled');
+      txt.textContent=w.label;
+      txt.className='wish-text';
+    } else {
+      item.classList.remove('filled');
+      txt.textContent='未選択';
+      txt.className='wish-text';
+    }
+  });
+}
+
+// ===== 確認画面 =====
+function buildConfirm() {
+  const zemi=document.getElementById('fZemi').value;
+  const grade=document.querySelector('input[name="grade"]:checked');
+  const name=document.getElementById('fName').value;
+  const gakuseki=document.getElementById('fGakuseki').value;
+  const email=document.getElementById('fEmail').value;
+
+  let html='<table style="width:100%;border-collapse:collapse;">';
+  const rows=[
+    ['担当', selectedCounselor.name],
+    ['種別', selectedType==='first'?'初回相談':'2回目以降'],
+    ['ゼミ', zemi],
+    ['学年', grade?grade.value:'―'],
+    ['氏名', name],
+    ['学籍番号', gakuseki],
+    ['メール', email],
+  ];
+  if(selectedType==='first'){
+    const career=document.querySelector('input[name="career"]:checked');
+    const status=document.querySelector('input[name="jobstatus"]:checked');
+    const themes=[...document.querySelectorAll('#themesGroup input:checked')].map(function(e){return e.value;});
+    if(career) rows.push(['希望進路', career.value]);
+    if(status) rows.push(['活動状況', status.value]);
+    var support=document.querySelector('input[name="support"]:checked');
+    var progress=document.querySelector('input[name="progress"]:checked');
+    var anxiety=[...document.querySelectorAll('input[name="anxiety"]:checked')].map(function(e){return e.value;});
+    if(support) rows.push(['サポート希望', support.value]);
+    if(progress) rows.push(['進み具合', progress.value]);
+    if(anxiety.length) rows.push(['不安なこと', anxiety.join('、')]);
+    if(themes.length) rows.push(['相談テーマ', themes.join('、')]);
+  } else {
+    const types=[...document.querySelectorAll('input[name="consultType"]:checked')].map(function(e){return e.value;});
+    const interview=document.querySelector('input[name="interviewType"]:checked');
+    const company=document.getElementById('fCompany').value;
+    if(types.length) rows.push(['相談種別', types.join('、')]);
+    if(interview) rows.push(['面接種別', interview.value]);
+    if(company) rows.push(['応募企業', company]);
+  }
+  const free=document.getElementById('fFree').value;
+  if(free) rows.push(['自由記入', free]);
+
+  rows.forEach(function(r){
+    html+='<tr><td style="padding:4px 8px 4px 0;color:var(--tl);font-size:0.78rem;white-space:nowrap;vertical-align:top;">'+r[0]+'</td>'+
+      '<td style="padding:4px 0;font-size:0.83rem;font-weight:500;">'+escHtml(r[1])+'</td></tr>';
+  });
+  html+='</table>';
+
+  html+='<div style="margin-top:12px;padding:10px;background:var(--gp);border-radius:8px;">';
+  html+='<div style="font-size:0.78rem;font-weight:700;color:var(--gd);margin-bottom:6px;">面談希望日時</div>';
+  wishes.forEach(function(w,i){
+    if(w) html+='<div style="font-size:0.82rem;margin-bottom:3px;"><span style="background:var(--gd);color:white;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:0.65rem;margin-right:6px;">'+(i+1)+'</span>'+escHtml(w.label)+'</div>';
+  });
+  html+='</div>';
+
+  document.getElementById('confirmContent').innerHTML=html;
+}
+
+// ===== 送信 =====
+// サポート希望度の表示切り替え
+function onSupportChange(){
+  var val = document.querySelector('input[name="support"]:checked');
+  var sec = document.getElementById('anxietySection');
+  if(val && (val.value==='基本は自分でやりたい' || val.value==='自分でできる！サポート不要')){
+    sec.style.display='block';
+  } else {
+    sec.style.display='none';
+  }
+}
+
+function sendMail() {
+  const zemi=document.getElementById('fZemi').value;
+  const grade=document.querySelector('input[name="grade"]:checked');
+  const name=document.getElementById('fName').value;
+  const gakuseki=document.getElementById('fGakuseki').value;
+  const email=document.getElementById('fEmail').value;
+  const tel=document.getElementById('fTel').value;
+  const free=document.getElementById('fFree').value;
+  const dest=selectedCounselor.email;
+  const isFirst=selectedType==='first';
+  const subjectTag=isFirst?'【面談申込】':'【面談予約】';
+  const wish1=wishes[0]?wishes[0].label:'未選択';
+  const subject=subjectTag+name+'・'+gakuseki+'・第1希望：'+wish1;
+
+  let body=zemi+'ゼミの '+name+' です。\n';
+  body+=(isFirst?'面談申込フォーム':'面談予約フォーム')+'より送信します。\n\n';
+  body+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+  body+=(isFirst?'キャリア面談申込アンケート':'2回目以降 面談予約')+'｜多摩大学（日本人学生用）2026年度\n';
+  body+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
+  body+='【基本情報】\n';
+  body+='・所属ゼミ　　：'+zemi+'\n';
+  body+='・学年　　　　：'+(grade?grade.value:'―')+'\n';
+  body+='・氏名　　　　：'+name+'\n';
+  body+='・学籍番号　　：'+gakuseki+'\n';
+  body+='・大学メール　：'+email+'\n';
+  body+='・電話番号　　：'+(tel||'―')+'\n\n';
+
+  if(isFirst){
+    const career=document.querySelector('input[name="career"]:checked');
+    const status=document.querySelector('input[name="jobstatus"]:checked');
+    const themes=[...document.querySelectorAll('#themesGroup input:checked')].map(function(e){return e.value;});
+    body+='【就職活動の状況】\n';
+    body+='・希望進路　　：'+(career?career.value:'―')+'\n';
+    body+='・活動状況　　：'+(status?status.value:'―')+'\n';
+
+    var support=document.querySelector('input[name="support"]:checked');
+    var progress=document.querySelector('input[name="progress"]:checked');
+    var anxiety=[...document.querySelectorAll('input[name="anxiety"]:checked')].map(function(e){return e.value;});
+    body+='・サポート希望：'+(support?support.value:'―')+'\n';
+    body+='・進み具合　　：'+(progress?progress.value:'―')+'\n';
+    if(anxiety.length) body+='・不安なこと　：'+anxiety.join('、')+'\n';
+    body+='\n';
+    body+='【相談したいこと・不安なこと】\n'+(themes.join('、')||'―')+'\n\n';
+  } else {
+    const types=[...document.querySelectorAll('input[name="consultType"]:checked')].map(function(e){return e.value;});
+    const interview=document.querySelector('input[name="interviewType"]:checked');
+    const company=document.getElementById('fCompany').value;
+    body+='【今回の相談内容】\n';
+    body+='・相談種別　　：'+(types.join('、')||'―')+'\n';
+    body+='・面接種別　　：'+(interview?interview.value:'―')+'\n';
+    body+='・応募企業　　：'+(company||'―')+'\n\n';
+  }
+
+  if(free) body+='【その他・自由記入】\n'+free+'\n\n';
+
+  body+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+  body+='【面談希望日時】\n';
+  wishes.forEach(function(w,i){
+    body+='・第'+(i+1)+'希望：'+(w?w.label:'未選択')+'\n';
+  });
+  body+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
+  body+='以上、よろしくお願いいたします。';
+
+  const url='https://mail.google.com/mail/?view=cm&fs=1'+
+    '&to='+encodeURIComponent(dest)+
+    '&su='+encodeURIComponent(subject)+
+    '&body='+encodeURIComponent(body);
+  window.open(url,'_blank');
+}
+
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>
