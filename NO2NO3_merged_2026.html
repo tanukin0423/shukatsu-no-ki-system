@@ -1052,6 +1052,10 @@ function bulkConfirm() {
     }
 
     if (subject && body) {
+      // 確定スロットキーと担当者IDを追加
+      const slotKey = (s._confirmed && s._confirmed !== '__reapply__')
+        ? wishToSlotKey(s._confirmed) : null;
+      const counselorId = no2UserInfo ? no2UserInfo.id : '';
       mailList.push({
         name: s.name,
         gakuseki: s.gakuseki,
@@ -1059,7 +1063,9 @@ function bulkConfirm() {
         subject: subject,
         body: body,
         color: color,
-        colorStatus: s._colorStatus
+        colorStatus: s._colorStatus,
+        slotKey: slotKey,
+        counselorId: counselorId
       });
     }
   });
@@ -1147,10 +1153,47 @@ function showMailConfirm(mailList) {
 function openMail(idx) {
   const m = window._pendingMails[idx];
   if (!m) return;
+
+  // 確定メール（green・blue）の場合のみ × に更新
+  // 再調整メール（red・再調整）はブロックしない
+  const isConfirmed = (m.color === 'green') ||
+    (m.color === 'blue' && !m.subject.includes('再調整'));
+
+  if (isConfirmed && m.slotKey && m.counselorId) {
+    if (window.fbBlockSlot) {
+      window.fbBlockSlot(m.counselorId, m.slotKey).then(function(ok) {
+        if (ok) {
+          // calSlotsにも即時反映
+          if (typeof calSlots !== 'undefined') {
+            calSlots[m.slotKey] = false;
+            renderCalGrid();
+          }
+          // トースト通知
+          showToast('🔒 ' + m.name + 'さんの面談枠を × に設定しました（' + m.slotKey + '）');
+        }
+      });
+    }
+  }
+
   sendGmail(m.dest, m.subject, m.body);
 }
 
 function closeMailDlg() { var d=document.getElementById("mailConfirmDlg"); if(d)d.remove(); }
+
+// ===== トースト通知 =====
+function showToast(msg) {
+  var t = document.getElementById('no2Toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'no2Toast';
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#2d5a27;color:white;padding:12px 20px;border-radius:11px;font-size:0.82rem;box-shadow:0 4px 20px rgba(0,0,0,0.2);z-index:99999;max-width:340px;line-height:1.6;display:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.display = 'none'; }, 4000);
+}
 
 // ===== メール本文 =====
 function buildConfirmBody(s, wish) {
@@ -1403,37 +1446,122 @@ function loadCounselorsForNo2() {
   }
 }
 
-// ===== admin.htmlのlocalStorageからカレンダーデータを読み込む =====
-function loadCalFromStorage() {
+// ===== カレンダーデータ読み込み（Firebase優先・localStorage補完） =====
+async function loadCalFromStorage() {
   const id = document.getElementById('no2CounselorSel').value;
   if (!id) {
     calSlots = {};
     renderCalGrid();
     return;
   }
+  calSlots = {};
+
+  // まずlocalStorageから即時表示
   try {
     const saved = localStorage.getItem('slots_'+id);
     if (saved) {
       const data = JSON.parse(saved);
-      // admin.htmlの形式：{ 'YYYY-MM-DD HH:MM': false } でブロックされている
-      calSlots = {};
       Object.keys(data).forEach(function(key) {
-        if (data[key] === false) {
-          calSlots[key] = false; // ブロック
-        }
+        if (data[key] === false) calSlots[key] = false;
       });
-      const blockedCount = Object.keys(calSlots).length;
-      alert('✅ '+document.getElementById('no2CounselorSel').options[document.getElementById('no2CounselorSel').selectedIndex].text+'のカレンダーデータを読み込みました。ブロック済み：'+blockedCount+'件');
-    } else {
-      calSlots = {};
-      alert('この相談員のカレンダーデータがありません。admin.htmlで設定してください。');
     }
-  } catch(e) {
-    calSlots = {};
-    console.error('カレンダーデータ読み込みエラー:', e);
+  } catch(e) {}
+
+  // Firebaseから最新データを取得（上書き）
+  if (window.fbLoadCalSlots) {
+    const count = await window.fbLoadCalSlots(id);
+    const selEl = document.getElementById('no2CounselorSel');
+    const selName = selEl.options[selEl.selectedIndex].text;
+    const blockedCount = Object.keys(calSlots).filter(k => calSlots[k]===false).length;
+    showToast('✅ ' + selName + ' のカレンダーを読み込みました（×：' + blockedCount + '件）');
+  } else {
+    const blockedCount = Object.keys(calSlots).filter(k => calSlots[k]===false).length;
+    if (blockedCount > 0) {
+      showToast('✅ カレンダーデータを読み込みました（×：' + blockedCount + '件）');
+    } else {
+      showToast('⚠️ カレンダーデータがありません。admin.htmlで設定してください。');
+    }
   }
   renderCalGrid();
 }
+</script>
+
+<!-- Firebase SDK（確定時にカレンダーを×に更新） -->
+<script type="module">
+import { initializeApp }   from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+
+const FB = {
+  apiKey:            "AIzaSyBTxRgOvPYOmacVfJkEjLLgI2K-ASnZbq4",
+  authDomain:        "career-board-4a3f8.firebaseapp.com",
+  projectId:         "career-board-4a3f8",
+  storageBucket:     "career-board-4a3f8.firebasestorage.app",
+  messagingSenderId: "235913147040",
+  appId:             "1:235913147040:web:39c20d95267e2777ef4fc5"
+};
+const app = initializeApp(FB);
+const db  = getFirestore(app);
+
+// ===== 確定スロットをFirebaseで × に更新 =====
+// counselorId: 相談員ID、slotKey: 'YYYY-MM-DD HH:MM'
+window.fbBlockSlot = async function(counselorId, slotKey) {
+  if (!counselorId || !slotKey) return false;
+  try {
+    // 現在のスロットデータを取得
+    const snap = await getDoc(doc(db, 'slots', counselorId));
+    let blocked = [];
+    if (snap.exists()) {
+      blocked = snap.data().blocked || [];
+    }
+    // 既に含まれていなければ追加
+    if (!blocked.includes(slotKey)) {
+      blocked.push(slotKey);
+    }
+    // Firebaseに書き戻し
+    await setDoc(doc(db, 'slots', counselorId), {
+      counselorId: counselorId,
+      blocked: blocked,
+      updatedAt: new Date().toISOString()
+    });
+    // localStorageも同期
+    const localData = {};
+    blocked.forEach(function(k){ localData[k] = false; });
+    localStorage.setItem('slots_' + counselorId, JSON.stringify(localData));
+    console.log('✅ Firebase × 更新完了:', counselorId, slotKey);
+    return true;
+  } catch(e) {
+    console.error('Firebase × 更新失敗:', e);
+    return false;
+  }
+};
+
+// ===== カレンダーデータをFirebaseから読み込む =====
+window.fbLoadCalSlots = async function(counselorId) {
+  if (!counselorId) return;
+  try {
+    const snap = await getDoc(doc(db, 'slots', counselorId));
+    if (snap.exists()) {
+      const blocked = snap.data().blocked || [];
+      // グローバルのcalSlotsを更新
+      if (typeof calSlots !== 'undefined') {
+        blocked.forEach(function(k){ calSlots[k] = false; });
+      }
+      // localStorageにも同期
+      const localData = {};
+      blocked.forEach(function(k){ localData[k] = false; });
+      localStorage.setItem('slots_' + counselorId, JSON.stringify(localData));
+      console.log('✅ Firebaseからカレンダー読み込み完了:', counselorId, blocked.length + '件');
+      return blocked.length;
+    }
+    return 0;
+  } catch(e) {
+    console.error('Firebase読み込み失敗:', e);
+    return 0;
+  }
+};
+
+window.firebaseNo2Ready = true;
+console.log('NO2NO3 Firebase initialized');
 </script>
 </body>
 </html>
