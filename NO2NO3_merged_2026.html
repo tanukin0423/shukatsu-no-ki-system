@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>面談管理ツール｜多摩大学 キャリアサポートセンター</title>
+<title>面談管理ツール｜多摩大学 キャリア支援課</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 :root {
@@ -375,7 +375,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);
   </div>
 </div>
 
-<div class="footer">多摩大学 キャリアサポートセンター ／ 面談管理ツール（NO2+NO3統合版）／ 2026年度</div>
+<div class="footer">多摩大学 キャリア支援課 ／ 面談管理ツール（NO2+NO3統合版）／ 2026年度</div>
 
 </div><!-- /mainWrap -->
 
@@ -390,11 +390,11 @@ let no2UserId = '';      // ログイン中のID
 let no2UserInfo = null;  // ログイン中の相談員オブジェクト
 
 // 署名は動的生成（ログイン後に更新）
-let SIGN = '\n\n北山 四郎\n多摩大学 キャリアサポートセンター\nkitayama@tama.ac.jp';
+let SIGN = '\n\n北山 四郎\n多摩大学 キャリア支援課\nkitayama@tama.ac.jp';
 
 function buildSign(c) {
   if (!c) return SIGN;
-  return '\n\n' + c.name + '\n多摩大学 キャリアサポートセンター\n' + c.email;
+  return '\n\n' + c.name + '\n多摩大学 キャリア支援課\n' + c.email;
 }
 const DAYS = ['日','月','火','水','木','金','土'];
 const HOLIDAYS_2026 = new Set([
@@ -431,14 +431,16 @@ function ymd(d) {
 function isHoliday(d) { return HOLIDAYS_2026.has(ymd(d)); }
 function isPast(d) { const t = new Date(); t.setHours(0,0,0,0); return d < t; }
 
-// 時間スロット一覧（10:00〜16:30の30分刻み）
+// 時間スロット一覧（面談30分＋記録15分＝45分刻み、10:00〜16:00）
 function getTimeSlots() {
   const slots = [];
-  for (let h = 10; h <= 16; h++) {
-    slots.push(String(h).padStart(2,'0') + ':00');
-    if (h < 16) slots.push(String(h).padStart(2,'0') + ':30');
+  let total = 10 * 60;
+  while (total <= 16 * 60) {
+    const h = Math.floor(total / 60);
+    const m = total % 60;
+    slots.push(String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0'));
+    total += 45;
   }
-  slots.push('16:30');
   return slots;
 }
 
@@ -1156,7 +1158,7 @@ function buildConfirmBody(s, wish) {
     'お申込みありがとうございます。\n面談日時を下記の通り確定いたしました。\n\n' +
     '━━━━━━━━━━━━━━━━━━━━━━━━\n' +
     '【確定日時】' + wish + '\n' +
-    '【場　　所】多摩大学 キャリアサポートセンター\n' +
+    '【場　　所】多摩大学 キャリア支援課\n' +
     '━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
     '当日は筆記用具をご持参ください。\nご不明な点があればお気軽にご連絡ください。' +
     SIGN;
@@ -1168,7 +1170,7 @@ function buildAdjustedBody(s, wish) {
     'ご希望の日時について調整させていただき、下記の日時で確定いたしました。\n\n' +
     '━━━━━━━━━━━━━━━━━━━━━━━━\n' +
     '【確定日時（調整後）】' + wish + '\n' +
-    '【場　　所】多摩大学 キャリアサポートセンター\n' +
+    '【場　　所】多摩大学 キャリア支援課\n' +
     '━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
     'ご希望に添えなかった点、大変申し訳ありませんでした。\n当日は筆記用具をご持参ください。' +
     SIGN;
