@@ -286,7 +286,7 @@ console.log('Firebase initialized');
       </p>
       <div class="counselor-select-wrap" id="calSelWrap">
         <label>相談員：</label>
-        <select id="calCounselorSel" onchange="loadCalendar()"></select>
+        <select id="calCounselorSel" onchange="(async()=>{await loadCalendar(); showSlotJson();})()"></select>
       </div>
       <div class="cal-header">
         <div class="week-nav">
@@ -460,16 +460,21 @@ async function loadData(){
         counselors = fbCounselors.map(function(c){
           return Object.assign({}, c, { password: localMap[c.id] || c.id+'2026' });
         });
-        // slotsもFirebaseから
-        for(const c of counselors){
-          const fbSlots = await window.fbLoadSlots(c.id);
-          if(fbSlots !== null){
-            allSlots[c.id] = fbSlots;
-            localStorage.setItem('slots_'+c.id, JSON.stringify(fbSlots));
-          } else if(!allSlots[c.id]){
-            allSlots[c.id] = {};
+        // slotsもFirebaseから全相談員分を並列取得
+        await Promise.all(counselors.map(async function(c){
+          try{
+            const fbSlots = await window.fbLoadSlots(c.id);
+            if(fbSlots !== null){
+              allSlots[c.id] = fbSlots;
+              localStorage.setItem('slots_'+c.id, JSON.stringify(fbSlots));
+            } else {
+              allSlots[c.id] = allSlots[c.id] || {};
+            }
+          } catch(e){
+            console.warn('loadData: slot fetch failed for '+c.id, e);
+            allSlots[c.id] = allSlots[c.id] || {};
           }
-        }
+        }));
         // localStorageも更新
         const data={updatedAt:new Date().toISOString().slice(0,10),workHours:{start:'10:00',end:'16:45',days:[1,2,3,4,5]},counselors:counselors};
         localStorage.setItem('counselors_data', JSON.stringify(data));
@@ -482,18 +487,22 @@ async function loadData(){
 async function doLogin(){
   const id=document.getElementById('loginId').value.trim();
   const pw=document.getElementById('loginPw').value;
-  document.getElementById('loginErr').textContent='';
-  document.getElementById('loginErr').textContent='⏳ データ読み込み中...';
+  document.getElementById('loginErr').textContent='⏳ Firebase読み込み中...';
+  // Firebaseが初期化されるまで最大3秒待機
+  for(let i=0;i<30;i++){
+    if(window.firebaseReady) break;
+    await new Promise(r=>setTimeout(r,100));
+  }
   await loadData();
   document.getElementById('loginErr').textContent='';
-  if(id===ADMIN_ID&&pw===ADMIN_PW){ currentRole='admin'; currentUserId=ADMIN_ID; startAdmin(); return; }
+  if(id===ADMIN_ID&&pw===ADMIN_PW){ currentRole='admin'; currentUserId=ADMIN_ID; await startAdmin(); return; }
   const c=counselors.find(function(x){ return x.id===id&&x.active&&x.password===pw; });
-  if(c){ currentRole='counselor'; currentUserId=id; startAdmin(); return; }
+  if(c){ currentRole='counselor'; currentUserId=id; await startAdmin(); return; }
   document.getElementById('loginErr').textContent='IDまたはパスワードが正しくありません';
   document.getElementById('loginPw').value='';
 }
 
-function startAdmin(){
+async function startAdmin(){
   document.getElementById('loginWrap').style.display='none';
   document.getElementById('adminWrap').style.display='block';
   if(currentRole==='admin'){
@@ -509,11 +518,10 @@ function startAdmin(){
     currentCalId=currentUserId;
     showTab('tabCalendar','tbCalendar');
   }
-  // QRセクションを現在のユーザーに合わせて初期化
   document.getElementById('myQrSection').style.display='block';
   renderCounselorTable();
-  renderSelects();
-  renderAdminCal();
+  // Firebase読み込み完了済みのデータでセレクト・カレンダー・JSONを描画
+  await renderSelects();
   updateJsonView();
 }
 
@@ -565,7 +573,7 @@ function maskPw(pw){
   return pw.slice(0,2)+'●●●●'+pw.slice(-1);
 }
 
-function renderSelects(){
+async function renderSelects(){
   const active=counselors.filter(function(c){ return c.active; });
   ['calCounselorSel','jsonCounselorSel'].forEach(function(sid){
     const el=document.getElementById(sid);
@@ -575,7 +583,24 @@ function renderSelects(){
     }).join('');
   });
   if(currentRole==='admin'&&active.length>0){ currentCalId=active[0].id; }
-  loadCalendar(); showSlotJson();
+  // 全相談員のスロットをFirebaseから並列取得（まだ取得できていない場合のみ）
+  if(window.fbLoadSlots){
+    try{
+      await Promise.all(active.map(async function(c){
+        if(!allSlots[c.id] || Object.keys(allSlots[c.id]).length===0){
+          const fbSlots = await window.fbLoadSlots(c.id);
+          if(fbSlots !== null){
+            allSlots[c.id] = fbSlots;
+            localStorage.setItem('slots_'+c.id, JSON.stringify(fbSlots));
+          } else {
+            allSlots[c.id] = allSlots[c.id] || {};
+          }
+        }
+      }));
+    } catch(e){ console.warn('renderSelects: Firebase slot fetch error', e); }
+  }
+  await loadCalendar();
+  showSlotJson();
 }
 
 function addCounselor(){
@@ -663,9 +688,19 @@ function getTimes(){
   return s;
 }
 
-function loadCalendar(){
+async function loadCalendar(){
   if(currentRole==='admin'){ const el=document.getElementById('calCounselorSel'); if(el) currentCalId=el.value; }
   if(!allSlots[currentCalId]) allSlots[currentCalId]={};
+  // カレンダー切り替え時にFirebaseから最新スロットを取得
+  if(window.fbLoadSlots && currentCalId){
+    try{
+      const fbSlots = await window.fbLoadSlots(currentCalId);
+      if(fbSlots !== null){
+        allSlots[currentCalId] = fbSlots;
+        localStorage.setItem('slots_'+currentCalId, JSON.stringify(fbSlots));
+      }
+    } catch(e){ console.warn('loadCalendar: Firebase fetch error', e); }
+  }
   renderAdminCal();
 }
 
@@ -763,10 +798,11 @@ function updateFbStatus(){
   const el = document.getElementById('fbStatus');
   if(!el) return;
   if(window.firebaseReady){
-    el.textContent = '🔥 Firebase接続済み';
+    el.textContent = '🔥 Firebase接続済み（全相談員同期済み）';
     el.style.background = 'rgba(255,255,255,0.25)';
     el.style.color = 'white';
   } else {
+    el.textContent = '🔄 Firebase接続中...';
     setTimeout(updateFbStatus, 500);
   }
 }
