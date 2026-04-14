@@ -357,9 +357,18 @@ body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);
 <!-- ===== TAB3: CSV出力 ===== -->
 <div id="tab3" class="tab-panel">
   <div class="section">
-    <div class="section-title">💾 CSV出力（カルテv4連携用）</div>
+    <div class="section-title">💾 CSV出力 ／ ☁️ Cloud保存</div>
+    <div style="background:#e8f5e3;border:1.5px solid #c8dfc2;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:0.82rem;line-height:1.8;">
+      <strong style="color:#2d5a27;">☁️ Cloud自動保存について</strong><br>
+      「振り分け開始」ボタンを押した時点で、全学生のカルテ基本情報が自動的にFirebaseに保存されます。<br>
+      <span style="color:#888;">karte_v5で学籍番号を入力するだけで即カルテ表示が可能です。</span>
+    </div>
+    <div class="btn-row" style="margin-bottom:10px;">
+      <button class="btn btn-primary" style="background:#1565c0;" onclick="manualSaveToFirebase()">☁️ 今すぐFirebaseに再保存</button>
+      <span id="fbManualStatus" style="font-size:0.8rem;color:#2d5a27;align-self:center;"></span>
+    </div>
     <p style="font-size:0.82rem;color:var(--tl);margin-bottom:12px;">
-      出力したCSVはカルテv4（karte_v4.html）で読み込めます。確定日時・ステータス列付きです。
+      CSVは念のためのバックアップとして保存できます。
     </p>
     <div class="btn-row">
       <button class="btn btn-primary" onclick="generateCSV()">📊 全員分CSV生成</button>
@@ -785,6 +794,48 @@ function startAssign() {
   document.getElementById('summarySection').style.display = 'block';
   document.getElementById('resultSection').style.display = 'block';
   document.getElementById('rejudgeBtn').style.display = 'inline-flex';
+
+  // ===== Firebase に全学生データを自動保存 =====
+  saveStudentsToFirebase();
+}
+
+// Firebase保存実行
+function saveStudentsToFirebase() {
+  if (!window.saveAllStudentsToFirebase) {
+    console.warn('Firebase未初期化。保存をスキップします。');
+    return;
+  }
+  var note = document.getElementById('assignNote');
+  if (note) note.textContent = '☁️ Firebaseに保存中…';
+  window.saveAllStudentsToFirebase(students).then(function(result) {
+    var msg = result.failed === 0
+      ? '✅ 振り分け完了！全' + result.saved + '名のカルテデータをCloudに自動保存しました'
+      : '⚠️ 振り分け完了。保存成功:' + result.saved + '名 / 失敗:' + result.failed + '名';
+    if (note) note.textContent = msg;
+    showFirebaseBanner(result);
+  }).catch(function(e) {
+    if (note) note.textContent = '⚠️ 振り分け完了（Cloud保存に失敗しました）';
+    console.error('saveStudentsToFirebase error:', e);
+  });
+}
+
+// Firebase保存結果バナー表示
+function showFirebaseBanner(result) {
+  var old = document.getElementById('fbBanner');
+  if (old) old.remove();
+  var banner = document.createElement('div');
+  banner.id = 'fbBanner';
+  var isOk = result.failed === 0;
+  banner.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);' +
+    'background:' + (isOk ? '#2d5a27' : '#BA7517') + ';color:white;' +
+    'padding:12px 24px;border-radius:10px;font-size:0.88rem;font-weight:700;' +
+    'z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.25);text-align:center;';
+  banner.innerHTML = (isOk ? '☁️ Cloud保存完了！' : '⚠️ 一部保存失敗') +
+    '<br><span style="font-size:0.75rem;font-weight:400;">' +
+    '全' + (result.saved + result.failed) + '名のカルテ基本情報を保存しました。' +
+    'karte_v5で学籍番号を入力すると即カルテ表示できます。</span>';
+  document.body.appendChild(banner);
+  setTimeout(function() { if (banner.parentNode) banner.remove(); }, 5000);
 }
 
 // ===== 重複アラート =====
@@ -1011,6 +1062,8 @@ function rejudge() {
   renderScheduleList();
   renderSummary();
   updateBulkBtn();
+  // 再判定後もFirebaseを更新
+  saveStudentsToFirebase();
 }
 
 // ===== 一括確定：確認画面を表示 =====
@@ -1311,6 +1364,27 @@ function clearAll() {
   updateBulkBtn();
 }
 
+// ===== Firebase手動再保存（CSV出力タブのボタン用） =====
+function manualSaveToFirebase() {
+  if (students.length === 0) {
+    alert('学生データがありません。先にメールを解析してください。');
+    return;
+  }
+  if (!window.saveAllStudentsToFirebase) {
+    alert('Firebase未接続です。ページを再読み込みしてお試しください。');
+    return;
+  }
+  var st = document.getElementById('fbManualStatus');
+  if (st) st.textContent = '保存中…';
+  window.saveAllStudentsToFirebase(students).then(function(result) {
+    var msg = result.failed === 0
+      ? '✅ ' + result.saved + '名をCloud保存しました'
+      : '⚠️ 成功:' + result.saved + '名 / 失敗:' + result.failed + '名';
+    if (st) st.textContent = msg;
+    setTimeout(function() { if (st) st.textContent = ''; }, 4000);
+  });
+}
+
 // ===== ログイン処理 =====
 function doNo2Login() {
   const id = document.getElementById('no2LoginId').value.trim();
@@ -1558,6 +1632,56 @@ window.fbLoadCalSlots = async function(counselorId) {
     console.error('Firebase読み込み失敗:', e);
     return 0;
   }
+};
+
+// ===== 振り分け確定後・全学生をFirebaseのkarte/に保存 =====
+window.saveAllStudentsToFirebase = async function(students) {
+  const now = new Date().toLocaleString('ja-JP');
+  const counselorId = (window.no2UserId && window.no2UserId !== 'admin')
+    ? window.no2UserId : 'kitayama';
+  const counselorInfo = window.no2UserInfo || {};
+
+  let saved = 0, failed = 0;
+  for (const s of students) {
+    if (!s.gakuseki || !s.gakuseki.trim()) continue;
+    const gakuseki = s.gakuseki.trim();
+    const statusLabel =
+      s._colorStatus === 'green' ? '確定済み' :
+      s._colorStatus === 'blue'  ? (s._confirmed === '__reapply__' ? '再調整中' : '調整完了') :
+                                    '要再調整';
+    const karteBase = {
+      gakuseki,
+      name:          s.name        || '',
+      zemi:          s.zemi        || '',
+      grade:         s.grade       || '',
+      email:         s.emailUniv   || s.emailPersonal || '',
+      career:        s.career      || '',
+      status:        s.jobStatus   || s.consultType || '',
+      support:       s.support     || '',
+      progress:      s.progress    || '',
+      anxiety:       s.anxiety     || '',
+      themes:        s.themes      || '',
+      w1:            s.w1          || '',
+      w2:            s.w2          || '',
+      w3:            s.w3          || '',
+      confirmedDate: (s._confirmed && s._confirmed !== '__reapply__') ? s._confirmed : '',
+      colorStatus:   s._colorStatus || 'red',
+      statusLabel,
+      isSecond:      s.isSecond    || false,
+      counselorId,
+      counselorName: counselorInfo.name || '北山 四郎',
+      _confirmedAt:  now,
+      _source:       'NO2NO3',
+    };
+    try {
+      await setDoc(doc(db, 'karte', gakuseki), karteBase, { merge: true });
+      saved++;
+    } catch(e) {
+      console.error('Firebase保存失敗：' + gakuseki, e);
+      failed++;
+    }
+  }
+  return { saved, failed };
 };
 
 window.firebaseNo2Ready = true;

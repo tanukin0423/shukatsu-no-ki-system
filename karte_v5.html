@@ -286,7 +286,7 @@ textarea.fi.tall{min-height:88px;}
         <div class="ico">☁️</div>
         <div>
           <div class="ttl">③ Cloudから読み込む（学籍番号で検索）</div>
-          <div class="dsc">面談中でもOK。学籍番号を入力するだけで即座に呼び出せます。</div>
+          <div class="dsc">学籍番号を入力するだけでOK！面談カルテがあれば確定日時＋カルテを表示。なくても<strong style="color:#2d5a27;">学生マスターから氏名・ゼミ・メール等を即表示</strong>できます。merge前でも使えます。</div>
           <div class="mfa" id="area_cloud">
             <div style="margin-top:8px;">
               <div style="font-size:0.72rem;color:var(--tl);margin-bottom:3px;font-weight:500;">学籍番号 <span style="color:#c0392b;">*必須</span></div>
@@ -1434,7 +1434,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, query, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const FB = {
   apiKey:            "AIzaSyBTxRgOvPYOmacVfJkEjLLgI2K-ASnZbq4",
@@ -1476,56 +1476,157 @@ document.getElementById('fbSaveBtn').addEventListener('click', async function(){
   }
 });
 
-// ☁️ Cloud読込
+// ☁️ Cloud読込（ヘッダーボタン：karte/ → students/ の順で検索）
 document.getElementById('fbLoadBtn').addEventListener('click', async function(){
-  const gakuseki = prompt('学籍番号を入力してください（例：2401023）');
+  const gakuseki = prompt('学籍番号を入力してください（例：24311001）\n\n面談カルテがあればカルテを、\nなければ学生マスターの基本情報を読み込みます。');
   if(!gakuseki) return;
-  await loadFromCloud(gakuseki);
+  // ヘッダーから呼ばれた場合はプレビューなしで即読み込み（skipModal=true）
+  await loadFromCloud(gakuseki.trim(), true);
 });
 
 // ===== Cloud読み込みの本体関数 =====
-async function loadFromCloud(gakuseki){
+// 検索順：① karte/（面談カルテ・確定日時） → ② students/（大学マスター基本情報）
+async function loadFromCloud(gakuseki, skipModal){
   const info = document.getElementById('cloudLoadInfo');
+  const preview = document.getElementById('cloudPreview');
   try{
-    const snap = await getDoc(doc(db,'karte', gakuseki));
-    if(!snap.exists()){
-      if(info){ info.style.display='block'; info.style.color='#c0392b'; info.textContent='⚠️ データが見つかりません：'+gakuseki; }
-      else alert('⚠️ 該当する学生のデータがCloudに見つかりません。\n学籍番号：'+gakuseki);
+    if(info){ info.style.display='block'; info.style.color='#888'; info.textContent='🔄 Cloudを検索中…'; }
+
+    // ===== ① karte/ コレクションを検索 =====
+    let data = null;
+    let dataSource = '';
+    const karteSnap = await getDoc(doc(db, 'karte', gakuseki));
+    if(karteSnap.exists()){
+      data = karteSnap.data();
+      dataSource = 'karte'; // 面談カルテあり
+    }
+
+    // ===== ② karte/になければ students/ を検索 =====
+    if(!data){
+      if(info) info.textContent = '🔄 学生マスターを検索中…';
+      const studentSnap = await getDoc(doc(db, 'students', gakuseki));
+      if(studentSnap.exists()){
+        const sd = studentSnap.data();
+        // students/のデータをkarte形式に変換してカルテの土台を作る
+        data = {
+          gakuseki:  sd.gakuseki || gakuseki,
+          name:      sd.name     || '',
+          zemi:      sd.zemi     || '',
+          grade:     sd.grade ? sd.grade + '年生' : '',
+          email:     sd.email    || '',
+          career:    sd.career   || '',
+          status:    sd.status   || '',
+          tanto:     sd.tanto    || '',
+          // karte固有フィールドは空で初期化
+          confirmedDate: '',
+          colorStatus:   '',
+          statusLabel:   '',
+          w1:'', w2:'', w3:'',
+          themes:'', support:'', progress:'', anxiety:'',
+          _source: 'students',
+          _studentMaster: true,
+        };
+        dataSource = 'students'; // 学生マスターのみ
+      }
+    }
+
+    // ===== どちらにもデータがない場合 =====
+    if(!data){
+      if(info){ info.style.display='block'; info.style.color='#c0392b'; info.textContent='⚠️ データが見つかりません（学籍番号：'+gakuseki+'）'; }
+      if(preview) preview.style.display='none';
       return;
     }
-    const data = snap.data();
+
+    // ===== プレビュー表示（モーダルを閉じる前に確認） =====
+    if(preview && !skipModal){
+      const statusColor = data.colorStatus==='green' ? '#2d5a27' :
+                          data.colorStatus==='blue'  ? '#185FA5' : '#666';
+      // データソースに応じたラベル
+      const sourceLabel = dataSource === 'karte'
+        ? '<span style="background:#2d5a27;color:white;font-size:0.68rem;padding:1px 8px;border-radius:10px;font-weight:700;">面談カルテあり</span>'
+        : '<span style="background:#BA7517;color:white;font-size:0.68rem;padding:1px 8px;border-radius:10px;font-weight:700;">学生マスターから</span>';
+
+      preview.style.display = 'block';
+      preview.innerHTML =
+        '<strong style="color:#2d5a27;">✅ データを確認しました&nbsp;&nbsp;</strong>' + sourceLabel + '<br>' +
+        '氏名：<strong>' + (data.name||'―') + '</strong>　' +
+        'ゼミ：' + (data.zemi||'―') + '<br>' +
+        '学籍番号：' + (data.gakuseki||gakuseki) + '　学年：' + (data.grade||'―') + '<br>' +
+        (dataSource === 'karte' && data.confirmedDate
+          ? '確定日時：<strong style="color:' + statusColor + ';">' + data.confirmedDate + '</strong><br>'
+          : '<span style="color:#BA7517;">※ まだ面談日程は未確定です。カルテの土台を作成します。</span><br>') +
+        '<span style="color:#888;font-size:0.72rem;">' +
+        (dataSource === 'karte'
+          ? '保存日時：' + (data._confirmedAt || data._cloudSavedAt || '不明')
+          : '担当職員：' + (data.tanto||'―') + '　就職ステータス：' + (data.status||'―')) +
+        '</span>';
+      if(info) info.style.display='none';
+      return; // プレビュー確認後、startBtnで開く
+    }
+
+    // ===== 実際に読み込んでカルテを開く =====
     restoreKarteData(data);
-    // 起動モーダルを閉じる
-    const startModal = document.getElementById('startModal');
-    if(startModal) startModal.classList.add('hide');
-    // ヘッダーのボタンから呼ばれた場合は全オーバーレイを閉じる
+
+    // 確定日時を自動セット（karteデータの場合のみ）
+    if(dataSource === 'karte' && data.confirmedDate){
+      var cdEl = document.getElementById('confirmedDate');
+      if(cdEl && !cdEl.value){ cdEl.value = data.confirmedDate; }
+      var hcEl = document.getElementById('hConfirmed');
+      if(hcEl){ hcEl.textContent = '✅ ' + data.confirmedDate; }
+    }
+
+    // 全モーダルを閉じる
     document.querySelectorAll('.ov').forEach(function(ov){ ov.classList.add('hide'); });
-    // 通知
+
+    // トースト通知（データソースに応じてメッセージを変える）
     var t = document.getElementById('toast');
     if(t){
-      t.textContent = '✅ Cloudから読み込みました！（'+gakuseki+'）保存日時：'+(data._cloudSavedAt||'不明');
+      var msg = '';
+      if(dataSource === 'karte'){
+        msg = '✅ 面談カルテを読み込みました！（' + gakuseki + '）' +
+          (data.confirmedDate ? '　面談日：' + data.confirmedDate : '');
+      } else {
+        msg = '📋 学生マスターから基本情報を読み込みました（' + gakuseki + '）
+面談日程確定後に確定日時が追加されます。';
+      }
+      t.textContent = msg;
       t.style.display='block';
-      setTimeout(function(){ t.style.display='none'; }, 4000);
+      setTimeout(function(){ t.style.display='none'; }, 5000);
     }
   }catch(e){
-    alert('❌ Cloud読み込みに失敗しました。\n'+e.message);
+    if(info){ info.style.display='block'; info.style.color='#c0392b'; info.textContent='❌ 読み込み失敗：'+e.message; }
+    else alert('❌ Cloud読み込みに失敗しました。\n'+e.message);
   }
 }
 
 // CSV読み込み後のCloud自動マージ
+// karte/があればES・面談記録をマージ、なければstudents/の情報で補完
 window._autoCloudMerge = async function(gakuseki){
   try{
-    const snap = await getDoc(doc(db,'karte', gakuseki));
-    if(!snap.exists()) return; // 初回面談なら何もしない
-    const data = snap.data();
-    // ES・面談記録・補足メモなどをマージ（基本情報はCSV優先）
-    restoreKarteData(data);
-    // 小さなトーストで通知
-    var t = document.getElementById('toast');
-    if(t){
-      t.textContent = '☁️ 過去のカルテデータをCloudから自動読み込みしました（'+gakuseki+'）';
-      t.style.display='block';
-      setTimeout(function(){ t.style.display='none'; }, 4000);
+    // ① まずkarte/を確認（過去のカルテがあればマージ）
+    const karteSnap = await getDoc(doc(db, 'karte', gakuseki));
+    if(karteSnap.exists()){
+      const data = karteSnap.data();
+      restoreKarteData(data);
+      var t = document.getElementById('toast');
+      if(t){
+        t.textContent = '☁️ 過去の面談カルテをCloudからマージしました（'+gakuseki+'）';
+        t.style.display='block';
+        setTimeout(function(){ t.style.display='none'; }, 4000);
+      }
+      return;
+    }
+    // ② karte/がなければstudents/から基本情報を補完
+    const studentSnap = await getDoc(doc(db, 'students', gakuseki));
+    if(studentSnap.exists()){
+      const sd = studentSnap.data();
+      // 担当職員・就職ステータスなど、CSVにない情報を補完
+      var t = document.getElementById('toast');
+      if(t){
+        t.textContent = '📋 学生マスターから追加情報を補完しました（担当：'+(sd.tanto||'―')+'）';
+        t.style.display='block';
+        setTimeout(function(){ t.style.display='none'; }, 4000);
+      }
     }
   }catch(e){
     console.warn('Cloud自動マージ失敗:', e);

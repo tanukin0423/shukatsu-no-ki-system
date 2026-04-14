@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>操作マニュアル【先生用】｜就活の木 面談予約システム</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gl:#7db96a;--gp:#e8f5e3;--gbg:#f3faf0;
+  --bark:#6b4c2a;--text:#2a2a2a;--tl:#666;--border:#c8dfc2;
+  --blue:#185FA5;--blue-pale:#E6F1FB;
+  --amber:#BA7517;--amber-pale:#FAEEDA;
+  --red:#A32D2D;--red-pale:#FCEBEB;
+  --purple:#6b3fa0;--purple-pale:#f0eafa;
+  --shadow:0 2px 16px rgba(45,90,39,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--gbg);color:var(--text);line-height:1.8;}
+
+@media print{
+  .no-print{display:none!important;}
+  .page-break{page-break-before:always;}
+  body{background:white;}
+  .card{box-shadow:none;border:1px solid #ccc;}
+  .site-header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+
+/* ヘッダー */
+.site-header{
+  background:var(--gd);color:white;
+  padding:32px 24px 24px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.site-header::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,0.03) 0px,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 8px);
+}
+.header-badge{
+  display:inline-block;background:var(--bark);
+  font-size:0.68rem;padding:3px 14px;border-radius:20px;
+  margin-bottom:10px;position:relative;letter-spacing:0.08em;
+}
+.site-header h1{font-family:'Noto Serif JP',serif;font-size:1.45rem;font-weight:700;position:relative;margin-bottom:6px;}
+.site-header p{font-size:0.8rem;opacity:0.8;position:relative;}
+.print-btn{
+  position:absolute;top:20px;right:20px;
+  background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);
+  color:white;border-radius:8px;padding:7px 16px;
+  font-family:'Noto Sans JP',sans-serif;font-size:0.78rem;cursor:pointer;
+}
+.print-btn:hover{background:rgba(255,255,255,0.3);}
+
+/* ナビ */
+.toc{
+  background:white;border-bottom:2px solid var(--border);
+  padding:10px 20px;position:sticky;top:0;z-index:100;
+  display:flex;gap:5px;flex-wrap:wrap;align-items:center;
+}
+.toc a{
+  font-size:0.72rem;font-weight:700;color:var(--gd);
+  text-decoration:none;padding:4px 10px;border-radius:20px;
+  border:1.5px solid var(--border);transition:all 0.15s;white-space:nowrap;
+}
+.toc a:hover{background:var(--gp);border-color:var(--gm);}
+.toc-label{font-size:0.7rem;color:var(--tl);white-space:nowrap;}
+
+/* メインコンテナ */
+.container{max-width:880px;margin:0 auto;padding:28px 20px 60px;}
+
+/* セクション */
+.section{margin-bottom:36px;}
+.section-title{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Noto Serif JP',serif;
+  font-size:1.15rem;font-weight:700;color:var(--gd);
+  border-left:4px solid var(--gd);
+  padding:8px 0 8px 14px;
+  margin-bottom:18px;
+}
+.section-title .snum{
+  background:var(--gd);color:white;
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Noto Sans JP',sans-serif;font-size:0.82rem;font-weight:700;
+  flex-shrink:0;
+}
+
+/* カード */
+.card{background:white;border-radius:14px;padding:20px 24px;margin-bottom:14px;box-shadow:var(--shadow);}
+.card-title{font-size:0.9rem;font-weight:700;color:var(--gd);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.card-title.blue{color:var(--blue);}
+.card-title.amber{color:var(--amber);}
+.card-title.bark{color:var(--bark);}
+.card-title.purple{color:var(--purple);}
+
+/* フロー */
+.flow-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:13px 16px;background:white;border-radius:11px;
+  border:1.5px solid var(--border);margin-bottom:4px;transition:all 0.15s;
+}
+.flow-item:hover{border-color:var(--gm);background:var(--gp);}
+.flow-item.new{border-color:var(--amber);background:var(--amber-pale);}
+.flow-item.pre{border-color:var(--purple);background:var(--purple-pale);}
+.flow-num{
+  background:var(--gd);color:white;width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.72rem;font-weight:700;flex-shrink:0;margin-top:2px;
+}
+.flow-num.pre{background:var(--purple);}
+.flow-arrow{text-align:center;color:var(--gl);font-size:1rem;padding:2px 0 2px 20px;}
+.flow-title{font-size:0.87rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+.flow-desc{font-size:0.78rem;color:var(--tl);line-height:1.7;}
+.flow-file{
+  display:inline-block;background:var(--gp);border:1px solid var(--border);
+  border-radius:6px;padding:2px 10px;font-size:0.72rem;
+  color:var(--gd);font-weight:700;margin-top:4px;
+}
+.flow-file.blue{background:var(--blue-pale);border-color:var(--blue);color:var(--blue);}
+.flow-file.amber{background:var(--amber-pale);border-color:var(--amber);color:var(--amber);}
+.flow-file.purple{background:var(--purple-pale);border-color:var(--purple);color:var(--purple);}
+.new-badge{
+  display:inline-block;background:var(--amber);color:white;
+  font-size:0.62rem;padding:1px 7px;border-radius:8px;font-weight:700;
+  margin-left:6px;vertical-align:middle;
+}
+
+/* ステップ */
+.step{display:flex;gap:14px;background:white;border-radius:10px;padding:14px 16px;border:1.5px solid var(--border);margin-bottom:10px;}
+.step-icon{font-size:1.3rem;flex-shrink:0;width:34px;text-align:center;margin-top:2px;}
+.step-head{font-size:0.88rem;font-weight:700;color:var(--gd);margin-bottom:5px;}
+.step-text{font-size:0.8rem;color:var(--tl);line-height:1.8;}
+
+/* ポイント */
+.point{border-radius:10px;padding:12px 16px;margin-bottom:10px;font-size:0.82rem;line-height:1.85;}
+.point.green{background:var(--gp);border-left:4px solid var(--gm);}
+.point.blue{background:var(--blue-pale);border-left:4px solid var(--blue);}
+.point.amber{background:var(--amber-pale);border-left:4px solid var(--amber);}
+.point.red{background:var(--red-pale);border-left:4px solid var(--red);}
+.point.purple{background:var(--purple-pale);border-left:4px solid var(--purple);}
+.point-title{font-weight:700;margin-bottom:4px;}
+
+/* ファイル一覧 */
+.file-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:600px){.file-list{grid-template-columns:1fr;}}
+.file-card{border-radius:10px;padding:14px 16px;border:1.5px solid var(--border);background:white;}
+.file-card.green{border-color:var(--gm);background:var(--gp);}
+.file-card.blue{border-color:var(--blue);background:var(--blue-pale);}
+.file-card.amber{border-color:var(--amber);background:var(--amber-pale);}
+.file-card.bark{border-color:var(--bark);background:#fdf6ec;}
+.file-card.purple{border-color:var(--purple);background:var(--purple-pale);}
+.file-name{font-size:0.87rem;font-weight:700;margin-bottom:5px;}
+.file-name.green{color:var(--gd);}
+.file-name.blue{color:var(--blue);}
+.file-name.amber{color:var(--amber);}
+.file-name.bark{color:var(--bark);}
+.file-name.purple{color:var(--purple);}
+.file-desc{font-size:0.75rem;color:var(--tl);line-height:1.7;}
+
+/* テーブル */
+.tbl{width:100%;border-collapse:collapse;font-size:0.8rem;margin-top:10px;}
+.tbl th{background:var(--gd);color:white;padding:8px 12px;text-align:left;font-weight:700;}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.7;}
+.tbl tr:hover td{background:var(--gp);}
+
+/* バッジ */
+.badge{display:inline-block;font-size:0.68rem;padding:2px 9px;border-radius:10px;font-weight:700;white-space:nowrap;}
+.badge.green{background:var(--gd);color:white;}
+.badge.blue{background:var(--blue);color:white;}
+.badge.amber{background:var(--amber);color:white;}
+.badge.red{background:var(--red);color:white;}
+.badge.gray{background:#888;color:white;}
+.badge.purple{background:var(--purple);color:white;}
+
+/* Firebase図解 */
+.fb-diagram{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;
+}
+.fb-col{
+  flex:1;min-width:200px;border-radius:10px;padding:14px 16px;
+  border:2px solid var(--border);
+}
+.fb-col.karte{border-color:var(--gm);background:var(--gp);}
+.fb-col.students{border-color:var(--purple);background:var(--purple-pale);}
+.fb-col.slots{border-color:var(--blue);background:var(--blue-pale);}
+.fb-col-title{font-size:0.82rem;font-weight:700;margin-bottom:8px;}
+.fb-col-title.green{color:var(--gd);}
+.fb-col-title.purple{color:var(--purple);}
+.fb-col-title.blue{color:var(--blue);}
+.fb-item{font-size:0.75rem;color:var(--tl);line-height:1.9;}
+
+/* 更新ログ */
+.update-log{background:white;border-radius:10px;padding:14px 18px;border:1.5px solid var(--border);font-size:0.78rem;line-height:2;}
+.update-date{color:var(--gd);font-weight:700;margin-right:8px;}
+
+/* フッター */
+.site-footer{text-align:center;padding:24px;font-size:0.72rem;color:var(--tl);border-top:1px solid var(--border);margin-top:40px;}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <button class="print-btn no-print" onclick="window.print()">🖨 印刷</button>
+  <div class="header-badge">STAFF ONLY ／ 2026年度版 v2</div>
+  <div style="font-size:2rem;margin-bottom:6px;position:relative;">🌳</div>
+  <h1>就活の木 面談予約システム<br>操作マニュアル【先生用】</h1>
+  <p>多摩大学 キャリア支援課　北山 四郎　kitayama@tama.ac.jp</p>
+</div>
+
+<!-- 目次 -->
+<div class="toc no-print">
+  <span class="toc-label">目次：</span>
+  <a href="#overview">全体像</a>
+  <a href="#files">ファイル構成</a>
+  <a href="#flow">業務フロー</a>
+  <a href="#master">①学生マスター</a>
+  <a href="#admin">②管理画面</a>
+  <a href="#no2no3">③面談管理</a>
+  <a href="#karte">④カルテ</a>
+  <a href="#firebase">Firebase</a>
+  <a href="#trouble">トラブル</a>
+</div>
+
+<div class="container">
+
+<!-- ===== 全体像 ===== -->
+<div class="section" id="overview">
+  <div class="section-title"><span class="snum">📋</span>システム全体像</div>
+
+  <div class="card">
+    <div class="card-title">🌳 就活の木 面談予約システムとは</div>
+    <p style="font-size:0.85rem;line-height:1.9;color:var(--tl);">
+      学生がQRコードから面談を予約し、先生がメールで受け取って日程を確定、カルテを作成するまでを一貫してサポートするシステムです。
+      すべてのデータはFirebase（クラウド）に保存されるため、<strong style="color:var(--gd);">大学・自宅・どこからでも最新状態でアクセス</strong>できます。<br>
+      さらに、<strong style="color:var(--purple);">大学のExcelを事前に取り込む</strong>ことで、予約・merge前でも学生の基本情報をカルテに即表示できます。
+    </p>
+  </div>
+
+  <div class="file-list">
+    <div class="file-card purple">
+      <div class="file-name purple">📊 student_master_import.html <span class="new-badge">事前作業</span></div>
+      <div class="file-desc">大学ExcelをFirebaseに一括登録。3年生・4年生対応。これを事前に実施することで全ツールの汎用性が大幅に向上。</div>
+    </div>
+    <div class="file-card bark">
+      <div class="file-name bark">🗓 admin.html</div>
+      <div class="file-desc">管理者画面。カレンダーの空き枠管理（×設定）。相談員の追加・編集。QRコード生成。</div>
+    </div>
+    <div class="file-card blue">
+      <div class="file-name blue">📋 NO2NO3_merged_2026.html</div>
+      <div class="file-desc">面談管理ツール。メール解析→日程確定→メール一括送信。確定データを自動でFirebaseに保存。</div>
+    </div>
+    <div class="file-card amber">
+      <div class="file-name amber">📝 karte_v5.html</div>
+      <div class="file-desc">面談カルテ。学籍番号を入力するだけで、面談カルテ OR 学生マスターの基本情報を即表示。merge前でも使用可能。</div>
+    </div>
+  </div>
+  <div class="card" style="border:1.5px solid var(--gm);">
+    <div class="card-title">📅 学生向け予約フォーム</div>
+    <div class="file-list" style="margin-top:0;">
+      <div class="file-card green" style="grid-column:1/-1;">
+        <div class="file-name green">📅 index.html（学生用・QRコードで配布）</div>
+        <div class="file-desc">学生が担当先生・日程・相談内容を入力してメール送信。Firebaseのカレンダー設定が自動反映され、×の日時は選べない。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ファイル構成 ===== -->
+<div class="section" id="files">
+  <div class="section-title"><span class="snum">📁</span>ファイル構成とアクセス方法</div>
+
+  <div class="card">
+    <div class="card-title">🔗 GitHubアクセスURL一覧</div>
+    <table class="tbl">
+      <thead><tr><th>ファイル</th><th>URL</th><th>使用者</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge purple">master</span></td>
+          <td style="font-size:0.74rem;word-break:break-all;">https://tanukin0423.github.io/shukatsu-no-ki-system/student_master_import.html</td>
+          <td>先生（事前作業）</td>
+        </tr>
+        <tr>
+          <td><span class="badge gray">admin</span></td>
+          <td style="font-size:0.74rem;word-break:break-all;">https://tanukin0423.github.io/shukatsu-no-ki-system/admin.html</td>
+          <td>先生</td>
+        </tr>
+        <tr>
+          <td><span class="badge blue">NO2NO3</span></td>
+          <td style="font-size:0.74rem;word-break:break-all;">https://tanukin0423.github.io/shukatsu-no-ki-system/NO2NO3_merged_2026.html</td>
+          <td>先生</td>
+        </tr>
+        <tr>
+          <td><span class="badge amber">karte_v5</span></td>
+          <td style="font-size:0.74rem;word-break:break-all;">https://tanukin0423.github.io/shukatsu-no-ki-system/karte_v5.html</td>
+          <td>先生</td>
+        </tr>
+        <tr>
+          <td><span class="badge green">index</span></td>
+          <td style="font-size:0.74rem;word-break:break-all;">https://tanukin0423.github.io/shukatsu-no-ki-system/index.html</td>
+          <td>学生</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="point green" style="margin-top:14px;">
+      <div class="point-title">💡 launcher.htmlが便利です</div>
+      デスクトップに保存したlauncher.htmlをダブルクリックすれば、全ツールにワンクリックでアクセスできます。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔑 ログイン情報</div>
+    <table class="tbl">
+      <thead><tr><th>役割</th><th>ID</th><th>パスワード</th><th>できること</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge red">管理者</span></td>
+          <td><code>admin</code></td>
+          <td><code>karigu2026</code></td>
+          <td>全機能（相談員管理・学生マスター登録）</td>
+        </tr>
+        <tr>
+          <td><span class="badge green">北山先生</span></td>
+          <td><code>kitayama</code></td>
+          <td><code>kitayama2026</code></td>
+          <td>自分のカレンダー管理・カルテ作成</td>
+        </tr>
+        <tr>
+          <td><span class="badge blue">相談員A〜C</span></td>
+          <td><code>soudan-a</code> 等</td>
+          <td><code>soudana2026</code> 等</td>
+          <td>自分のカレンダー管理・カルテ作成</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 業務フロー ===== -->
+<div class="section" id="flow">
+  <div class="section-title"><span class="snum">🔄</span>業務フロー全体</div>
+
+  <div class="card">
+    <div class="card-title">📌 年度はじめの事前作業 → 日常業務の流れ</div>
+
+    <div style="font-size:0.78rem;font-weight:700;color:var(--purple);margin-bottom:8px;padding:4px 10px;background:var(--purple-pale);border-radius:6px;display:inline-block;">
+      【事前作業】年度はじめに1回実施
+    </div>
+    <div class="flow-item pre">
+      <div class="flow-num pre">前</div>
+      <div>
+        <div class="flow-title">大学ExcelをFirebaseに一括登録する</div>
+        <div class="flow-desc">3年生・4年生のExcelファイルをstudent_master_importに読み込み、Firebaseの「students」コレクションに全学生の基本情報を登録します。<br>これを実施すると、merge前でも学籍番号だけでカルテが開けるようになります。</div>
+        <span class="flow-file purple">student_master_import.html</span>
+      </div>
+    </div>
+
+    <div style="font-size:0.78rem;font-weight:700;color:var(--gd);margin:14px 0 8px;padding:4px 10px;background:var(--gp);border-radius:6px;display:inline-block;">
+      【日常業務】面談受付のたびに実施
+    </div>
+
+    <div class="flow-item">
+      <div class="flow-num">1</div>
+      <div>
+        <div class="flow-title">カレンダーに空き枠を設定する（週1回程度）</div>
+        <div class="flow-desc">サイボウズを見ながら、塞がっている時間帯を「×（赤）」に設定します。保存するとindex.htmlに即反映されます。</div>
+        <span class="flow-file">admin.html → カレンダー設定タブ</span>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-item">
+      <div class="flow-num">2</div>
+      <div>
+        <div class="flow-title">QRコードを学生に配布する</div>
+        <div class="flow-desc">admin.htmlで自分専用QRコードを生成・印刷して配布します。QRを読み取ると担当が自動設定されます。</div>
+        <span class="flow-file">admin.html → カレンダー設定タブ → QRコード生成</span>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-item">
+      <div class="flow-num">3</div>
+      <div>
+        <div class="flow-title">学生から予約メールを受け取る</div>
+        <div class="flow-desc">学生がindex.htmlから入力→メール送信。先生のメールボックスに届きます。</div>
+        <span class="flow-file">学生側：index.html</span>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-item new">
+      <div class="flow-num">4</div>
+      <div>
+        <div class="flow-title">メールを解析して日程を確定する <span class="new-badge">Firebase自動保存</span></div>
+        <div class="flow-desc">メール本文をNO2NO3に貼り付け→自動解析→振り分け。<strong>「振り分け開始」を押した瞬間に全学生のカルテ基本情報がFirebaseに自動保存されます。</strong></div>
+        <span class="flow-file blue">NO2NO3_merged_2026.html</span>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-item">
+      <div class="flow-num">5</div>
+      <div>
+        <div class="flow-title">確定メールを一括送信する</div>
+        <div class="flow-desc">「全員のメールを一括作成する」ボタンで1件ずつ確認しながら送信。緑＝確定、青＝調整完了、赤＝再調整メール。</div>
+        <span class="flow-file blue">NO2NO3_merged_2026.html</span>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-item new">
+      <div class="flow-num">6</div>
+      <div>
+        <div class="flow-title">カルテを開く <span class="new-badge">学籍番号だけでOK</span></div>
+        <div class="flow-desc">karte_v5を開いて「③ Cloudから読み込む」を選択し、学籍番号を入力するだけ。<br>・面談カルテがあれば：確定日時＋過去のES・面談記録を表示<br>・なければ：学生マスターから氏名・ゼミ・メール等を自動表示（merge前でもOK！）</div>
+        <span class="flow-file amber">karte_v5.html</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 学生マスター ===== -->
+<div class="section page-break" id="master">
+  <div class="section-title"><span class="snum">①</span>student_master_import.html の使い方</div>
+
+  <div class="point purple" style="margin-bottom:16px;">
+    <div class="point-title">🎯 このツールを事前に使うと何が変わるか</div>
+    大学Excelの全学生情報をFirebaseに登録しておくことで、<strong>予約メールが届く前・merge前でも</strong>学籍番号を入力するだけでカルテの土台（氏名・ゼミ・メール・担当職員・就職ステータス等）が自動表示されます。
+  </div>
+
+  <div class="card">
+    <div class="card-title purple">📊 操作手順（3ステップ）</div>
+    <div class="step">
+      <div class="step-icon">🔑</div>
+      <div>
+        <div class="step-head">ログイン（パスワード：karigu2026）</div>
+        <div class="step-text">管理者パスワードでログインします。GitHub Pages版（https://）でのみFirebase登録が動作します。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">📂</div>
+      <div>
+        <div class="step-head">Excelファイルを読み込む</div>
+        <div class="step-text">
+          3年生（28卒）と4年生（27卒）のExcelファイルをそれぞれ選択します。<br>
+          どちらか一方だけでもOKです。<br>
+          「📊 データを解析する」ボタンを押すと、14項目が自動抽出されてプレビュー表示されます。<br><br>
+          <strong>抽出される項目：</strong>学籍番号・氏名・フリガナ・学年・性別・学科・ゼミ・担当職員・就職希望・ステータス・携帯電話・メールアドレス・在留資格・国籍
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">☁️</div>
+      <div>
+        <div class="step-head">「☁️ 全件をCloudに登録する」を押す</div>
+        <div class="step-text">
+          Firebaseの「students」コレクションに学籍番号をキーとして一括登録されます。<br>
+          プログレスバーで進捗が確認できます。同じ学籍番号は上書きされます。<br><br>
+          <strong>フィルター登録も可能：</strong>氏名・学籍番号・ゼミで絞り込んだ後「☁️ 表示中のデータのみ登録」でフィルター結果だけ登録できます。
+        </div>
+      </div>
+    </div>
+    <div class="point amber" style="margin-top:12px;">
+      <div class="point-title">💡 Cloud検索・確認機能</div>
+      画面下部の「Cloudデータ検索・確認」で、学籍番号を入力して登録済みデータを確認できます。誤って登録したデータは「🗑 削除」ボタンで個別削除できます。
+    </div>
+  </div>
+</div>
+
+<!-- ===== admin.html ===== -->
+<div class="section page-break" id="admin">
+  <div class="section-title"><span class="snum">②</span>admin.html の使い方</div>
+
+  <div class="card">
+    <div class="card-title">🗓 カレンダー設定（空き枠の管理）</div>
+    <div class="step">
+      <div class="step-icon">🔑</div>
+      <div>
+        <div class="step-head">ログイン（kitayama / kitayama2026）</div>
+        <div class="step-text">ログイン時にFirebaseから最新データを自動読み込みします。「🔥 Firebase接続済み」と表示されれば正常です。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">❌</div>
+      <div>
+        <div class="step-head">塞がっている時間帯を「×（赤）」にする</div>
+        <div class="step-text">
+          サイボウズを並べて確認しながら操作します。<br>
+          ○（緑）＝予約可能　×（赤）＝予約不可<br>
+          時間帯は<strong>45分刻み</strong>：10:00 / 10:45 / 11:30 / 12:15 / 13:00 / 13:45 / 14:30 / 15:15 / 16:00<br>
+          「この週を全て×」ボタンで丸ごとブロックも可能。60日以降は設定不可（黄色表示）。
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">💾</div>
+      <div>
+        <div class="step-head">「💾 カレンダーを保存」を押す</div>
+        <div class="step-text">Firebaseに即時保存。「✅ Firebase + ローカルに保存しました」と表示されればOKです。index.htmlに即座に反映されます。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📱 QRコードの生成と配布</div>
+    <div class="step">
+      <div class="step-icon">📱</div>
+      <div>
+        <div class="step-head">「カレンダー設定」タブ下部 → GitHub PagesのベースURLを入力</div>
+        <div class="step-text">例：https://tanukin0423.github.io/shukatsu-no-ki-system/<br>入力するとQRコードが自動生成されます。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">⬇️</div>
+      <div>
+        <div class="step-head">「QRコードをダウンロード」または「印刷」して学生に配布</div>
+        <div class="step-text">QRを読み取ると担当が自動で「北山先生」に設定されます。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NO2NO3 ===== -->
+<div class="section page-break" id="no2no3">
+  <div class="section-title"><span class="snum">③</span>NO2NO3_merged_2026.html の使い方</div>
+
+  <div class="card">
+    <div class="card-title">📨 STEP1：メールを貼り付けて解析する</div>
+    <div class="step">
+      <div class="step-icon">🔑</div>
+      <div>
+        <div class="step-head">ログイン（kitayama / kitayama2026）</div>
+        <div class="step-text">ログイン後、自分のカレンダーが自動で読み込まれます。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">📋</div>
+      <div>
+        <div class="step-head">「受信解析」タブ → メール本文をペースト → 「解析して追加」</div>
+        <div class="step-text">複数名分を繰り返し貼り付けてOKです。全員分貼り付けてから次に進んでください。初回・2回目以降どちらにも自動対応します。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📅 STEP2：振り分けと日程確定</div>
+    <div class="step">
+      <div class="step-icon">🚀</div>
+      <div>
+        <div class="step-head">「日程確定」タブ → 優先ルール選択 → 「振り分け開始」</div>
+        <div class="step-text">
+          <span class="badge green">緑</span> 第1希望で確定　<span class="badge blue">青</span> 第2・第3希望で確定　<span class="badge red">赤</span> 全希望が埋まっている（要再調整）<br><br>
+          <strong style="color:var(--gd);">☁️ この時点で全学生のカルテ基本情報がFirebaseに自動保存されます！</strong><br>
+          画面上部に「☁️ Cloud保存完了！○名のカルテ基本情報を保存しました」のバナーが表示されます。
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">✏️</div>
+      <div>
+        <div class="step-head">プルダウンで手動調整 → 「🔄 調整後・再判定」</div>
+        <div class="step-text">変更後は再判定で重複チェック。再判定後もFirebaseが自動更新されます。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📧 STEP3：確定メールを送信する</div>
+    <div class="step">
+      <div class="step-icon">✅</div>
+      <div>
+        <div class="step-head">「全員のメールを一括作成する」→ 1件ずつ確認して送信</div>
+        <div class="step-text">
+          <span class="badge green">緑</span> → 面談確定メール<br>
+          <span class="badge blue">青</span> → 調整完了メール（または再調整依頼）<br>
+          <span class="badge red">赤</span> → 再調整依頼メール
+        </div>
+      </div>
+    </div>
+    <div class="point blue" style="margin-top:12px;">
+      <div class="point-title">💡 CSVについて</div>
+      「CSV出力」タブからCSVのダウンロードもできます（バックアップ用）。「今すぐFirebaseに再保存」ボタンで手動再保存も可能です。
+    </div>
+  </div>
+</div>
+
+<!-- ===== karte_v5 ===== -->
+<div class="section page-break" id="karte">
+  <div class="section-title"><span class="snum">④</span>karte_v5.html の使い方</div>
+
+  <div class="point green" style="margin-bottom:16px;">
+    <div class="point-title">🌟 大幅改善：学籍番号1つでいつでもカルテが開けます</div>
+    merge前でも学生マスターから基本情報を表示。merge後は確定日時も自動セット。CSVの読み込みは不要です。
+  </div>
+
+  <div class="card">
+    <div class="card-title">☁️ Cloudから読み込む（推奨・最速）</div>
+    <div class="step">
+      <div class="step-icon">🔑</div>
+      <div>
+        <div class="step-head">ログイン → 「面談準備カルテ」モーダルが表示される</div>
+        <div class="step-text">ログイン後すぐにモーダルが開きます。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">☁️</div>
+      <div>
+        <div class="step-head">「③ Cloudから読み込む ⭐推奨」を選択</div>
+        <div class="step-text">学籍番号を入力してEnterキーまたはボタンを押します。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🔍</div>
+      <div>
+        <div class="step-head">2段階で自動検索される</div>
+        <div class="step-text">
+          <strong>① karte/（面談カルテ）を検索</strong><br>
+          　→ あれば：<span class="badge green">面談カルテあり</span> バッジ付きで確定日時＋過去カルテを表示<br><br>
+          <strong>② なければ students/（学生マスター）を検索</strong><br>
+          　→ あれば：<span class="badge amber">学生マスターから</span> バッジ付きで氏名・ゼミ・担当職員等を表示<br>
+          　　「面談日程は未確定です。カルテの土台を作成します。」と案内<br><br>
+          プレビューを確認して「カルテを開く」ボタンで完了。
+        </div>
+      </div>
+    </div>
+    <div class="point green" style="margin-top:12px;">
+      <div class="point-title">✅ 次の学生への切り替えは？</div>
+      ヘッダーの「☁️ Cloud読込」ボタンを押して学籍番号を入力するだけ。CSVを再読み込みする必要はありません。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💾 カルテの保存</div>
+    <div class="step">
+      <div class="step-icon">💾</div>
+      <div>
+        <div class="step-head">「💾 保存」ボタン（ヘッダー右上）</div>
+        <div class="step-text">ローカルJSONとFirebase Cloudの両方に同時保存。面談中は随時押してください。3分ごとにローカル自動バックアップもされます。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🎙️</div>
+      <div>
+        <div class="step-head">音声入力（Chrome推奨）</div>
+        <div class="step-text">各テキストエリアの「🎙️」ボタンで音声入力開始。面談記録・カルテメモの長文入力に便利です。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Firebase ===== -->
+<div class="section" id="firebase">
+  <div class="section-title"><span class="snum">🔥</span>Firebase連携について</div>
+
+  <div class="card">
+    <div class="card-title">☁️ Firebaseのデータ構造</div>
+    <div class="fb-diagram">
+      <div class="fb-col students">
+        <div class="fb-col-title purple">📊 students/（学生マスター）</div>
+        <div class="fb-item">
+          登録元：student_master_import<br>
+          キー：学籍番号<br>
+          ─────────────<br>
+          氏名・フリガナ<br>
+          学年・性別・学科<br>
+          ゼミ・担当職員<br>
+          就職希望・ステータス<br>
+          携帯・メール<br>
+          在留資格・国籍
+        </div>
+      </div>
+      <div class="fb-col karte">
+        <div class="fb-col-title green">📝 karte/（面談カルテ）</div>
+        <div class="fb-item">
+          登録元：NO2NO3（自動）<br>
+          　　　　karte_v5（保存時）<br>
+          キー：学籍番号<br>
+          ─────────────<br>
+          確定日時・ステータス<br>
+          ES・自己PR・ガクチカ<br>
+          面談記録・メモ<br>
+          第1〜第3希望<br>
+          担当相談員
+        </div>
+      </div>
+      <div class="fb-col slots">
+        <div class="fb-col-title blue">🗓 slots/ ／ config/</div>
+        <div class="fb-item">
+          登録元：admin<br>
+          ─────────────<br>
+          slots/：相談員ごとの<br>
+          　　　　×スロット設定<br>
+          config/：相談員リスト<br>
+          　　　　（氏名・メール）
+        </div>
+      </div>
+    </div>
+    <div class="point green" style="margin-top:14px;">
+      <div class="point-title">💡 karte_v5の検索順序</div>
+      学籍番号を入力すると <strong>① karte/ → ② students/</strong> の順に検索します。
+      karte/にデータがあれば面談カルテ優先、なければstudents/の基本情報でカルテの土台を作成します。
+    </div>
+  </div>
+</div>
+
+<!-- ===== トラブル ===== -->
+<div class="section" id="trouble">
+  <div class="section-title"><span class="snum">🛠</span>トラブル対応</div>
+
+  <div class="card">
+    <table class="tbl">
+      <thead><tr><th>症状</th><th>原因</th><th>対処法</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>admin.htmlのカレンダーが古い状態で表示される</td>
+          <td>Firebase読み込み前に表示された</td>
+          <td>一度ログアウトして再ログイン</td>
+        </tr>
+        <tr>
+          <td>karte_v5で学籍番号を入力しても「データが見つかりません」</td>
+          <td>student_masterへの事前登録がまだ、またはNO2NO3での振り分けがまだ</td>
+          <td>student_master_importでExcelを読み込んでFirebaseに登録してください</td>
+        </tr>
+        <tr>
+          <td>「Firebase接続中…」から変わらない</td>
+          <td>ネットワーク不安定</td>
+          <td>ページを再読み込み（F5）</td>
+        </tr>
+        <tr>
+          <td>index.htmlの日付が全部赤くなる</td>
+          <td>admin.htmlの保存忘れ</td>
+          <td>admin.htmlで再度「保存」を押す</td>
+        </tr>
+        <tr>
+          <td>student_master_importで「Firebase未接続」と表示される</td>
+          <td>ローカルファイルで開いている</td>
+          <td>GitHub PagesのURL（https://）でアクセスしてください</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="update-log">
+    <div><span class="update-date">2026.04 v2</span>karte_v5を改修。students/コレクションとの2段階検索対応。merge前でも学籍番号だけでカルテの土台が作成可能に。</div>
+    <div><span class="update-date">2026.04 v2</span>student_master_import.htmlをシステムに正式統合。先生用マニュアルに追加。</div>
+    <div><span class="update-date">2026.04 v1</span>Firebase同期タイミング修正（admin.html）。</div>
+    <div><span class="update-date">2026.04 v1</span>NO2NO3の振り分け確定時にFirebaseへ全学生データを自動保存する機能を追加。</div>
+  </div>
+</div>
+
+</div>
+
+<div class="site-footer">
+  就活の木 面談予約システム 操作マニュアル【先生用】2026年度版 v2<br>
+  多摩大学 キャリア支援課 ／ 北山 四郎　kitayama@tama.ac.jp
+</div>
+</body>
+</html>

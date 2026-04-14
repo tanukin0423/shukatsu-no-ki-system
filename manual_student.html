@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面談予約の方法【学生用】｜多摩大学 キャリア支援課</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gl:#7db96a;--gp:#e8f5e3;--gbg:#f3faf0;
+  --bark:#6b4c2a;--text:#2a2a2a;--tl:#666;--border:#c8dfc2;
+  --blue:#185FA5;--blue-pale:#E6F1FB;
+  --amber:#BA7517;--amber-pale:#FAEEDA;
+  --red:#A32D2D;--red-pale:#FCEBEB;
+  --shadow:0 2px 16px rgba(45,90,39,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--gbg);color:var(--text);line-height:1.8;}
+
+@media print{
+  .no-print{display:none!important;}
+  body{background:white;}
+  .card{box-shadow:none;border:1px solid #ccc;}
+}
+
+/* ヘッダー */
+.site-header{
+  background:var(--gd);color:white;
+  padding:36px 24px 28px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.site-header::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    60deg,
+    rgba(255,255,255,0.03) 0px,
+    rgba(255,255,255,0.03) 1px,
+    transparent 1px,transparent 10px
+  );
+}
+.site-header .tree{font-size:2.6rem;position:relative;margin-bottom:8px;}
+.site-header h1{
+  font-family:'Noto Serif JP',serif;
+  font-size:1.4rem;font-weight:700;position:relative;margin-bottom:6px;
+}
+.site-header p{font-size:0.82rem;opacity:0.85;position:relative;}
+.print-btn{
+  position:absolute;top:20px;right:20px;
+  background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);
+  color:white;border-radius:8px;padding:7px 16px;
+  font-family:'Noto Sans JP',sans-serif;font-size:0.78rem;cursor:pointer;
+}
+
+/* コンテナ */
+.container{max-width:680px;margin:0 auto;padding:24px 16px 60px;}
+
+/* セクションタイトル */
+.sec-title{
+  font-family:'Noto Serif JP',serif;
+  font-size:1.1rem;font-weight:700;color:var(--gd);
+  border-left:4px solid var(--gd);
+  padding:6px 0 6px 12px;
+  margin:28px 0 14px;
+}
+
+/* カード */
+.card{
+  background:white;border-radius:14px;
+  padding:20px;margin-bottom:14px;
+  box-shadow:var(--shadow);
+}
+
+/* ステップ */
+.step-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:10px;}
+.step-box{
+  display:flex;align-items:flex-start;gap:14px;
+  background:white;border-radius:12px;
+  padding:16px;border:1.5px solid var(--border);
+}
+.step-circle{
+  background:var(--gd);color:white;
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;font-weight:700;flex-shrink:0;
+  margin-top:2px;
+}
+.step-content{}
+.step-title{font-size:0.92rem;font-weight:700;color:var(--gd);margin-bottom:5px;}
+.step-body{font-size:0.82rem;color:var(--tl);line-height:1.85;}
+.step-body strong{color:var(--text);}
+
+/* ポイントボックス */
+.tip{
+  border-radius:10px;padding:13px 16px;
+  margin:10px 0;font-size:0.82rem;line-height:1.9;
+}
+.tip.green{background:var(--gp);border-left:4px solid var(--gm);}
+.tip.amber{background:var(--amber-pale);border-left:4px solid var(--amber);}
+.tip.blue{background:var(--blue-pale);border-left:4px solid var(--blue);}
+.tip.red{background:var(--red-pale);border-left:4px solid var(--red);}
+.tip-title{font-weight:700;margin-bottom:4px;}
+
+/* 画面説明 */
+.screen-desc{
+  background:#f8fdf6;border:1.5px solid var(--border);
+  border-radius:10px;padding:14px 16px;margin-bottom:10px;
+  font-size:0.82rem;line-height:1.9;
+}
+.screen-label{
+  display:inline-block;background:var(--gd);color:white;
+  font-size:0.7rem;padding:2px 10px;border-radius:20px;
+  font-weight:700;margin-bottom:8px;
+}
+.screen-label.blue{background:var(--blue);}
+.screen-label.amber{background:var(--amber);}
+
+/* FAQ */
+.faq{margin-bottom:10px;}
+.faq-q{
+  font-weight:700;color:var(--gd);font-size:0.88rem;
+  padding:10px 14px;background:var(--gp);border-radius:8px 8px 0 0;
+  border:1.5px solid var(--border);border-bottom:none;
+  display:flex;gap:8px;align-items:flex-start;
+}
+.faq-a{
+  font-size:0.82rem;color:var(--tl);line-height:1.85;
+  padding:10px 14px;background:white;
+  border:1.5px solid var(--border);border-radius:0 0 8px 8px;
+}
+
+/* バッジ */
+.badge{display:inline-block;font-size:0.72rem;padding:2px 9px;border-radius:10px;font-weight:700;}
+.badge.green{background:var(--gd);color:white;}
+.badge.blue{background:var(--blue);color:white;}
+.badge.red{background:var(--red);color:white;}
+
+/* フッター */
+.site-footer{
+  text-align:center;padding:24px;
+  font-size:0.72rem;color:var(--tl);
+  border-top:1px solid var(--border);
+  margin-top:30px;
+}
+
+/* QR説明 */
+.qr-explain{
+  display:flex;gap:16px;align-items:flex-start;
+  background:white;border-radius:12px;
+  padding:16px;border:1.5px solid var(--border);
+  margin-bottom:10px;
+}
+.qr-icon{font-size:2.4rem;flex-shrink:0;}
+.qr-body{}
+.qr-title{font-size:0.9rem;font-weight:700;color:var(--gd);margin-bottom:5px;}
+.qr-desc{font-size:0.8rem;color:var(--tl);line-height:1.8;}
+
+/* 大きなステップ番号 */
+.big-step{
+  display:flex;gap:0;align-items:stretch;
+  background:white;border-radius:14px;
+  border:1.5px solid var(--border);
+  overflow:hidden;margin-bottom:12px;
+  box-shadow:var(--shadow);
+}
+.big-step-num{
+  background:var(--gd);color:white;
+  width:56px;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;flex-shrink:0;
+  font-family:'Noto Serif JP',serif;
+  font-size:1.4rem;font-weight:700;
+}
+.big-step-num small{font-size:0.6rem;font-weight:400;opacity:0.8;margin-top:2px;}
+.big-step-body{padding:16px 18px;flex:1;}
+.big-step-title{font-size:0.95rem;font-weight:700;color:var(--gd);margin-bottom:6px;}
+.big-step-text{font-size:0.82rem;color:var(--tl);line-height:1.85;}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <button class="print-btn no-print" onclick="window.print()">🖨 印刷</button>
+  <div class="tree">🌳</div>
+  <h1>キャリア面談の予約方法</h1>
+  <p>多摩大学 キャリア支援課　2026年度版</p>
+</div>
+
+<div class="container">
+
+<!-- はじめに -->
+<div class="card" style="border-left:4px solid var(--gd);margin-top:4px;">
+  <p style="font-size:0.88rem;line-height:2;">
+    キャリア支援課では、就活・進路・将来のことを何でも相談できる<strong>個別面談</strong>を実施しています。<br>
+    予約はスマートフォンから簡単にできます。担当の先生のQRコードを読み取るか、URLからアクセスしてください。
+  </p>
+</div>
+
+<!-- STEP概要 -->
+<div class="sec-title">📋 予約の流れ（全4ステップ）</div>
+
+<div class="big-step">
+  <div class="big-step-num">1<small>STEP</small></div>
+  <div class="big-step-body">
+    <div class="big-step-title">担当の先生と相談の種類を選ぶ</div>
+    <div class="big-step-text">QRコードを読み取ると担当の先生が自動で設定されます。初回か2回目以降かも選んでください。</div>
+  </div>
+</div>
+<div class="big-step">
+  <div class="big-step-num">2<small>STEP</small></div>
+  <div class="big-step-body">
+    <div class="big-step-title">基本情報と就活の状況を入力する</div>
+    <div class="big-step-text">氏名・学籍番号・ゼミ・大学メールアドレスなどを入力します。初回の方は就活の状況も教えてください。</div>
+  </div>
+</div>
+<div class="big-step">
+  <div class="big-step-num">3<small>STEP</small></div>
+  <div class="big-step-body">
+    <div class="big-step-title">面談希望日時を選ぶ（第1〜第3希望）</div>
+    <div class="big-step-text">希望する週のタブを選んで日付・時間帯をクリックするだけです。赤い日付は予約できません。</div>
+  </div>
+</div>
+<div class="big-step">
+  <div class="big-step-num">4<small>STEP</small></div>
+  <div class="big-step-body">
+    <div class="big-step-title">内容を確認してメールを送信する</div>
+    <div class="big-step-text">入力内容を確認してボタンを押すと、メール内容が自動で作成されます。Gmailで送信して完了です。</div>
+  </div>
+</div>
+
+<!-- STEP1 詳細 -->
+<div class="sec-title">STEP 1｜担当の先生と相談の種類</div>
+
+<div class="screen-desc">
+  <div class="screen-label">画面の説明</div><br>
+  <strong>担当の先生を選ぶ：</strong><br>
+  QRコードを読み取った場合は、担当の先生が自動で選択されています。<br>
+  分からない場合は「北山 四郎」を選んでください。<br><br>
+  <strong>相談の種類：</strong><br>
+  🌱 <strong>初回相談</strong>…キャリア支援課にはじめて来る方<br>
+  🔄 <strong>2回目以降</strong>…前回面談した方の続き、ES添削・面接対策など
+</div>
+
+<div class="tip amber">
+  <div class="tip-title">📎 初回相談の方へ：事前に検査を受けてください</div>
+  初回面談では以下の2つの検査結果をPDFで準備してください。<br>
+  メール送信時に添付してください（必須ではありませんが、面談がより充実します）。<br><br>
+  ① <strong>職業興味検査（VPI）</strong>　→ jobtag（厚生労働省）で無料受検<br>
+  ② <strong>仕事価値観検査</strong>　　　 → jobtag（厚生労働省）で無料受検<br>
+  🔗 https://shigoto.mhlw.go.jp
+</div>
+
+<!-- STEP2 詳細 -->
+<div class="sec-title">STEP 2｜基本情報の入力</div>
+
+<div class="screen-desc">
+  <div class="screen-label">入力する項目</div>
+  <table style="width:100%;font-size:0.82rem;border-collapse:collapse;margin-top:8px;">
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:6px 8px;font-weight:700;color:var(--gd);width:35%;">所属ゼミ</td>
+      <td style="padding:6px 8px;">例：山田ゼミ</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:6px 8px;font-weight:700;color:var(--gd);">学年</td>
+      <td style="padding:6px 8px;">1〜4年生・その他</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:6px 8px;font-weight:700;color:var(--gd);">氏名</td>
+      <td style="padding:6px 8px;">フルネームで入力</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:6px 8px;font-weight:700;color:var(--gd);">学籍番号 ★</td>
+      <td style="padding:6px 8px;">例：24311001（必須）</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:6px 8px;font-weight:700;color:var(--gd);">大学メール ★</td>
+      <td style="padding:6px 8px;">〜@tama.ac.jp（必須）</td>
+    </tr>
+    <tr>
+      <td style="padding:6px 8px;font-weight:700;color:var(--gd);">電話番号</td>
+      <td style="padding:6px 8px;">任意</td>
+    </tr>
+  </table>
+</div>
+
+<div class="tip green">
+  <div class="tip-title">💡 初回の方：就活の状況も教えてください</div>
+  希望進路・活動状況・サポートの希望・相談したいテーマを選んでください。<br>
+  より充実した面談ができるよう、先生が事前に準備します。
+</div>
+
+<!-- STEP3 詳細 -->
+<div class="sec-title">STEP 3｜面談希望日時の選び方</div>
+
+<div class="step-wrap">
+  <div class="step-box">
+    <div class="step-circle">1</div>
+    <div class="step-content">
+      <div class="step-title">週のタブを選ぶ</div>
+      <div class="step-body">「今週」「来週」「再来週」「以降」の4つのタブから希望の週を選んでください。</div>
+    </div>
+  </div>
+  <div class="step-box">
+    <div class="step-circle">2</div>
+    <div class="step-content">
+      <div class="step-title">日付をクリックする</div>
+      <div class="step-body">
+        <span class="badge green">○ 緑の日付</span>：予約できます<br>
+        <span class="badge red">× 赤い日付</span>：予約できません（先生がご不在など）<br>
+        土日・祝日・過去の日付は選べません。
+      </div>
+    </div>
+  </div>
+  <div class="step-box">
+    <div class="step-circle">3</div>
+    <div class="step-content">
+      <div class="step-title">時間帯をクリックする</div>
+      <div class="step-body">
+        日付をクリックすると時間帯が表示されます。<br>
+        面談時間は<strong>45分</strong>です。<br>
+        10:00 / 10:45 / 11:30 / 12:15 / 13:00 / 13:45 / 14:30 / 15:15 / 16:00 から選べます。<br>
+        赤い時間帯は予約できません。
+      </div>
+    </div>
+  </div>
+  <div class="step-box">
+    <div class="step-circle">4</div>
+    <div class="step-content">
+      <div class="step-title">第1〜第3希望まで選ぶ</div>
+      <div class="step-body">
+        同じ操作を繰り返して、希望日時を最大3つ選んでください。<br>
+        第1希望が取れない場合に第2・第3希望で調整します。<br>
+        <strong>できるだけ3つ選んでいただくと、スムーズに確定できます。</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tip amber">
+  <div class="tip-title">⚠️ 間違えた場合は？</div>
+  選択した日時の右端にある「✕」ボタンで削除できます。<br>
+  「← 戻る」ボタンで前のSTEPに戻ることもできます。
+</div>
+
+<!-- STEP4 詳細 -->
+<div class="sec-title">STEP 4｜確認・メール送信</div>
+
+<div class="step-wrap">
+  <div class="step-box">
+    <div class="step-circle">1</div>
+    <div class="step-content">
+      <div class="step-title">入力内容を確認する</div>
+      <div class="step-body">氏名・学籍番号・希望日時が正しいか確認してください。</div>
+    </div>
+  </div>
+  <div class="step-box">
+    <div class="step-circle">2</div>
+    <div class="step-content">
+      <div class="step-title">「📧 メール内容を作成する」を押す</div>
+      <div class="step-body">宛先・件名・本文が自動で作成されます。</div>
+    </div>
+  </div>
+  <div class="step-box">
+    <div class="step-circle">3</div>
+    <div class="step-content">
+      <div class="step-title">メールを送信する</div>
+      <div class="step-body">
+        <strong>📧 「メール作成画面を開く」</strong>→ Gmailが自動で開きます。内容を確認して「送信」を押してください。<br><br>
+        <strong>うまく開かない場合：</strong><br>
+        ① 「📋 メール内容をコピーする」を押す<br>
+        ② Gmailアプリを開いて「作成」<br>
+        ③ 宛先を入力して本文欄に貼り付け → 送信
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tip green">
+  <div class="tip-title">✅ 送信後の流れ</div>
+  先生がメールを受け取り、日程を確認して<strong>2〜3日以内</strong>に確定メールをお送りします。<br>
+  確定メールが届いたら面談日時が決定です。お待ちください。
+</div>
+
+<!-- よくある質問 -->
+<div class="sec-title">❓ よくある質問</div>
+
+<div class="faq">
+  <div class="faq-q">Q. 予約フォームはどこからアクセスできますか？</div>
+  <div class="faq-a">担当の先生から受け取ったQRコードを読み取るか、先生から案内されたURLにアクセスしてください。</div>
+</div>
+<div class="faq">
+  <div class="faq-q">Q. 希望した日時で予約できるか分かりません。</div>
+  <div class="faq-a">赤く表示されている日時は既に予約済みまたは先生がご不在です。緑の日時から選んでください。できるだけ第3希望まで選んでいただくとスムーズです。</div>
+</div>
+<div class="faq">
+  <div class="faq-q">Q. 送信後に確定メールが来ません。</div>
+  <div class="faq-a">2〜3営業日お待ちください。それ以上経っても届かない場合は、迷惑メールフォルダを確認するか、先生に直接ご連絡ください。</div>
+</div>
+<div class="faq">
+  <div class="faq-q">Q. 予約をキャンセルしたい場合は？</div>
+  <div class="faq-a">先生に直接メールでご連絡ください。できるだけ早めにご連絡いただけると助かります。</div>
+</div>
+<div class="faq">
+  <div class="faq-q">Q. 初回相談で、どんなことを相談できますか？</div>
+  <div class="faq-a">就活の進め方・自己分析・ES作成・面接対策・業界研究・インターンシップ・将来の不安など、何でも相談できます。「何を相談すればいいか分からない」という方も大歓迎です。</div>
+</div>
+<div class="faq">
+  <div class="faq-q">Q. スマートフォンでも使えますか？</div>
+  <div class="faq-a">はい、スマートフォン対応しています。Gmailアプリからメールを送信できます。</div>
+</div>
+
+<!-- 連絡先 -->
+<div class="sec-title">📞 連絡先</div>
+<div class="card">
+  <p style="font-size:0.85rem;line-height:2.1;">
+    <strong>多摩大学 キャリア支援課</strong><br>
+    担当：北山 四郎（キャリ爺）<br>
+    📧 kitayama@tama.ac.jp<br>
+    🌳 就活の木ツール：https://tanukin0423.github.io
+  </p>
+  <div class="tip green" style="margin-top:12px;">
+    <div class="tip-title">🌱 あなたの就活を、木を育てるように丁寧にサポートします</div>
+    一人で悩まず、まずは気軽に面談に来てください。就活のこと、将来のこと、何でも話しましょう。
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<div class="site-footer">
+  多摩大学 キャリア支援課 ／ キャリア面談予約ガイド 2026年度版
+</div>
+
+</body>
+</html>
