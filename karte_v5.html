@@ -293,6 +293,7 @@ textarea.fi.tall{min-height:88px;}
               <input class="fil-inp" id="cloudGakuseki" placeholder="例：23311001">
               <button id="cloudLoadBtn" style="margin-top:8px;width:100%;padding:9px;background:#1565c0;color:white;border:none;border-radius:8px;font-family:inherit;font-size:0.85rem;font-weight:700;cursor:pointer;">☁️ Cloudから読み込む</button>
               <div id="cloudLoadInfo" style="margin-top:6px;font-size:0.77rem;color:var(--gd);display:none;"></div>
+              <div id="cloudPreview" style="display:none;margin-top:10px;background:#e8f5e3;border:1.5px solid #c8dfc2;border-radius:8px;padding:10px 12px;font-size:0.78rem;line-height:1.9;"></div>
             </div>
           </div>
         </div>
@@ -1328,6 +1329,18 @@ document.addEventListener('DOMContentLoaded',function(){
       var inp=prompt('本人確認のため学籍番号を入力してください：');
       if(!inp||inp.trim()!==jsonData.gakuseki){alert('学籍番号が一致しません。\n正しいJSONファイルを選択してください。');return;}
       restoreJSON(jsonData);
+    }else if(selOpt==='cloud'){
+      // プレビュー確認済み → 実際にCloud読み込み
+      var gakuseki = (g('cloudGakuseki').value||'').trim();
+      if(!gakuseki){ alert('学籍番号を入力してください。'); return; }
+      var preview = g('cloudPreview');
+      if(!preview || preview.style.display==='none'){
+        alert('先に「☁️ Cloudから読み込む」ボタンを押して、データを確認してください。');
+        return;
+      }
+      // skipModal=true で実際の読み込みを実行
+      loadFromCloud(gakuseki, true);
+      return;
     }else if(selOpt===3){
       var name=(g('newName').value||'').trim();
       var gaku=(g('newGakuseki').value||'').trim();
@@ -1639,9 +1652,10 @@ if(cloudLoadBtn){
   cloudLoadBtn.addEventListener('click', async function(){
     const gakuseki = document.getElementById('cloudGakuseki').value.trim();
     if(!gakuseki){ alert('学籍番号を入力してください'); return; }
-    const info = document.getElementById('cloudLoadInfo');
-    if(info){ info.style.display='block'; info.style.color='#888'; info.textContent='読み込み中…'; }
-    await loadFromCloud(gakuseki);
+    // まずプレビューを表示（skipModal=false）
+    await loadFromCloud(gakuseki, false);
+    // プレビュー確認後、startBtnで「カルテを開く」を押してもらう
+    selOpt = 'cloud';
   });
 }
 </script>
