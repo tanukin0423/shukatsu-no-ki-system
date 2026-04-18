@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>面談予約フォーム｜多摩大学 キャリア支援課</title>
+<title>面談予約フォーム v2｜多摩大学 キャリア支援課</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 :root{
@@ -156,6 +156,34 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--gbg);color:var(--tex
 
 /* ローディング */
 .loading{text-align:center;padding:20px;color:var(--tl);font-size:0.85rem;}
+
+/* ===== v2追加：入力検証関連のスタイル ===== */
+/* バリデーション状態表示 */
+.field input.invalid{border-color:#c0392b !important;background:#fff5f5;}
+.field input.valid{border-color:#4a8c3f !important;background:#f5fff0;}
+.field input.warn{border-color:#e67e22 !important;background:#fff8f0;}
+
+/* バリデーションメッセージ */
+.val-msg{font-size:0.73rem;margin-top:5px;padding:6px 10px;border-radius:6px;line-height:1.6;display:none;}
+.val-msg.show{display:block;}
+.val-msg.error{background:#fdecea;color:#c0392b;border-left:3px solid #c0392b;}
+.val-msg.ok{background:#eaf6e4;color:#2d5a27;border-left:3px solid #4a8c3f;}
+.val-msg.warn{background:#fff3cd;color:#856404;border-left:3px solid #e67e22;}
+.val-msg strong{font-weight:700;}
+
+/* メールアドレス期待値表示 */
+.email-hint{background:var(--blue-pale);border:1.5px solid var(--blue);border-radius:8px;padding:8px 12px;margin-top:5px;font-size:0.77rem;color:var(--blue);display:none;line-height:1.6;}
+.email-hint.show{display:block;}
+
+/* 送信ボタン無効化状態 */
+.submit-btn:disabled{background:#999 !important;cursor:not-allowed !important;transform:none !important;box-shadow:none !important;}
+.submit-btn.sent{background:#4a8c3f !important;}
+
+/* 確認画面メール強調表示 */
+.confirm-email-alert{background:#fff8e1;border:2px solid #e67e22;border-radius:10px;padding:12px 14px;margin:14px 0 10px;}
+.confirm-email-alert-title{font-size:0.82rem;font-weight:700;color:#c0392b;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.confirm-email-value{font-family:monospace;font-size:1.05rem;font-weight:700;color:#2d5a27;background:white;padding:8px 12px;border-radius:7px;border:1.5px solid var(--border);word-break:break-all;}
+.confirm-email-note{font-size:0.73rem;color:#856404;margin-top:6px;line-height:1.6;}
 </style>
 <!-- Firebase SDK -->
 <script type="module">
@@ -289,9 +317,17 @@ window.firebaseReady = true;
       <div class="field"><label>氏名<span class="req">*必須</span></label>
         <input type="text" id="fName" placeholder="例：多摩 太郎"></div>
       <div class="field"><label>学籍番号<span class="req">*必須</span></label>
-        <input type="text" id="fGakuseki" placeholder="例：24311001"></div>
+        <input type="text" id="fGakuseki" placeholder="例：24311001" inputmode="numeric" maxlength="8">
+        <div class="val-msg" id="msgGakuseki"></div>
+      </div>
       <div class="field"><label>大学メールアドレス<span class="req">*必須</span></label>
-        <input type="email" id="fEmail" placeholder="例：24311001ta@tama.ac.jp"></div>
+        <input type="email" id="fEmail" placeholder="例：24311001ts@tama.ac.jp" autocapitalize="off" autocorrect="off">
+        <div class="field-note">📌 大学から付与されたアドレスを入力してください。<br>
+          形式：<strong>学籍番号(8桁)＋姓のイニシャル＋名のイニシャル@tama.ac.jp</strong><br>
+          例：多摩 太郎さん → <strong>24311001tt</strong>@tama.ac.jp（<u>姓→名の順</u>）
+        </div>
+        <div class="val-msg" id="msgEmail"></div>
+      </div>
       <div class="field"><label>電話番号</label>
         <input type="tel" id="fTel" placeholder="例：090-1234-5678"></div>
     </div>
@@ -524,7 +560,7 @@ window.firebaseReady = true;
   </div>
 
 </div>
-<div class="footer">多摩大学 キャリア支援課</div>
+<div class="footer">多摩大学 キャリア支援課　<span style="opacity:0.6;">v2</span></div>
 
 <script>
 // ===== 定数 =====
@@ -562,7 +598,69 @@ window.addEventListener('load', function() {
   renderCalGrid();
   // URLパラメータで相談員を自動選択
   checkUrlParam();
+  // リアルタイム入力検証を登録
+  setupRealtimeValidation();
 });
+
+// ===== v2追加：リアルタイム入力検証 =====
+function setupRealtimeValidation(){
+  var gakusekiEl = document.getElementById('fGakuseki');
+  var emailEl = document.getElementById('fEmail');
+  var msgGakuseki = document.getElementById('msgGakuseki');
+  var msgEmail = document.getElementById('msgEmail');
+
+  // 学籍番号：入力中は半角化、blurで検証
+  gakusekiEl.addEventListener('input', function(){
+    // 全角数字を半角に即時変換
+    var converted = toHalfWidth(this.value);
+    if(converted !== this.value){
+      this.value = converted;
+    }
+    // 入力中は緩い検証（8桁に達したら検証）
+    if(this.value.length === 8){
+      var r = validateGakuseki(this.value);
+      setFieldValidation(this, msgGakuseki, r);
+    } else if(this.value.length > 0){
+      this.classList.remove('valid','invalid','warn');
+      msgGakuseki.classList.remove('show','ok','error','warn');
+    } else {
+      setFieldValidation(this, msgGakuseki, null);
+    }
+    // 学籍番号が変わったらメールも再検証
+    if(emailEl.value){
+      var em = validateTamaEmail(emailEl.value, this.value);
+      setFieldValidation(emailEl, msgEmail, em);
+    }
+  });
+  gakusekiEl.addEventListener('blur', function(){
+    if(this.value){
+      var r = validateGakuseki(this.value);
+      setFieldValidation(this, msgGakuseki, r);
+      if(r.ok){ this.value = r.normalized; }
+    }
+  });
+
+  // メールアドレス：入力中は半角・小文字化、blurで厳格検証
+  emailEl.addEventListener('input', function(){
+    // 全角→半角＋小文字化
+    var converted = toHalfWidth(this.value).toLowerCase();
+    if(converted !== this.value){
+      var pos = this.selectionStart;
+      this.value = converted;
+      try{ this.setSelectionRange(pos, pos); }catch(e){}
+    }
+  });
+  emailEl.addEventListener('blur', function(){
+    if(this.value){
+      var gk = gakusekiEl.value.trim();
+      var r = validateTamaEmail(this.value, gk);
+      setFieldValidation(this, msgEmail, r);
+      if(r.ok){ this.value = r.normalized; }
+    } else {
+      setFieldValidation(this, msgEmail, null);
+    }
+  });
+}
 
 function checkUrlParam() {
   const params = new URLSearchParams(window.location.search);
@@ -628,7 +726,10 @@ async function loadCounselors() {
     }
     renderCounselorSelect();
   } catch(e) {
-    document.getElementById('counselorLoading').textContent = 'データの読み込みに失敗しました。';
+    document.getElementById('counselorLoading').innerHTML =
+      '⚠️ データの読み込みに失敗しました。<br>' +
+      '<span style="font-size:0.75rem;color:var(--tl);">通信環境をご確認のうえ、ページを再読み込みしてください。</span><br>' +
+      '<button onclick="location.reload()" style="margin-top:8px;padding:5px 14px;background:var(--gd);color:white;border:none;border-radius:6px;font-family:inherit;cursor:pointer;font-size:0.8rem;">🔄 再読み込み</button>';
   }
 }
 
@@ -644,7 +745,27 @@ function renderCounselorSelect() {
 
 async function onCounselorChange() {
   const id = document.getElementById('selCounselor').value;
-  selectedCounselor = counselors.find(function(c){ return c.id === id; }) || null;
+  const newCounselor = counselors.find(function(c){ return c.id === id; }) || null;
+
+  // v2追加：既に希望日時が選択されている場合、カウンセラー変更を警告
+  var hasWishes = wishes.some(function(w){ return w !== null; });
+  if(hasWishes && selectedCounselor && newCounselor && selectedCounselor.id !== newCounselor.id){
+    var ok = confirm(
+      '⚠️ 担当の先生を変更すると、選択済みの希望日時がリセットされます。\n\n' +
+      '（先生ごとに予約可能な時間帯が異なるため）\n\n' +
+      '変更してもよろしいですか？'
+    );
+    if(!ok){
+      // 元のカウンセラーに戻す
+      document.getElementById('selCounselor').value = selectedCounselor.id;
+      return;
+    }
+    // 希望日時をクリア
+    wishes = [null, null, null];
+    updateWishSummary();
+  }
+
+  selectedCounselor = newCounselor;
   blockedSlots = new Set();
   if (id) {
     try {
@@ -695,7 +816,7 @@ function selectType(type) {
 }
 
 // ===== ステップ移動 =====
-function goStep(n) {
+async function goStep(n) {
   if (n===1) {
     if (!selectedCounselor) { alert('担当の先生を選んでください。'); return; }
     if (!selectedType) { alert('相談の種類を選んでください。'); return; }
@@ -707,6 +828,50 @@ function goStep(n) {
     if (wishes.filter(function(w){ return w; }).length === 0) {
       alert('希望日時を少なくとも1つ選んでください。'); return;
     }
+
+    // v2追加：確認画面へ進む前に最新スロットを再取得して競合チェック
+    if(selectedCounselor && window.fbLoadSlots){
+      try{
+        var latestSlots = await window.fbLoadSlots(selectedCounselor.id);
+        if(latestSlots){
+          var newBlocked = new Set();
+          Object.keys(latestSlots).forEach(function(k){
+            if(latestSlots[k]===false) newBlocked.add(k);
+          });
+          // 選択済みの希望が最新でブロックされていないか確認
+          var conflicts = [];
+          wishes.forEach(function(w, i){
+            if(w && newBlocked.has(w.iso + ' ' + w.time)){
+              conflicts.push('第'+(i+1)+'希望：'+w.label);
+            }
+          });
+          if(conflicts.length > 0){
+            alert('⚠️ 選択中の希望日時のうち、以下は他の方の予約で埋まってしまいました。\n\n' +
+                  conflicts.join('\n') + '\n\n' +
+                  '恐れ入りますが、別の時間帯を選び直してください。');
+            // 最新のブロック情報を反映
+            blockedSlots = newBlocked;
+            // ブロックされた希望をクリア
+            wishes.forEach(function(w, i){
+              if(w && newBlocked.has(w.iso + ' ' + w.time)){
+                wishes[i] = null;
+              }
+            });
+            updateWishSummary();
+            renderWeekGrid(0,'grid0'); renderWeekGrid(1,'grid1');
+            renderWeekGrid(2,'grid2'); renderCalGrid();
+            return;
+          }
+          // ブロック情報を更新
+          blockedSlots = newBlocked;
+          localStorage.setItem('slots_'+selectedCounselor.id, JSON.stringify(latestSlots));
+        }
+      }catch(e){
+        console.warn('スロット再取得失敗:', e);
+        // 失敗しても確認画面には進む（オフライン対応）
+      }
+    }
+
     buildConfirm();
   }
   currentStep = n;
@@ -724,13 +889,185 @@ function goStep(n) {
   window.scrollTo(0,0);
 }
 
+// ===== v2追加：入力検証ユーティリティ =====
+/**
+ * 全角→半角変換（英数字・記号）
+ */
+function toHalfWidth(s){
+  if(!s) return '';
+  return s.replace(/[！-～]/g, function(c){
+    return String.fromCharCode(c.charCodeAt(0) - 0xFEE0);
+  }).replace(/\s+/g,''); // 空白も除去
+}
+
+/**
+ * 学籍番号の検証（8桁の数字）
+ */
+function validateGakuseki(value){
+  var v = toHalfWidth(value);
+  if(!v){ return { ok:false, msg:'', normalized:'' }; } // 空欄は個別処理
+  if(!/^\d{8}$/.test(v)){
+    return {
+      ok:false,
+      msg:'学籍番号は<strong>半角数字8桁</strong>で入力してください。<br>現在：' + value.length + '文字',
+      normalized:v
+    };
+  }
+  return { ok:true, msg:'✓ 形式OK', normalized:v };
+}
+
+/**
+ * 多摩大学のメールアドレス検証
+ * 形式：学籍番号(8桁) + 姓イニシャル + 名イニシャル + @tama.ac.jp
+ * 姓→名の順に自動付与されることに注意
+ */
+function validateTamaEmail(value, gakuseki){
+  var v = toHalfWidth(value).toLowerCase();
+  if(!v){ return { ok:false, msg:'', normalized:'' }; }
+
+  // ドメインチェック（他大学・個人メール防止）
+  if(!/@tama\.ac\.jp$/.test(v)){
+    if(/@/.test(v)){
+      return {
+        ok:false,
+        type:'error',
+        msg:'<strong>@tama.ac.jp</strong> で終わる大学メールを入力してください。<br>個人のメール（Gmail等）は使わないでください。',
+        normalized:v
+      };
+    }
+    return {
+      ok:false,
+      type:'error',
+      msg:'「@tama.ac.jp」を含む大学メールを入力してください。',
+      normalized:v
+    };
+  }
+
+  // 基本形式：数字＋英字＋@tama.ac.jp
+  var basicPattern = /^(\d+)([a-z]+)@tama\.ac\.jp$/;
+  var m = v.match(basicPattern);
+
+  if(!m){
+    // @tama.ac.jp は合っているが前半の形式が違う
+    var localPart = v.replace(/@tama\.ac\.jp$/,'');
+    return {
+      ok:false,
+      type:'error',
+      msg:'メールアドレスの形式が正しくありません。<br>' +
+          '正しい形式：<strong>学籍番号(数字8桁)＋イニシャル(英字)＋@tama.ac.jp</strong><br>' +
+          '現在の@より前の部分：「' + localPart + '」',
+      normalized:v
+    };
+  }
+
+  var numPart = m[1];
+  var letterPart = m[2];
+
+  // 数字部分が8桁か
+  if(numPart.length !== 8){
+    return {
+      ok:false,
+      type:'error',
+      msg:'学籍番号の部分が' + numPart.length + '桁になっています。<br>大学メールは<strong>数字8桁</strong>から始まります。',
+      normalized:v
+    };
+  }
+
+  // 学籍番号との一致チェック
+  if(gakuseki){
+    var gk = toHalfWidth(gakuseki);
+    if(/^\d{8}$/.test(gk) && numPart !== gk){
+      return {
+        ok:false,
+        type:'error',
+        msg:'メールアドレスの前半が学籍番号と一致していません。<br>' +
+            '学籍番号：<strong>' + gk + '</strong>／メール：<strong>' + numPart + '</strong>',
+        normalized:v
+      };
+    }
+  }
+
+  // イニシャル部分が英字1〜3文字か（留学生等を考慮）
+  if(letterPart.length < 1 || letterPart.length > 3){
+    return {
+      ok:false,
+      type:'error',
+      msg:'イニシャル部分は英字1〜3文字が一般的です。<br>現在：「' + letterPart + '」（' + letterPart.length + '文字）',
+      normalized:v
+    };
+  }
+
+  // すべてOK（ただし順序違いの可能性があるので警告も返す）
+  return {
+    ok:true,
+    type:'ok',
+    msg:'✓ 形式OK（<strong>' + numPart + letterPart + '@tama.ac.jp</strong>）<br>' +
+        '⚠️ ご注意：イニシャルは<strong>姓→名の順</strong>で自動付与されています。<br>例）北山 四郎さん → 「sk」（Shiro Kitayamaではなく Kitayama Shiro の順）',
+    normalized: numPart + letterPart + '@tama.ac.jp',
+    letterPart: letterPart
+  };
+}
+
+/**
+ * 入力欄のスタイルを更新
+ */
+function setFieldValidation(inputEl, msgEl, result){
+  inputEl.classList.remove('valid','invalid','warn');
+  msgEl.classList.remove('show','ok','error','warn');
+
+  if(!result || !result.msg){
+    return;
+  }
+
+  if(result.ok){
+    if(result.type === 'warn'){
+      inputEl.classList.add('warn');
+      msgEl.classList.add('show','warn');
+    } else {
+      inputEl.classList.add('valid');
+      msgEl.classList.add('show','ok');
+    }
+  } else {
+    inputEl.classList.add('invalid');
+    msgEl.classList.add('show','error');
+  }
+  msgEl.innerHTML = result.msg;
+}
+
 // ===== バリデーション =====
 function validateStep1() {
   if (!document.getElementById('fZemi').value.trim()) { alert('ゼミを入力してください。'); return false; }
   if (!document.querySelector('input[name="grade"]:checked')) { alert('学年を選択してください。'); return false; }
   if (!document.getElementById('fName').value.trim()) { alert('氏名を入力してください。'); return false; }
-  if (!document.getElementById('fGakuseki').value.trim()) { alert('学籍番号を入力してください。'); return false; }
-  if (!document.getElementById('fEmail').value.trim()) { alert('メールアドレスを入力してください。'); return false; }
+
+  // 学籍番号の検証
+  var gakusekiEl = document.getElementById('fGakuseki');
+  var gakuseki = gakusekiEl.value.trim();
+  if (!gakuseki) { alert('学籍番号を入力してください。'); gakusekiEl.focus(); return false; }
+  var gkResult = validateGakuseki(gakuseki);
+  if(!gkResult.ok){
+    alert('学籍番号は半角数字8桁で入力してください。\n現在：' + gakuseki);
+    gakusekiEl.focus();
+    return false;
+  }
+  // 正規化して戻す
+  gakusekiEl.value = gkResult.normalized;
+
+  // メールアドレスの検証（多摩大学ルール）
+  var emailEl = document.getElementById('fEmail');
+  var email = emailEl.value.trim();
+  if (!email) { alert('メールアドレスを入力してください。'); emailEl.focus(); return false; }
+  var emResult = validateTamaEmail(email, gkResult.normalized);
+  if(!emResult.ok){
+    // 警告メッセージを取り除いてalertに表示
+    var plainMsg = emResult.msg.replace(/<[^>]+>/g,'').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+    alert('⚠️ メールアドレスを確認してください\n\n' + plainMsg);
+    emailEl.focus();
+    return false;
+  }
+  // 正規化して戻す
+  emailEl.value = emResult.normalized;
+
   return true;
 }
 
@@ -998,6 +1335,14 @@ function buildConfirm() {
   });
   html+='</table>';
 
+  // v2追加：メールアドレスを目立つ形で再確認
+  html+='<div class="confirm-email-alert">';
+  html+='<div class="confirm-email-alert-title">⚠️ 送信先のメールアドレスを必ず確認してください</div>';
+  html+='<div class="confirm-email-value">'+escHtml(email)+'</div>';
+  html+='<div class="confirm-email-note">このアドレス宛に担当の先生から返信が届きます。<br>';
+  html+='アドレスが間違っていると返信が届かず、面談日時が確定できません。</div>';
+  html+='</div>';
+
   html+='<div style="margin-top:12px;padding:10px;background:var(--gp);border-radius:8px;">';
   html+='<div style="font-size:0.78rem;font-weight:700;color:var(--gd);margin-bottom:6px;">面談希望日時</div>';
   wishes.forEach(function(w,i){
@@ -1021,6 +1366,12 @@ function onSupportChange(){
 }
 
 function sendMail() {
+  // v2追加：二重送信防止
+  var submitBtn = document.querySelector('.submit-btn');
+  if(submitBtn && submitBtn.disabled){
+    return;
+  }
+
   const zemi=document.getElementById('fZemi').value;
   const grade=document.querySelector('input[name="grade"]:checked');
   const name=document.getElementById('fName').value;
@@ -1102,6 +1453,13 @@ function sendMail() {
   var area = document.getElementById('mailPreviewArea');
   area.style.display = 'block';
   area.scrollIntoView({behavior:'smooth', block:'start'});
+
+  // v2追加：送信後はボタンを「作成済み」状態に
+  if(submitBtn){
+    submitBtn.disabled = true;
+    submitBtn.classList.add('sent');
+    submitBtn.innerHTML = '✅ メール内容を作成済み（下のボタンから送信してください）';
+  }
 }
 
 function copyMailContent(){
