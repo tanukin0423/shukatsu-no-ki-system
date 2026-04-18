@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>面談カルテv5｜多摩大学 キャリア支援課</title>
+<title>面談カルテv5.1｜多摩大学 キャリア支援課</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 /* ログイン画面 */
@@ -190,6 +190,8 @@ textarea.fi.tall{min-height:88px;}
 .memo-add-ta{min-height:54px;background:white;}
 .prompt-copy-btn{margin-top:7px;background:#c8860a;color:white;border:none;border-radius:20px;padding:4px 14px;font-size:0.72rem;cursor:pointer;font-family:inherit;transition:all 0.2s;}
 .prompt-copy-btn:hover{background:#a06d08;}
+/* バージョン表示 */
+.version-badge{font-size:0.65rem;color:rgba(255,255,255,0.4);margin-left:8px;}
 </style>
 </head>
 <body>
@@ -198,7 +200,7 @@ textarea.fi.tall{min-height:88px;}
 <div id="loginScreen">
   <div class="login-box">
     <div style="font-size:2rem;margin-bottom:8px;">🌳</div>
-    <h2>面談カルテ v5</h2>
+    <h2>面談カルテ v5.1</h2>
     <p>多摩大学 キャリア支援課</p>
     <input type="password" id="loginPw" placeholder="パスワードを入力" autocomplete="off">
     <span class="hint-toggle" id="hintToggle">💡 ヒントを見る</span>
@@ -333,8 +335,8 @@ textarea.fi.tall{min-height:88px;}
                 <div style="font-size:0.72rem;color:var(--tl);margin-bottom:3px;font-weight:500;">希望進路</div>
                 <select class="fil-inp" id="newCareer">
                   <option value="">選択してください</option>
-                  <option value="就職（一般企業）">就職（一般企業）</option>
-                  <option value="就職（公務員）">就職（公務員）</option>
+                  <option value="就職(一般企業)">就職（一般企業）</option>
+                  <option value="就職(公務員)">就職（公務員）</option>
                   <option value="進学">進学</option>
                   <option value="未定">未定</option>
                 </select>
@@ -375,7 +377,7 @@ textarea.fi.tall{min-height:88px;}
       <div class="warn-box">
         <div class="warn-title">⚠️ 読み込み前にご確認ください</div>
         <strong>上書きされる項目：</strong>希望進路・活動状況・志望先・相談テーマ・希望日時・確定日時・ステータス・自由記入<br>
-        <strong>保持される項目：</strong>面談記録・ES素材帳・追記欄・検査メモ<br><br>
+        <strong>保持される項目：</strong>面談記録・ES素材帳・追記欄・検査メモ・補足メモ<br><br>
         ※手入力した基本情報は<strong>上書きされます。</strong>新旧データをよく確認してから続けてください。
       </div>
       <label class="fil-lbl">
@@ -403,7 +405,7 @@ textarea.fi.tall{min-height:88px;}
     <div class="kha"></div>
     <div class="khm">
       <div>
-        <div class="khe">🌳 面談準備カルテ ／ 多摩大学 キャリア支援課</div>
+        <div class="khe">🌳 面談準備カルテ ／ 多摩大学 キャリア支援課<span class="version-badge">v5.1</span></div>
         <div class="khn" id="hName">（学生名）</div>
         <div class="khmt">
           <span id="hZemi">―</span>
@@ -435,6 +437,12 @@ textarea.fi.tall{min-height:88px;}
 </div>
 
 <!-- メイン -->
+<!--
+  ★★★ 根本修正の仕組み ★★★
+  data-save="true" 属性が付いた要素は、保存・復元の対象に自動登録されます。
+  新しいフィールドを追加する際は、HTML要素に data-save="true" を付けるだけでOK。
+  saveJSON/_collectJSON/restoreJSON を書き換える必要はありません。
+-->
 <div class="main">
 
   <div class="card">
@@ -479,7 +487,7 @@ textarea.fi.tall{min-height:88px;}
       </div>
       <div style="margin-top:8px;">
         <div class="fl">面談確定日時</div>
-        <input class="fi" id="confirmedDate" placeholder="例：2026年4月8日（水）10:00 / 10:45 / 11:30…">
+        <input class="fi" id="confirmedDate" data-save="true" placeholder="例：2026年4月8日（水）10:00 / 10:45 / 11:30…">
       </div>
       <div style="margin-top:6px;">
         <div class="fl">自由記入（アンケートより）</div>
@@ -494,16 +502,16 @@ textarea.fi.tall{min-height:88px;}
       <div class="vi">
         <div class="vt">
           <span class="vtl">📊 職業興味検査（VPI）</span>
-          <label class="vck"><input type="checkbox" id="vpiCheck"> 受領済み</label>
+          <label class="vck"><input type="checkbox" id="vpiCheck" data-save="true"> 受領済み</label>
         </div>
-        <input class="fi" id="vpiMemo" placeholder="結果メモ（例：社会的・芸術的が高い）">
+        <input class="fi" id="vpiMemo" data-save="true" placeholder="結果メモ（例：社会的・芸術的が高い）">
       </div>
       <div class="vi">
         <div class="vt">
           <span class="vtl">💡 仕事価値観検査</span>
-          <label class="vck"><input type="checkbox" id="valueCheck"> 受領済み</label>
+          <label class="vck"><input type="checkbox" id="valueCheck" data-save="true"> 受領済み</label>
         </div>
-        <input class="fi" id="valueMemo" placeholder="結果メモ（例：達成・他者への影響が上位）">
+        <input class="fi" id="valueMemo" data-save="true" placeholder="結果メモ（例：達成・他者への影響が上位）">
       </div>
     </div>
   </div>
@@ -512,22 +520,22 @@ textarea.fi.tall{min-height:88px;}
     <div class="ch b" style="display:flex;align-items:center;">📝 面談中 追記欄（ヒアリング情報）<button class="sec-save-btn" onclick="saveAll()">💾☁️ 保存</button></div>
     <div class="cb">
       <div class="fg2">
-        <div class="ff"><div class="fl">ゼミの内容・テーマ</div><input class="fi" id="zemiContent" placeholder="例：マーケティング・消費者行動"></div>
+        <div class="ff"><div class="fl">ゼミの内容・テーマ</div><input class="fi" id="zemiContent" data-save="true" placeholder="例：マーケティング・消費者行動"></div>
         <div class="ff">
           <div class="fl">アルバイト経験</div>
-          <div class="rrow"><label class="rl"><input type="radio" name="baito" value="あり"> あり</label><label class="rl"><input type="radio" name="baito" value="なし"> なし</label></div>
-          <input class="fi" id="baitoDetail" placeholder="職種・期間（例：カフェスタッフ・2年）">
+          <div class="rrow"><label class="rl"><input type="radio" name="baito" value="あり" data-save-radio="true"> あり</label><label class="rl"><input type="radio" name="baito" value="なし" data-save-radio="true"> なし</label></div>
+          <input class="fi" id="baitoDetail" data-save="true" placeholder="職種・期間（例：カフェスタッフ・2年）">
         </div>
         <div class="ff">
           <div class="fl">部活・サークル経験</div>
-          <div class="rrow"><label class="rl"><input type="radio" name="club" value="あり"> あり</label><label class="rl"><input type="radio" name="club" value="なし"> なし</label></div>
-          <input class="fi" id="clubDetail" placeholder="種類・役割（例：バスケ部・副部長）">
+          <div class="rrow"><label class="rl"><input type="radio" name="club" value="あり" data-save-radio="true"> あり</label><label class="rl"><input type="radio" name="club" value="なし" data-save-radio="true"> なし</label></div>
+          <input class="fi" id="clubDetail" data-save="true" placeholder="種類・役割（例：バスケ部・副部長）">
         </div>
-        <div class="ff"><div class="fl">趣味・好きなこと</div><input class="fi" id="hobby" placeholder="例：読書・旅行・料理"></div>
-        <div class="ff"><div class="fl">特技・得意なこと</div><input class="fi" id="skill" placeholder="例：人前で話すこと・データ分析"></div>
-        <div class="ff"><div class="fl">保有資格・取得予定</div><input class="fi" id="license" placeholder="例：普通自動車免許・TOEIC 700点"></div>
-        <div class="ff"><div class="fl">PC・ITスキル</div><input class="fi" id="pcSkill" placeholder="例：Excel・Word（基本）・Python（学習中）"></div>
-        <div class="ff"><div class="fl">語学・その他スキル</div><input class="fi" id="langSkill" placeholder="例：英語（TOEIC 650）・中国語（日常会話）"></div>
+        <div class="ff"><div class="fl">趣味・好きなこと</div><input class="fi" id="hobby" data-save="true" placeholder="例：読書・旅行・料理"></div>
+        <div class="ff"><div class="fl">特技・得意なこと</div><input class="fi" id="skill" data-save="true" placeholder="例：人前で話すこと・データ分析"></div>
+        <div class="ff"><div class="fl">保有資格・取得予定</div><input class="fi" id="license" data-save="true" placeholder="例：普通自動車免許・TOEIC 700点"></div>
+        <div class="ff"><div class="fl">PC・ITスキル</div><input class="fi" id="pcSkill" data-save="true" placeholder="例：Excel・Word（基本）・Python（学習中）"></div>
+        <div class="ff"><div class="fl">語学・その他スキル</div><input class="fi" id="langSkill" data-save="true" placeholder="例：英語（TOEIC 650）・中国語（日常会話）"></div>
       </div>
     </div>
   </div>
@@ -557,11 +565,11 @@ textarea.fi.tall{min-height:88px;}
           <span class="esbadge" style="background:var(--gd);">📚 ガクチカ①（学業）</span>
           <span style="font-size:0.69rem;color:var(--tl);">S+STAR+F&amp;C 六段論法</span>
         </div>
-        <textarea class="fi tall" id="gaku1" placeholder="学業で力を入れたことを記入…"></textarea>
+        <textarea class="fi tall" id="gaku1" data-save="true" placeholder="学業で力を入れたことを記入…"></textarea>
         <div class="cc" id="c1">0文字</div>
         <div class="memo-add-box">
           <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
-          <textarea class="fi memo-add-ta" id="gaku1memo" placeholder="例：3回目面談で判明・数字が出た・失敗談も語れるようになった…"></textarea>
+          <textarea class="fi memo-add-ta" id="gaku1memo" data-save="true" placeholder="例：3回目面談で判明・数字が出た・失敗談も語れるようになった…"></textarea>
           <button class="prompt-copy-btn" onclick="copyPrompt('gaku1','gaku1memo','ガクチカ①（学業）','S+STAR+F&C 六段論法・400字以内')">📋 ブラッシュアッププロンプトをコピー</button>
         </div>
       </div>
@@ -570,11 +578,11 @@ textarea.fi.tall{min-height:88px;}
           <span class="esbadge" style="background:var(--bark);">☕ ガクチカ②（学業以外）</span>
           <span style="font-size:0.69rem;color:var(--tl);">S+STAR+F&amp;C 六段論法</span>
         </div>
-        <textarea class="fi tall" id="gaku2" placeholder="学業以外で力を入れたことを記入…"></textarea>
+        <textarea class="fi tall" id="gaku2" data-save="true" placeholder="学業以外で力を入れたことを記入…"></textarea>
         <div class="cc" id="c2">0文字</div>
         <div class="memo-add-box">
           <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
-          <textarea class="fi memo-add-ta" id="gaku2memo" placeholder="例：アルバイトでリーダー経験あり・具体的なエピソードが増えた…"></textarea>
+          <textarea class="fi memo-add-ta" id="gaku2memo" data-save="true" placeholder="例：アルバイトでリーダー経験あり・具体的なエピソードが増えた…"></textarea>
           <button class="prompt-copy-btn" onclick="copyPrompt('gaku2','gaku2memo','ガクチカ②（学業以外）','S+STAR+F&C 六段論法・400字以内')">📋 ブラッシュアッププロンプトをコピー</button>
         </div>
       </div>
@@ -583,11 +591,11 @@ textarea.fi.tall{min-height:88px;}
           <span class="esbadge" style="background:var(--gm);">🌟 自己PR</span>
           <span style="font-size:0.69rem;color:var(--tl);">PREP＋TA</span>
         </div>
-        <textarea class="fi tall" id="selfpr" placeholder="自己PRを記入…"></textarea>
+        <textarea class="fi tall" id="selfpr" data-save="true" placeholder="自己PRを記入…"></textarea>
         <div class="cc" id="c3">0文字</div>
         <div class="memo-add-box">
           <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
-          <textarea class="fi memo-add-ta" id="selfprmemo" placeholder="例：粘り強さが強み・チームをまとめる場面が多い…"></textarea>
+          <textarea class="fi memo-add-ta" id="selfprmemo" data-save="true" placeholder="例：粘り強さが強み・チームをまとめる場面が多い…"></textarea>
           <button class="prompt-copy-btn" onclick="copyPrompt('selfpr','selfprmemo','自己PR','PREP+TA形式・300字以内')">📋 ブラッシュアッププロンプトをコピー</button>
         </div>
       </div>
@@ -596,17 +604,17 @@ textarea.fi.tall{min-height:88px;}
           <span class="esbadge" style="background:#1a3a6b;">🧭 企業選びの軸・志望動機の素材</span>
           <span style="font-size:0.69rem;color:var(--tl);">結論先行→きっかけ→動機→共感→仕事→将来像</span>
         </div>
-        <textarea class="fi tall" id="jiku" placeholder="企業選びの軸・志望動機につながる素材を記入…"></textarea>
+        <textarea class="fi tall" id="jiku" data-save="true" placeholder="企業選びの軸・志望動機につながる素材を記入…"></textarea>
         <div class="cc" id="c4">0文字</div>
         <div class="memo-add-box">
           <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
-          <textarea class="fi memo-add-ta" id="jikumemo" placeholder="例：幼少期の体験が動機の根っこ・業界への共感ポイントが明確になった…"></textarea>
+          <textarea class="fi memo-add-ta" id="jikumemo" data-save="true" placeholder="例：幼少期の体験が動機の根っこ・業界への共感ポイントが明確になった…"></textarea>
           <button class="prompt-copy-btn" onclick="copyPrompt('jiku','jikumemo','志望動機・企業選びの軸','結論先行→きっかけ→動機→共感→仕事→将来像・400字以内')">📋 ブラッシュアッププロンプトをコピー</button>
         </div>
       </div>
       <div style="background:var(--gp);border-radius:9px;padding:10px 13px;">
         <div style="font-size:0.72rem;font-weight:700;color:var(--gd);margin-bottom:5px;">💬 カウンセラーコメント・添削メモ</div>
-        <textarea class="fi" id="counselorMemo" style="background:white;min-height:63px;" placeholder="添削のポイント・気づきなど…"></textarea>
+        <textarea class="fi" id="counselorMemo" data-save="true" style="background:white;min-height:63px;" placeholder="添削のポイント・気づきなど…"></textarea>
       </div>
       <div style="margin-top:12px;display:flex;justify-content:flex-end;">
         <button class="sec-save-btn es-style" style="padding:6px 18px;font-size:0.8rem;" onclick="saveAll()">💾☁️ 保存</button>
@@ -677,7 +685,7 @@ textarea.fi.tall{min-height:88px;}
 </div>
 
 <div class="kf">
-  <span>多摩大学 キャリア支援課 ／ 面談準備カルテ</span>
+  <span>多摩大学 キャリア支援課 ／ 面談準備カルテ v5.1</span>
   <span id="footerName">―</span>
 </div>
 
@@ -792,22 +800,58 @@ function buildList(container,rows,curGaku,onSel){
   });
 }
 
+// ============================================================
+// ★★★ 根本修正：ヘッダー情報の管理 ★★★
+// 不安チェックやサブジェクトなどの表示専用データを、DOM汚染を避けて
+// 内部状態として保持するための変数。保存・復元時にこれを使う。
+// ============================================================
+var _headerState = {
+  name:'', zemi:'', grade:'', gakuseki:'', email:'',
+  career:'', status:'', target:'', jobs:'',
+  support:'', progress:'', anxiety:'',
+  subjects:'', themes:'',
+  w1:'', w2:'', w3:'', free:'', createdAt:''
+};
+
 function fillInfo(s){
-  g('hName').textContent=s['氏名']||'（氏名なし）';
-  g('hZemi').textContent='🏫 '+(s['ゼミ']||'―')+'ゼミ';
-  g('hGrade').textContent='🎓 '+(s['学年']||'―');
-  g('hGakuseki').textContent='🆔 '+(s['学籍番号']||'―');
-  g('hEmail').textContent='📧 '+(s['大学メール']||'―');
-  g('hDate').textContent='作成日：'+new Date().toLocaleDateString('ja-JP');
-  g('iCareer').textContent=s['希望進路']||'―';
-  g('iStatus').textContent=s['活動状況']||'―';
-  g('iTarget').textContent=s['志望先']||'―';
-  g('iJobs').textContent=s['希望職種']||'―';
+  // 内部状態を更新
+  _headerState.name = s['氏名']||'';
+  _headerState.zemi = s['ゼミ']||'';
+  _headerState.grade = s['学年']||'';
+  _headerState.gakuseki = s['学籍番号']||'';
+  _headerState.email = s['大学メール']||'';
+  _headerState.career = s['希望進路']||'';
+  _headerState.status = s['活動状況']||'';
+  _headerState.target = s['志望先']||'';
+  _headerState.jobs = s['希望職種']||'';
+  _headerState.support = s['サポート希望']||'';
+  _headerState.progress = s['進み具合']||'';
+  _headerState.anxiety = s['不安なこと']||'';
+  _headerState.subjects = s['履修科目']||'';
+  _headerState.themes = s['相談テーマ']||'';
+  _headerState.w1 = s['第1希望']||'';
+  _headerState.w2 = s['第2希望']||'';
+  _headerState.w3 = s['第3希望']||'';
+  _headerState.free = s['相談詳細']||'';
+  if(!_headerState.createdAt){
+    _headerState.createdAt = new Date().toLocaleDateString('ja-JP');
+  }
+
+  g('hName').textContent=_headerState.name||'（氏名なし）';
+  g('hZemi').textContent='🏫 '+(_headerState.zemi||'―')+'ゼミ';
+  g('hGrade').textContent='🎓 '+(_headerState.grade||'―');
+  g('hGakuseki').textContent='🆔 '+(_headerState.gakuseki||'―');
+  g('hEmail').textContent='📧 '+(_headerState.email||'―');
+  g('hDate').textContent='作成日：'+_headerState.createdAt;
+  g('iCareer').textContent=_headerState.career||'―';
+  g('iStatus').textContent=_headerState.status||'―';
+  g('iTarget').textContent=_headerState.target||'―';
+  g('iJobs').textContent=_headerState.jobs||'―';
 
   // サポート希望・進み具合・不安チェック・判定バッジ
-  var support=s['サポート希望']||'';
-  var progress=s['進み具合']||'';
-  var anxiety=s['不安なこと']||'';
+  var support = _headerState.support;
+  var progress = _headerState.progress;
+  var anxiety = _headerState.anxiety;
   var supportArea=g('supportInfoArea');
   if(support||progress||anxiety){
     supportArea.style.display='block';
@@ -842,18 +886,25 @@ function fillInfo(s){
       badge.style.display='none';
     }
   } else { supportArea.style.display='none'; }
-  var subs=(s['履修科目']||'').split(/[、,，]/).filter(Boolean);
+
+  // 履修科目タグ表示
+  var subs=_headerState.subjects.split(/[、,，]/).filter(Boolean);
   g('iSubjects').innerHTML=subs.length?subs.map(function(t){return'<span class="tag">'+t.trim()+'</span>';}).join(''):'<span class="tag">―</span>';
-  var thms=(s['相談テーマ']||'').split(/[、,，]/).filter(Boolean);
+
+  // 相談テーマタグ表示
+  var thms=_headerState.themes.split(/[、,，]/).filter(Boolean);
   g('iThemes').innerHTML=thms.length?thms.map(function(t){return'<span class="tag'+(t.indexOf('わからない')>=0?' warn':'')+'">'+ t.trim()+'</span>';}).join(''):'<span class="tag">―</span>';
-  var confirmed=s['確定日時']?s['確定日時'].trim():'';
-  g('iWishes').innerHTML=[s['第1希望'],s['第2希望'],s['第3希望']].map(function(w,i){
+
+  // 希望日時
+  var confirmed = (s['確定日時']||'').trim() || g('confirmedDate').value;
+  g('iWishes').innerHTML=[_headerState.w1,_headerState.w2,_headerState.w3].map(function(w,i){
     var isConfirmed=confirmed&&w&&w.trim()===confirmed;
     var mark=isConfirmed?'<span style="color:#4a8c3f;font-weight:700;margin-left:6px;">✅ 確定</span>':'';
     return'<div class="wi"><span class="wn">'+(i+1)+'</span>'+(w||'未選択')+mark+'</div>';
   }).join('');
-  g('iFree').textContent=s['相談詳細']||'―';
-  g('footerName').textContent=(s['氏名']||'―')+' ／ '+(s['学籍番号']||'―');
+  g('iFree').textContent=_headerState.free||'―';
+  g('footerName').textContent=(_headerState.name||'―')+' ／ '+(_headerState.gakuseki||'―');
+
   // 確定日時・ステータスをCSVから自動読み込み
   if(s['確定日時']&&s['確定日時'].trim()){
     g('confirmedDate').value=s['確定日時'].trim();
@@ -862,33 +913,309 @@ function fillInfo(s){
   }
   if(s['ステータス']&&s['ステータス'].trim()){
     var st=s['ステータス'].trim();
-    var badge=g('hConfirmed');
+    var badge2=g('hConfirmed');
     if(st==='確定済み'){
-      badge.style.background='rgba(74,140,63,0.4)';
-      badge.style.borderColor='rgba(74,140,63,0.6)';
+      badge2.style.background='rgba(74,140,63,0.4)';
+      badge2.style.borderColor='rgba(74,140,63,0.6)';
     } else if(st==='調整中'){
-      badge.style.background='rgba(224,122,40,0.35)';
-      badge.style.borderColor='rgba(224,122,40,0.6)';
-      if(!s['確定日時'])badge.textContent='⚠️ 調整中';
+      badge2.style.background='rgba(224,122,40,0.35)';
+      badge2.style.borderColor='rgba(224,122,40,0.6)';
+      if(!s['確定日時'])badge2.textContent='⚠️ 調整中';
     }
   }
 }
 
-function restoreJSON(d){
-  fillInfo({'氏名':d.name,'ゼミ':d.zemi,'学年':d.grade,'学籍番号':d.gakuseki,'大学メール':d.email,'希望進路':d.career,'活動状況':d.status,'志望先':d.target,'希望職種':d.jobs,'履修科目':d.subjects,'相談テーマ':d.themes,'第1希望':d.w1,'第2希望':d.w2,'第3希望':d.w3,'相談詳細':d.free,'サポート希望':d.support||'','進み具合':d.progress||'','不安なこと':d.anxiety||''});
-  if(d.confirmedDate){g('confirmedDate').value=d.confirmedDate;g('hConfirmed').textContent='✅ '+d.confirmedDate;}
-  if(d.vpiCheck)g('vpiCheck').checked=true;
-  if(d.valueCheck)g('valueCheck').checked=true;
-  ['vpiMemo','valueMemo','zemiContent','baitoDetail','clubDetail','hobby','skill','license','pcSkill','langSkill','gaku1','gaku2','selfpr','jiku','counselorMemo','gaku1memo','gaku2memo','selfprmemo','jikumemo'].forEach(function(id){if(d[id])g(id).value=d[id];});
-  ['baito','club'].forEach(function(n){
-    if(d['r_'+n]){var el=document.querySelector('input[name="'+n+'"][value="'+d['r_'+n]+'"]');if(el)el.checked=true;}
+// ============================================================
+// ★★★ 根本修正：統一収集システム ★★★
+// data-save="true" 属性を持つすべての要素を自動収集
+// 新しいフィールド追加時は、HTMLに属性を付けるだけで対応完了
+// ============================================================
+
+/**
+ * data-save 属性を持つ全要素の値を自動収集
+ * @returns {Object} { id: value } の辞書
+ */
+function _collectSaveFields(){
+  var result = {};
+  // 通常の data-save="true" 要素
+  document.querySelectorAll('[data-save="true"]').forEach(function(el){
+    if(!el.id) return; // idがないものはスキップ
+    if(el.type === 'checkbox'){
+      result[el.id] = el.checked;
+    } else {
+      result[el.id] = el.value;
+    }
   });
-  if(d.memos&&d.memos.length)d.memos.forEach(function(m){addMemo(m);});
-  [['gaku1','c1'],['gaku2','c2'],['selfpr','c3'],['jiku','c4']].forEach(function(p){if(g(p[0]))g(p[1]).textContent=g(p[0]).value.length+'文字';});
-  g('saveStatus').textContent='💾 最終保存：'+d._savedAt;
-  g('hDate').textContent='作成日：'+(d.createdAt||'―');
+  // data-save-radio="true" のラジオボタン（name単位で収集）
+  var radioGroups = {};
+  document.querySelectorAll('[data-save-radio="true"]').forEach(function(el){
+    if(!el.name) return;
+    if(el.checked){ radioGroups[el.name] = el.value; }
+    else if(!(el.name in radioGroups)){ radioGroups[el.name] = ''; }
+  });
+  Object.keys(radioGroups).forEach(function(name){
+    result['radio_' + name] = radioGroups[name];
+  });
+  return result;
 }
 
+/**
+ * 収集した値を各要素に自動適用
+ * @param {Object} data { id: value } の辞書
+ */
+function _applySaveFields(data){
+  if(!data) return;
+  document.querySelectorAll('[data-save="true"]').forEach(function(el){
+    if(!el.id) return;
+    if(el.id in data){
+      if(el.type === 'checkbox'){
+        el.checked = !!data[el.id];
+      } else {
+        el.value = data[el.id] || '';
+      }
+    }
+  });
+  // ラジオボタン復元
+  document.querySelectorAll('[data-save-radio="true"]').forEach(function(el){
+    if(!el.name) return;
+    var key = 'radio_' + el.name;
+    if(key in data && data[key] === el.value){
+      el.checked = true;
+    }
+  });
+}
+
+/**
+ * 面談記録を収集
+ */
+function _collectMemos(){
+  var memos=[];
+  g('memoContainer').querySelectorAll('.me').forEach(function(e){
+    var di=e.querySelector('.medate');var tas=e.querySelectorAll('textarea');
+    memos.push({
+      idx: e.dataset.idx,
+      date: di?di.value:'',
+      memo: tas[0]?tas[0].value:'',
+      action: tas[1]?tas[1].value:''
+    });
+  });
+  return memos;
+}
+
+/**
+ * 文字数カウンタを更新
+ */
+function _updateCharCounts(){
+  [['gaku1','c1'],['gaku2','c2'],['selfpr','c3'],['jiku','c4']].forEach(function(p){
+    var el=g(p[0]);
+    if(el && g(p[1])) g(p[1]).textContent=el.value.length+'文字';
+  });
+}
+
+// ============================================================
+// restoreJSON: 保存データから全フィールドを復元
+// ============================================================
+function restoreJSON(d){
+  if(!d) return;
+
+  // ヘッダー情報を_headerStateに戻す
+  _headerState.name = d.name || d.headerState?.name || '';
+  _headerState.zemi = d.zemi || d.headerState?.zemi || '';
+  _headerState.grade = d.grade || d.headerState?.grade || '';
+  _headerState.gakuseki = d.gakuseki || d.headerState?.gakuseki || '';
+  _headerState.email = d.email || d.headerState?.email || '';
+  _headerState.career = d.career || d.headerState?.career || '';
+  _headerState.status = d.status || d.headerState?.status || '';
+  _headerState.target = d.target || d.headerState?.target || '';
+  _headerState.jobs = d.jobs || d.headerState?.jobs || '';
+  _headerState.support = d.support || d.headerState?.support || '';
+  _headerState.progress = d.progress || d.headerState?.progress || '';
+  _headerState.anxiety = d.anxiety || d.headerState?.anxiety || '';
+  _headerState.subjects = d.subjects || d.headerState?.subjects || '';
+  _headerState.themes = d.themes || d.headerState?.themes || '';
+  _headerState.w1 = d.w1 || d.headerState?.w1 || '';
+  _headerState.w2 = d.w2 || d.headerState?.w2 || '';
+  _headerState.w3 = d.w3 || d.headerState?.w3 || '';
+  _headerState.free = d.free || d.headerState?.free || '';
+  _headerState.createdAt = d.createdAt || d.headerState?.createdAt || '';
+
+  // ヘッダー・基本情報を描画
+  fillInfo({
+    '氏名': _headerState.name,
+    'ゼミ': _headerState.zemi,
+    '学年': _headerState.grade,
+    '学籍番号': _headerState.gakuseki,
+    '大学メール': _headerState.email,
+    '希望進路': _headerState.career,
+    '活動状況': _headerState.status,
+    '志望先': _headerState.target,
+    '希望職種': _headerState.jobs,
+    '履修科目': _headerState.subjects,
+    '相談テーマ': _headerState.themes,
+    '第1希望': _headerState.w1,
+    '第2希望': _headerState.w2,
+    '第3希望': _headerState.w3,
+    '相談詳細': _headerState.free,
+    'サポート希望': _headerState.support,
+    '進み具合': _headerState.progress,
+    '不安なこと': _headerState.anxiety
+  });
+
+  // ★★★ 自動復元：data-save属性の全フィールド ★★★
+  // fields オブジェクトがあればそれを、なければ旧形式フラット構造から復元
+  var fields = d.fields || {};
+  // 旧形式との互換性：トップレベルのキーも見る
+  ['vpiMemo','valueMemo','zemiContent','baitoDetail','clubDetail','hobby','skill','license','pcSkill','langSkill',
+   'gaku1','gaku2','selfpr','jiku','counselorMemo',
+   'gaku1memo','gaku2memo','selfprmemo','jikumemo',
+   'confirmedDate','vpiCheck','valueCheck',
+   'radio_baito','radio_club'].forEach(function(key){
+    if(!(key in fields) && key in d) fields[key] = d[key];
+  });
+  // 旧形式 r_baito/r_club → radio_baito/radio_club
+  if(!('radio_baito' in fields) && 'r_baito' in d) fields.radio_baito = d.r_baito;
+  if(!('radio_club' in fields) && 'r_club' in d) fields.radio_club = d.r_club;
+
+  _applySaveFields(fields);
+
+  // 確定日時のヘッダー表示
+  var cd = fields.confirmedDate || '';
+  if(cd){
+    g('hConfirmed').textContent='✅ '+cd;
+    g('hConfirmed').style.background='rgba(74,140,63,0.4)';
+  }
+
+  // 面談記録の復元（★重複防止のため既存を全消去してから再描画）
+  g('memoContainer').innerHTML = '';
+  if(d.memos && d.memos.length){
+    d.memos.forEach(function(m){addMemo(m);});
+  }
+
+  // 文字数カウント更新
+  _updateCharCounts();
+
+  // 保存日時表示
+  if(d._savedAt){
+    g('saveStatus').textContent='💾 最終保存：'+d._savedAt;
+  }
+  if(_headerState.createdAt){
+    g('hDate').textContent='作成日：'+_headerState.createdAt;
+  }
+}
+
+// ============================================================
+// saveJSON: 統一データ構造で保存（ローカル.json出力用）
+// ============================================================
+function saveJSON(withDate){
+  var name = _headerState.name || g('hName').textContent.trim();
+  var gakuseki = _headerState.gakuseki || g('hGakuseki').textContent.replace('🆔 ','').trim();
+  if(!gakuseki||gakuseki==='―'){
+    var inp=prompt('学籍番号を入力してください（ファイル識別に使用します）：');
+    if(!inp)return;
+    gakuseki=inp.trim();
+    _headerState.gakuseki = gakuseki;
+    g('hGakuseki').textContent='🆔 '+gakuseki;
+  }
+
+  var data = _buildSaveData();
+  data._savedAt = new Date().toLocaleString('ja-JP');
+
+  var fname=withDate
+    ? 'カルテデータ_'+gakuseki+'_'+new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')+'.json'
+    : 'カルテデータ_'+gakuseki+'.json';
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download=fname;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+  g('saveStatus').textContent='💾 最終保存：'+data._savedAt;
+  toast('💾 '+fname+' を保存しました！\n学生フォルダに保存してください。');
+}
+
+// ============================================================
+// ★★★ 根本修正：統一セーブデータ構築関数 ★★★
+// saveJSON も _collectJSON も、同じ関数を呼んで同じデータを作る
+// これで「片方だけ漏れる」バグが構造的に起きなくなる
+// ============================================================
+function _buildSaveData(){
+  var gakuseki = _headerState.gakuseki || g('hGakuseki').textContent.replace('🆔 ','').trim();
+  var name = _headerState.name || g('hName').textContent.trim();
+
+  // data-save属性の全要素を自動収集
+  var fields = _collectSaveFields();
+
+  // 統一データ構造
+  var data = {
+    // === トップレベル（必須・検索用） ===
+    gakuseki: gakuseki,
+    name: name,
+
+    // === ヘッダー・基本情報（_headerStateから）===
+    zemi: _headerState.zemi,
+    grade: _headerState.grade,
+    email: _headerState.email,
+    career: _headerState.career,
+    status: _headerState.status,
+    target: _headerState.target,
+    jobs: _headerState.jobs,
+    support: _headerState.support,
+    progress: _headerState.progress,
+    anxiety: _headerState.anxiety,
+    subjects: _headerState.subjects,
+    themes: _headerState.themes,
+    w1: _headerState.w1,
+    w2: _headerState.w2,
+    w3: _headerState.w3,
+    free: _headerState.free,
+    createdAt: _headerState.createdAt,
+
+    // === 入力フィールド（data-save属性・自動収集）===
+    fields: fields,
+
+    // === 面談記録 ===
+    memos: _collectMemos(),
+
+    // === 互換性維持のため、旧形式フィールドもトップレベルに複製 ===
+    // （古いJSONを読み込める状態を維持）
+    confirmedDate: fields.confirmedDate || '',
+    vpiCheck: fields.vpiCheck || false,
+    valueCheck: fields.valueCheck || false,
+    vpiMemo: fields.vpiMemo || '',
+    valueMemo: fields.valueMemo || '',
+    zemiContent: fields.zemiContent || '',
+    baitoDetail: fields.baitoDetail || '',
+    clubDetail: fields.clubDetail || '',
+    hobby: fields.hobby || '',
+    skill: fields.skill || '',
+    license: fields.license || '',
+    pcSkill: fields.pcSkill || '',
+    langSkill: fields.langSkill || '',
+    r_baito: fields.radio_baito || '',
+    r_club: fields.radio_club || '',
+    gaku1: fields.gaku1 || '',
+    gaku2: fields.gaku2 || '',
+    selfpr: fields.selfpr || '',
+    jiku: fields.jiku || '',
+    counselorMemo: fields.counselorMemo || '',
+    gaku1memo: fields.gaku1memo || '',
+    gaku2memo: fields.gaku2memo || '',
+    selfprmemo: fields.selfprmemo || '',
+    jikumemo: fields.jikumemo || ''
+  };
+
+  return data;
+}
+
+// Firebase用：データ収集・復元のグローバル公開
+window._collectJSON = function(){
+  var gakuseki = _headerState.gakuseki || g('hGakuseki').textContent.replace('🆔 ','').trim();
+  if(!gakuseki || gakuseki==='―') return null;
+  return _buildSaveData();
+};
+window._restoreJSON = function(data){ restoreJSON(data); };
+
+// 面談記録を追加
 function addMemo(data){
   var container=g('memoContainer');
   var count=container.querySelectorAll('.me').length+1;
@@ -917,126 +1244,36 @@ function addMemo(data){
   if(!data)wrap.scrollIntoView({behavior:'smooth'});
 }
 
-function saveJSON(withDate){
-  var name=g('hName').textContent.trim();
-  var gakuseki=g('hGakuseki').textContent.replace('🆔 ','').trim();
-  if(!gakuseki||gakuseki==='―'){
-    var inp=prompt('学籍番号を入力してください（ファイル識別に使用します）：');
-    if(!inp)return;
-    gakuseki=inp.trim();
-    g('hGakuseki').textContent='🆔 '+gakuseki;
-  }
-  var now=new Date().toLocaleString('ja-JP');
-  var memos=[];
-  g('memoContainer').querySelectorAll('.me').forEach(function(e){
-    var di=e.querySelector('.medate');var tas=e.querySelectorAll('textarea');
-    memos.push({idx:e.dataset.idx,date:di?di.value:'',memo:tas[0]?tas[0].value:'',action:tas[1]?tas[1].value:''});
-  });
-  var data={
-    gakuseki:gakuseki,name:name,_savedAt:now,
-    createdAt:g('hDate').textContent.replace('作成日：',''),
-    zemi:g('hZemi').textContent.replace('🏫 ','').replace('ゼミ',''),
-    grade:g('hGrade').textContent.replace('🎓 ',''),
-    email:g('hEmail').textContent.replace('📧 ',''),
-    confirmedDate:g('confirmedDate').value,
-    career:g('iCareer').textContent,status:g('iStatus').textContent,
-    target:g('iTarget').textContent,jobs:g('iJobs').textContent,
-    support:g('iSupport')?g('iSupport').textContent:'',
-    progress:g('iProgress')?g('iProgress').textContent:'',
-    anxiety:g('iAnxiety')?g('iAnxiety').textContent.replace(/\s+/g,''):'',
-    subjects:Array.from(g('iSubjects').querySelectorAll('.tag')).map(function(t){return t.textContent;}).join('、'),
-    themes:Array.from(g('iThemes').querySelectorAll('.tag')).map(function(t){return t.textContent;}).join('、'),
-    w1:'',w2:'',w3:'',free:g('iFree').textContent,
-    vpiCheck:g('vpiCheck').checked,valueCheck:g('valueCheck').checked,
-    vpiMemo:g('vpiMemo').value,valueMemo:g('valueMemo').value,
-    zemiContent:g('zemiContent').value,baitoDetail:g('baitoDetail').value,
-    clubDetail:g('clubDetail').value,hobby:g('hobby').value,
-    skill:g('skill').value,license:g('license').value,
-    pcSkill:g('pcSkill').value,langSkill:g('langSkill').value,
-    r_baito:(document.querySelector('input[name="baito"]:checked')||{}).value||'',
-    r_club:(document.querySelector('input[name="club"]:checked')||{}).value||'',
-    memos:memos,
-    gaku1:g("gaku1").value,gaku2:g("gaku2").value,
-    selfpr:g("selfpr").value,jiku:g("jiku").value,
-    counselorMemo:g("counselorMemo").value,gaku1memo:g("gaku1memo")?g("gaku1memo").value:"",gaku2memo:g("gaku2memo")?g("gaku2memo").value:"",selfprmemo:g("selfprmemo")?g("selfprmemo").value:"",jikumemo:g("jikumemo")?g("jikumemo").value:""
-  };
-  var wishes=g('iWishes').querySelectorAll('.wi');
-  if(wishes[0])data.w1=wishes[0].textContent.replace('1','').trim();
-  if(wishes[1])data.w2=wishes[1].textContent.replace('2','').trim();
-  if(wishes[2])data.w3=wishes[2].textContent.replace('3','').trim();
-
-  var fname=withDate
-    ? 'カルテデータ_'+gakuseki+'_'+new Date().toLocaleDateString('ja-JP').replace(/\//g,'-')+'.json'
-    : 'カルテデータ_'+gakuseki+'.json';
-  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url;a.download=fname;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  setTimeout(function(){URL.revokeObjectURL(url);},1000);
-  g('saveStatus').textContent='💾 最終保存：'+now;
-  toast('💾 '+fname+' を保存しました！\n学生フォルダに保存してください。');
-} // ← saveJSON 終了
-
-// Firebase用：データ収集・復元のグローバル公開
-window._collectJSON = function(){
-  var name=g('hName').textContent.trim();
-  var gakuseki=g('hGakuseki').textContent.replace('🆔 ','').trim();
-  if(!gakuseki||gakuseki==='―') return null;
-  var memos=[];
-  g('memoContainer').querySelectorAll('.me').forEach(function(e){
-    var di=e.querySelector('.medate');var tas=e.querySelectorAll('textarea');
-    memos.push({idx:e.dataset.idx,date:di?di.value:'',memo:tas[0]?tas[0].value:'',action:tas[1]?tas[1].value:''});
-  });
-  return {
-    gakuseki:gakuseki,name:name,
-    zemiContent:g('zemiContent').value,baitoDetail:g('baitoDetail').value,
-    clubDetail:g('clubDetail').value,hobby:g('hobby').value,
-    skill:g('skill').value,license:g('license').value,
-    pcSkill:g('pcSkill').value,langSkill:g('langSkill').value,
-    vpiMemo:g('vpiMemo').value,valueMemo:g('valueMemo').value,
-    confirmedDate:g('confirmedDate').value,
-    support:g('iSupport')?g('iSupport').textContent:'',
-    progress:g('iProgress')?g('iProgress').textContent:'',
-    anxiety:g('iAnxiety')?g('iAnxiety').textContent.replace(/\s+/g,''):'',
-    memos:memos,
-    gaku1:g('gaku1').value,gaku2:g('gaku2').value,
-    selfpr:g('selfpr').value,jiku:g('jiku').value,
-    counselorMemo:g('counselorMemo').value
-  };
-};
-window._restoreJSON = function(data){ restoreJSON(data); };
-
 // ===== saveAll: Cloud保存 ＋ ローカルバックアップ =====
-function saveAll(){
+window.saveAll = function(){
   // Cloud保存（fbSaveBtnを経由）
   var fbBtn = document.getElementById('fbSaveBtn');
   if(fbBtn) fbBtn.click();
-  // ローカルバックアップ（ダウンロードなし・localStorageに保存）
+  // ローカルバックアップ（localStorageに保存）
   if(window._collectJSON){
     var data = window._collectJSON();
     if(data && data.gakuseki){
       try{
         localStorage.setItem('karte_backup_'+data.gakuseki, JSON.stringify(data));
-      }catch(e){}
+      }catch(e){ console.warn('ローカルバックアップ失敗:', e); }
     }
   }
-}
+};
 
 // ===== AI機能（Claude API連携） =====
-function saveApiKey(){
+window.saveApiKey = function(){
   var key = document.getElementById('aiApiKey').value.trim();
   if(!key){ toast('⚠️ APIキーを入力してください'); return; }
   sessionStorage.setItem('ai_api_key', key);
   toast('✅ APIキーを保存しました（このセッション中のみ有効）');
-}
+};
 
-function toggleKeyVis(){
+window.toggleKeyVis = function(){
   var inp = document.getElementById('aiApiKey');
   var btn = document.getElementById('keyToggle');
   if(inp.type==='password'){ inp.type='text'; btn.textContent='隠す'; }
   else { inp.type='password'; btn.textContent='表示'; }
-}
+};
 
 function getApiKey(){
   var key = sessionStorage.getItem('ai_api_key') || document.getElementById('aiApiKey').value.trim();
@@ -1044,19 +1281,19 @@ function getApiKey(){
 }
 
 function getStudentInfo(){
-  var name = document.getElementById('hName') ? document.getElementById('hName').textContent.trim() : '';
-  var zemi = document.getElementById('hZemi') ? document.getElementById('hZemi').textContent.replace('🏫 ','').replace('ゼミ','') : '';
-  var gaku1 = document.getElementById('gaku1') ? document.getElementById('gaku1').value.trim() : '';
-  var gaku2 = document.getElementById('gaku2') ? document.getElementById('gaku2').value.trim() : '';
-  var selfpr = document.getElementById('selfpr') ? document.getElementById('selfpr').value.trim() : '';
-  var jiku = document.getElementById('jiku') ? document.getElementById('jiku').value.trim() : '';
-  var career = document.getElementById('iCareer') ? document.getElementById('iCareer').textContent.trim() : '';
-  var target = document.getElementById('iTarget') ? document.getElementById('iTarget').textContent.trim() : '';
-  return {name,zemi,gaku1,gaku2,selfpr,jiku,career,target};
+  return {
+    name: _headerState.name || '',
+    zemi: _headerState.zemi || '',
+    gaku1: g('gaku1') ? g('gaku1').value.trim() : '',
+    gaku2: g('gaku2') ? g('gaku2').value.trim() : '',
+    selfpr: g('selfpr') ? g('selfpr').value.trim() : '',
+    jiku: g('jiku') ? g('jiku').value.trim() : '',
+    career: _headerState.career || '',
+    target: _headerState.target || ''
+  };
 }
 
-async function aiAction(type){
-  // 企業調査エリアの表示切り替え
+window.aiAction = async function(type){
   var resArea = document.getElementById('researchInputArea');
   resArea.style.display = type==='research' ? 'block' : 'none';
 
@@ -1090,10 +1327,8 @@ async function aiAction(type){
       '・等身大の言葉で、盛りすぎないようにしてください。\n' +
       '・400字以内にまとめてください。\n' +
       '・改善のポイントも最後に3点簡潔に教えてください。';
-
   } else if(type==='qa'){
     title = '🎤 想定問答集';
-    var company = document.getElementById('researchCompany') ? document.getElementById('researchCompany').value.trim() : '';
     prompt =
       'あなたは就職面接対策のプロのキャリアカウンセラーです。\n' +
       '以下の学生向けに面接の想定問答を作成してください。\n\n' +
@@ -1109,7 +1344,6 @@ async function aiAction(type){
       '・よく聞かれる質問10問と、この学生に合った回答例を作成してください。\n' +
       '・回答は等身大で、具体的なエピソードを交えてください。\n' +
       '・難易度：標準的な質問5問＋深堀り質問3問＋意外な質問2問の構成にしてください。';
-
   } else if(type==='research'){
     var company = document.getElementById('researchCompany').value.trim();
     if(!company){ alert('調べたい企業名を入力してください。'); return; }
@@ -1128,7 +1362,6 @@ async function aiAction(type){
       '就職活動中の学生が参考にしやすい形でまとめてください。';
   }
 
-  // ローディング表示
   document.getElementById('aiLoading').style.display = 'block';
   document.getElementById('aiResult').classList.remove('show');
   ['aiBtnES','aiBtnQA','aiBtnResearch'].forEach(function(id){
@@ -1142,10 +1375,11 @@ async function aiAction(type){
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': key,
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 1500,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -1179,16 +1413,16 @@ async function aiAction(type){
       if(btn) btn.disabled = false;
     });
   }
-}
+};
 
-function copyAiResult(){
+window.copyAiResult = function(){
   var body = document.getElementById('aiResultBody');
   if(!body) return;
   var text = body.innerText;
   navigator.clipboard.writeText(text).then(function(){
     toast('📋 AIの回答をコピーしました！');
   });
-}
+};
 
 // セッション保存済みキーを復元
 document.addEventListener('DOMContentLoaded', function(){
@@ -1197,10 +1431,10 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 // ===== ブラッシュアッププロンプトコピー =====
-function copyPrompt(mainId, memoId, label, format){
+window.copyPrompt = function(mainId, memoId, label, format){
   var main = g(mainId) ? g(mainId).value.trim() : '';
   var memo = g(memoId) ? g(memoId).value.trim() : '';
-  var name = g('hName') ? g('hName').textContent.trim() : '学生';
+  var name = _headerState.name || '学生';
   if(!main){ toast('⚠️ '+label+'の本文が未入力です。'); return; }
   var prompt =
     '以下の学生のES素材をブラッシュアップしてください。\n\n' +
@@ -1214,7 +1448,7 @@ function copyPrompt(mainId, memoId, label, format){
     '・学生本人の言葉のトーンを大切にしてください。\n' +
     '・等身大の表現で、盛りすぎないようにしてください。';
   doCopy(prompt, '📋 ' + label + 'のプロンプトをコピーしました！\nClaudeに貼り付けてください。');
-}
+};
 
 function copyShidai(){
   var v=function(id){return g(id)?g(id).value:'（未記入）';};
@@ -1222,9 +1456,9 @@ function copyShidai(){
 }
 
 function genPrompt(){
-  var name=g('hName').textContent.trim();
-  var zemi=g('hZemi').textContent.replace('🏫 ','');
-  var grade=g('hGrade').textContent.replace('🎓 ','');
+  var name = _headerState.name || '';
+  var zemi = _headerState.zemi || '';
+  var grade = _headerState.grade || '';
   var v=function(id){return g(id)?g(id).value.trim():'（未記入）';};
   var mt='';
   g('memoContainer').querySelectorAll('.me').forEach(function(e,i){
@@ -1232,13 +1466,23 @@ function genPrompt(){
     mt+='【'+(i+1)+'回目 '+(di?di.value:'')+'】\n'+(tas[0]?tas[0].value.trim():'')+'\n次回アクション：'+(tas[1]?tas[1].value.trim():'')+'\n\n';
   });
   var cm=v('counselorMemo');
+  // 補足メモも取り込む（★根本修正で保存されるようになった補足情報を活用）
+  var memos = '';
+  ['gaku1memo','gaku2memo','selfprmemo','jikumemo'].forEach(function(id){
+    var val = v(id);
+    if(val && val !== '（未記入）'){
+      var label = {gaku1memo:'ガクチカ①', gaku2memo:'ガクチカ②', selfprmemo:'自己PR', jikumemo:'志望動機'}[id];
+      memos += '・'+label+'補足：'+val+'\n';
+    }
+  });
   var p='あなたはキャリアカウンセラーのアシスタントです。\n以下の情報をもとに４大質問を添削・ブラッシュアップしてください。\n\n'
-    +'━━━━━━━━━━━━━━━━━━━━━━━━\n【学生情報】\n氏名：'+name+'　'+zemi+'　'+grade+'\n'
+    +'━━━━━━━━━━━━━━━━━━━━━━━━\n【学生情報】\n氏名：'+name+'　'+zemi+'ゼミ　'+grade+'\n'
     +'━━━━━━━━━━━━━━━━━━━━━━━━\n\n【面談記録（時系列）】\n'
     +'優先順位：①学生の強み・エピソード ②４大質問への指摘 ③その他は参考程度\n'
     +'VPI・価値観は参考のみ。学生の言葉・経験を活かした等身大の文章にしてください。\n\n'
     +(mt||'（面談記録なし）\n')
     +(cm&&cm!=='（未記入）'?'\n【カウンセラーコメント】\n'+cm+'\n':'')
+    +(memos?'\n【面談で判明した補足情報】\n'+memos+'\n':'')
     +'\n━━━━━━━━━━━━━━━━━━━━━━━━\n【現在の４大質問】\n\n'
     +'■ ガクチカ①（学業）\n'+v('gaku1')+'\n\n■ ガクチカ②（学業以外）\n'+v('gaku2')
     +'\n\n■ 自己PR\n'+v('selfpr')+'\n\n■ 企業選びの軸・志望動機の素材\n'+v('jiku')
@@ -1264,7 +1508,6 @@ document.addEventListener('DOMContentLoaded',function(){
         var o=g('opt'+i);if(o)o.classList.remove('sel');
         var a=g('area'+i);if(a)a.classList.remove('show');
       });
-      // cloud選択も解除
       var oc=g('opt_cloud');if(oc)oc.classList.remove('sel');
       var ac=g('area_cloud');if(ac)ac.classList.remove('show');
       el.classList.add('sel');
@@ -1329,11 +1572,11 @@ document.addEventListener('DOMContentLoaded',function(){
       if(!inp||inp.trim()!==jsonData.gakuseki){alert('学籍番号が一致しません。\n正しいJSONファイルを選択してください。');return;}
       restoreJSON(jsonData);
     }else if(selOpt===3){
-      var name=(g('newName').value||'').trim();
+      var nm=(g('newName').value||'').trim();
       var gaku=(g('newGakuseki').value||'').trim();
-      if(!name||!gaku){alert('氏名と学籍番号は必須です。');return;}
+      if(!nm||!gaku){alert('氏名と学籍番号は必須です。');return;}
       fillInfo({
-        '氏名':name,'学籍番号':gaku,
+        '氏名':nm,'学籍番号':gaku,
         '学年':g('newGrade').value||'3年生',
         'ゼミ':(g('newZemi').value||'').trim(),
         '大学メール':(g('newEmail').value||'').trim(),
@@ -1342,6 +1585,14 @@ document.addEventListener('DOMContentLoaded',function(){
         '志望先':'','希望職種':'','履修科目':'',
         '相談テーマ':'','第1希望':'','第2希望':'','第3希望':'','相談詳細':''
       });
+    }else if(selOpt==='cloud'){
+      // ★★★ 新機能：③Cloudから読み込むの「カルテを開く」対応 ★★★
+      var cloudGaku = (g('cloudGakuseki').value||'').trim();
+      if(!cloudGaku){ alert('学籍番号を入力してください。'); return; }
+      if(window._loadFromCloudDirect){
+        window._loadFromCloudDirect(cloudGaku);
+      }
+      return; // モーダルは _loadFromCloudDirect 側で閉じる
     }
     g('startModal').classList.add('hide');
   });
@@ -1354,9 +1605,9 @@ document.addEventListener('DOMContentLoaded',function(){
   // 印刷
   g('printBtn').addEventListener('click',function(){window.print();});
 
-  // JSON保存
   // 💾☁️ 保存ボタン（JSON+Cloud統合）
   g('saveBtn').addEventListener('click', function(){ saveAll(); });
+
   // closeBtn：保存確認してログオフ
   g('closeBtn').addEventListener('click', function(){
     var choice = confirm('閉じる前に保存しますか？\n\n【OK】保存してからログオフ\n【キャンセル】キャンセル');
@@ -1409,20 +1660,22 @@ document.addEventListener('DOMContentLoaded',function(){
       modalRows=parseCSV(text);
       g('csvModalLabel').textContent=e.target.files[0].name;
       g('csvModalList').style.display='block';
-      var curGaku=g('hGakuseki').textContent.replace('🆔 ','').trim();
+      var curGaku=_headerState.gakuseki || g('hGakuseki').textContent.replace('🆔 ','').trim();
       buildList(g('csvModalRows'),modalRows,curGaku,function(idx){selModalIdx=idx;});
     });
   });
   g('csvModalApply').addEventListener('click',function(){
     if(selModalIdx<0){alert('学生を選択してください。');return;}
     var s=modalRows[selModalIdx];
-    var cur=g('hGakuseki').textContent.replace('🆔 ','').trim();
+    var cur=_headerState.gakuseki || g('hGakuseki').textContent.replace('🆔 ','').trim();
     if(cur&&cur!=='―'&&s['学籍番号']!==cur){
       if(!confirm('⚠️ 学籍番号が一致しません！\n現在：'+cur+'\n選択：'+s['学籍番号']+'\n\nそれでも読み込みますか？'))return;
     }
+    // ★★★ 修正：fillInfoは基本情報のみ上書き、data-save要素は保持 ★★★
+    // （data-save属性を触らないのでES素材・面談メモ・補足メモ等は保持される）
     fillInfo(s);
     g('csvModal').classList.add('hide');
-    toast('📋 アンケートデータを読み込みました。\n面談記録・ES欄は保持されています。');
+    toast('📋 アンケートデータを読み込みました。\n面談記録・ES欄・補足メモは保持されています。');
   });
 
 });// DOMContentLoaded
@@ -1448,7 +1701,6 @@ const FB = {
 const app = initializeApp(FB);
 const db  = getFirestore(app);
 
-// collectJSON は既存のグローバル関数
 function getKarteData(){
   return window._collectJSON ? window._collectJSON() : null;
 }
@@ -1459,7 +1711,7 @@ function restoreKarteData(data){
 // ☁️ Cloud保存
 document.getElementById('fbSaveBtn').addEventListener('click', async function(){
   const data = getKarteData();
-  if(!data){ return; } // saveAllから呼ばれる場合は静かに失敗
+  if(!data){ return; }
   const gakuseki = data.gakuseki;
   if(!gakuseki){ return; }
   try{
@@ -1468,7 +1720,6 @@ document.getElementById('fbSaveBtn').addEventListener('click', async function(){
       _cloudSavedAt: new Date().toLocaleString('ja-JP')
     });
     document.getElementById('saveStatus').textContent = '☁️ Cloud保存済み：' + new Date().toLocaleString('ja-JP');
-    // トーストで静かに通知
     var t = document.getElementById('toast');
     if(t){ t.textContent='☁️ Cloudに保存しました（'+gakuseki+'）'; t.style.display='block'; setTimeout(function(){t.style.display='none';},3000); }
   }catch(e){
@@ -1476,38 +1727,32 @@ document.getElementById('fbSaveBtn').addEventListener('click', async function(){
   }
 });
 
-// ☁️ Cloud読込（ヘッダーボタン：karte/ → students/ の順で検索）
+// ☁️ Cloud読込（ヘッダーボタン）
 document.getElementById('fbLoadBtn').addEventListener('click', async function(){
   const gakuseki = prompt('学籍番号を入力してください（例：24311001）\n\n面談カルテがあればカルテを、\nなければ学生マスターの基本情報を読み込みます。');
   if(!gakuseki) return;
-  // ヘッダーから呼ばれた場合はプレビューなしで即読み込み（skipModal=true）
   await loadFromCloud(gakuseki.trim(), true);
 });
 
 // ===== Cloud読み込みの本体関数 =====
-// 検索順：① karte/（面談カルテ・確定日時） → ② students/（大学マスター基本情報）
 async function loadFromCloud(gakuseki, skipModal){
   const info = document.getElementById('cloudLoadInfo');
-  const preview = document.getElementById('cloudPreview');
   try{
     if(info){ info.style.display='block'; info.style.color='#888'; info.textContent='🔄 Cloudを検索中…'; }
 
-    // ===== ① karte/ コレクションを検索 =====
     let data = null;
     let dataSource = '';
     const karteSnap = await getDoc(doc(db, 'karte', gakuseki));
     if(karteSnap.exists()){
       data = karteSnap.data();
-      dataSource = 'karte'; // 面談カルテあり
+      dataSource = 'karte';
     }
 
-    // ===== ② karte/になければ students/ を検索 =====
     if(!data){
       if(info) info.textContent = '🔄 学生マスターを検索中…';
       const studentSnap = await getDoc(doc(db, 'students', gakuseki));
       if(studentSnap.exists()){
         const sd = studentSnap.data();
-        // students/のデータをkarte形式に変換してカルテの土台を作る
         data = {
           gakuseki:  sd.gakuseki || gakuseki,
           name:      sd.name     || '',
@@ -1517,7 +1762,6 @@ async function loadFromCloud(gakuseki, skipModal){
           career:    sd.career   || '',
           status:    sd.status   || '',
           tanto:     sd.tanto    || '',
-          // karte固有フィールドは空で初期化
           confirmedDate: '',
           colorStatus:   '',
           statusLabel:   '',
@@ -1526,48 +1770,17 @@ async function loadFromCloud(gakuseki, skipModal){
           _source: 'students',
           _studentMaster: true,
         };
-        dataSource = 'students'; // 学生マスターのみ
+        dataSource = 'students';
       }
     }
 
-    // ===== どちらにもデータがない場合 =====
     if(!data){
       if(info){ info.style.display='block'; info.style.color='#c0392b'; info.textContent='⚠️ データが見つかりません（学籍番号：'+gakuseki+'）'; }
-      if(preview) preview.style.display='none';
       return;
     }
 
-    // ===== プレビュー表示（モーダルを閉じる前に確認） =====
-    if(preview && !skipModal){
-      const statusColor = data.colorStatus==='green' ? '#2d5a27' :
-                          data.colorStatus==='blue'  ? '#185FA5' : '#666';
-      // データソースに応じたラベル
-      const sourceLabel = dataSource === 'karte'
-        ? '<span style="background:#2d5a27;color:white;font-size:0.68rem;padding:1px 8px;border-radius:10px;font-weight:700;">面談カルテあり</span>'
-        : '<span style="background:#BA7517;color:white;font-size:0.68rem;padding:1px 8px;border-radius:10px;font-weight:700;">学生マスターから</span>';
-
-      preview.style.display = 'block';
-      preview.innerHTML =
-        '<strong style="color:#2d5a27;">✅ データを確認しました&nbsp;&nbsp;</strong>' + sourceLabel + '<br>' +
-        '氏名：<strong>' + (data.name||'―') + '</strong>　' +
-        'ゼミ：' + (data.zemi||'―') + '<br>' +
-        '学籍番号：' + (data.gakuseki||gakuseki) + '　学年：' + (data.grade||'―') + '<br>' +
-        (dataSource === 'karte' && data.confirmedDate
-          ? '確定日時：<strong style="color:' + statusColor + ';">' + data.confirmedDate + '</strong><br>'
-          : '<span style="color:#BA7517;">※ まだ面談日程は未確定です。カルテの土台を作成します。</span><br>') +
-        '<span style="color:#888;font-size:0.72rem;">' +
-        (dataSource === 'karte'
-          ? '保存日時：' + (data._confirmedAt || data._cloudSavedAt || '不明')
-          : '担当職員：' + (data.tanto||'―') + '　就職ステータス：' + (data.status||'―')) +
-        '</span>';
-      if(info) info.style.display='none';
-      return; // プレビュー確認後、startBtnで開く
-    }
-
-    // ===== 実際に読み込んでカルテを開く =====
     restoreKarteData(data);
 
-    // 確定日時を自動セット（karteデータの場合のみ）
     if(dataSource === 'karte' && data.confirmedDate){
       var cdEl = document.getElementById('confirmedDate');
       if(cdEl && !cdEl.value){ cdEl.value = data.confirmedDate; }
@@ -1575,10 +1788,8 @@ async function loadFromCloud(gakuseki, skipModal){
       if(hcEl){ hcEl.textContent = '✅ ' + data.confirmedDate; }
     }
 
-    // 全モーダルを閉じる
     document.querySelectorAll('.ov').forEach(function(ov){ ov.classList.add('hide'); });
 
-    // トースト通知（データソースに応じてメッセージを変える）
     var t = document.getElementById('toast');
     if(t){
       var msg = '';
@@ -1598,18 +1809,66 @@ async function loadFromCloud(gakuseki, skipModal){
   }
 }
 
+// 起動モーダルの「カルテを開く」から呼び出すための関数
+window._loadFromCloudDirect = function(gakuseki){
+  loadFromCloud(gakuseki, true);
+};
+
 // CSV読み込み後のCloud自動マージ
-// karte/があればES・面談記録をマージ、なければstudents/の情報で補完
+// ★★★ 修正：基本情報はCSV優先、ES・面談記録・補足メモのみマージ ★★★
 window._autoCloudMerge = async function(gakuseki){
   try{
-    // ① まずkarte/を確認（過去のカルテがあればマージ）
+    // ① まずkarte/を確認（過去のカルテがあれば、入力フィールドのみマージ）
     const karteSnap = await getDoc(doc(db, 'karte', gakuseki));
     if(karteSnap.exists()){
       const data = karteSnap.data();
-      restoreKarteData(data);
+
+      // 入力フィールド（data-save対象）のみ復元する
+      // 基本情報（氏名・ゼミ・志望先など）は今読み込んだCSVを優先
+      var fieldsOnly = data.fields || {};
+      // 旧形式との互換性
+      if(!Object.keys(fieldsOnly).length){
+        var fieldKeys = ['vpiMemo','valueMemo','zemiContent','baitoDetail','clubDetail','hobby','skill','license','pcSkill','langSkill',
+                          'gaku1','gaku2','selfpr','jiku','counselorMemo',
+                          'gaku1memo','gaku2memo','selfprmemo','jikumemo',
+                          'confirmedDate','vpiCheck','valueCheck'];
+        fieldKeys.forEach(function(k){ if(k in data) fieldsOnly[k] = data[k]; });
+        if('r_baito' in data) fieldsOnly.radio_baito = data.r_baito;
+        if('r_club' in data) fieldsOnly.radio_club = data.r_club;
+      }
+
+      // data-save要素だけ復元（基本情報は上書きしない）
+      document.querySelectorAll('[data-save="true"]').forEach(function(el){
+        if(!el.id) return;
+        if(el.id in fieldsOnly){
+          if(el.type === 'checkbox'){ el.checked = !!fieldsOnly[el.id]; }
+          else { el.value = fieldsOnly[el.id] || ''; }
+        }
+      });
+      document.querySelectorAll('[data-save-radio="true"]').forEach(function(el){
+        if(!el.name) return;
+        var key = 'radio_' + el.name;
+        if(key in fieldsOnly && fieldsOnly[key] === el.value){ el.checked = true; }
+      });
+
+      // 面談記録もマージ
+      var container = document.getElementById('memoContainer');
+      if(container) container.innerHTML = '';
+      if(data.memos && data.memos.length){
+        // addMemo関数を直接呼べないので、メモを反映するカスタムイベントを発火
+        window._restoreMemosOnly && window._restoreMemosOnly(data.memos);
+      }
+
+      // 文字数カウント更新
+      [['gaku1','c1'],['gaku2','c2'],['selfpr','c3'],['jiku','c4']].forEach(function(p){
+        var el=document.getElementById(p[0]);
+        var cc=document.getElementById(p[1]);
+        if(el && cc) cc.textContent=el.value.length+'文字';
+      });
+
       var t = document.getElementById('toast');
       if(t){
-        t.textContent = '☁️ 過去の面談カルテをCloudからマージしました（'+gakuseki+'）';
+        t.textContent = '☁️ 過去のカルテからES素材・面談記録をマージしました（'+gakuseki+'）';
         t.style.display='block';
         setTimeout(function(){ t.style.display='none'; }, 4000);
       }
@@ -1619,7 +1878,6 @@ window._autoCloudMerge = async function(gakuseki){
     const studentSnap = await getDoc(doc(db, 'students', gakuseki));
     if(studentSnap.exists()){
       const sd = studentSnap.data();
-      // 担当職員・就職ステータスなど、CSVにない情報を補完
       var t = document.getElementById('toast');
       if(t){
         t.textContent = '📋 学生マスターから追加情報を補完しました（担当：'+(sd.tanto||'―')+'）';
@@ -1631,22 +1889,10 @@ window._autoCloudMerge = async function(gakuseki){
     console.warn('Cloud自動マージ失敗:', e);
   }
 };
-
-// 起動モーダルのcloudLoadBtn
-const cloudLoadBtn = document.getElementById('cloudLoadBtn');
-if(cloudLoadBtn){
-  cloudLoadBtn.addEventListener('click', async function(){
-    const gakuseki = document.getElementById('cloudGakuseki').value.trim();
-    if(!gakuseki){ alert('学籍番号を入力してください'); return; }
-    const info = document.getElementById('cloudLoadInfo');
-    if(info){ info.style.display='block'; info.style.color='#888'; info.textContent='読み込み中…'; }
-    await loadFromCloud(gakuseki);
-  });
-}
 </script>
 
 <script>
-// ===== 自動バックアップ（3分ごと・ローカルストレージ） =====
+// ===== 自動バックアップ（3分ごと・localStorage） =====
 setInterval(function(){
   if(!window._collectJSON) return;
   var data = window._collectJSON();
@@ -1655,7 +1901,6 @@ setInterval(function(){
     localStorage.setItem('karte_backup_' + data.gakuseki, JSON.stringify(data));
     var now = new Date().toLocaleTimeString('ja-JP');
     console.log('🔄 自動バックアップ完了：' + now);
-    // ステータス表示を一瞬更新
     var st = document.getElementById('saveStatus');
     if(st){
       var prev = st.textContent;
@@ -1663,11 +1908,10 @@ setInterval(function(){
       setTimeout(function(){ st.textContent = prev; }, 3000);
     }
   }catch(e){ console.warn('自動バックアップ失敗:', e); }
-}, 3 * 60 * 1000); // 3分
+}, 3 * 60 * 1000);
 
 // ===== 閉じる・ページ離脱の警告 =====
 var _saved = false;
-// 保存ボタンが押されたらフラグを立てる
 document.addEventListener('DOMContentLoaded', function(){
   ['saveBtn','saveAsBtn','fbSaveBtn'].forEach(function(id){
     var btn = document.getElementById(id);
@@ -1677,11 +1921,50 @@ document.addEventListener('DOMContentLoaded', function(){
 window.addEventListener('beforeunload', function(e){
   if(!window._collectJSON) return;
   var data = window._collectJSON();
-  if(!data || !data.gakuseki) return; // 未読み込みなら警告不要
+  if(!data || !data.gakuseki) return;
   if(_saved) return;
   e.preventDefault();
   e.returnValue = '保存されていないデータがあります。ページを離れますか？';
 });
+
+// memosだけを復元するヘルパー（_autoCloudMergeから呼ばれる）
+window._restoreMemosOnly = function(memos){
+  var container = document.getElementById('memoContainer');
+  if(!container) return;
+  container.innerHTML = '';
+  if(!memos || !memos.length) return;
+  memos.forEach(function(m, i){
+    var count = i + 1;
+    var wrap = document.createElement('div');
+    wrap.className = 'me';
+    wrap.dataset.idx = m.idx || (Date.now() + i);
+    var hd = document.createElement('div'); hd.className = 'meh';
+    var left = document.createElement('div'); left.style.cssText = 'display:flex;align-items:center;gap:7px;';
+    var badge = document.createElement('span'); badge.className = 'mebadge'; badge.textContent = count + '回目';
+    var di = document.createElement('input'); di.className = 'medate'; di.value = m.date || ''; di.placeholder = '面談日';
+    left.appendChild(badge); left.appendChild(di);
+    var del = document.createElement('button'); del.className = 'medel'; del.textContent = '🗑';
+    del.addEventListener('click', (function(w){ return function(){
+      if(!confirm('この面談記録を削除しますか？')) return;
+      w.remove();
+      container.querySelectorAll('.me').forEach(function(e,i){
+        var b = e.querySelector('.mebadge'); if(b) b.textContent = (i+1) + '回目';
+      });
+    };})(wrap));
+    hd.appendChild(left); hd.appendChild(del); wrap.appendChild(hd);
+    var mta = document.createElement('textarea'); mta.className = 'fi';
+    mta.style.cssText = 'min-height:76px;border-radius:0;border:none;border-top:1px solid var(--border);';
+    mta.placeholder = '面談メモ・所感…'; mta.value = m.memo || '';
+    wrap.appendChild(mta);
+    var ah = document.createElement('div'); ah.className = 'meah'; ah.textContent = '✅ 次回アクション';
+    wrap.appendChild(ah);
+    var ata = document.createElement('textarea'); ata.className = 'fi';
+    ata.style.cssText = 'min-height:48px;border-radius:0;border:none;border-top:1px solid var(--border);';
+    ata.placeholder = '次回の課題…'; ata.value = m.action || '';
+    wrap.appendChild(ata);
+    container.appendChild(wrap);
+  });
+};
 </script>
 <script>
 // ===== 音声入力機能 =====
@@ -1727,7 +2010,6 @@ window.addEventListener('beforeunload', function(e){
 
     r.onend = function(){
       if(btn.classList.contains('recording')){
-        // 途切れた場合は自動再開
         try{ r.start(); }catch(ex){}
       }
     };
@@ -1744,7 +2026,6 @@ window.addEventListener('beforeunload', function(e){
   }
 
   window.toggleVoice = function(btn){
-    // ボタンの兄弟要素（textarea or input）を直接取得
     var wrap = btn.parentNode;
     var target = null;
     for(var i=0;i<wrap.childNodes.length;i++){
@@ -1753,7 +2034,6 @@ window.addEventListener('beforeunload', function(e){
     }
     if(!target){ console.error('target not found'); return; }
 
-    // 別のボタンが録音中なら止める
     if(currentBtn && currentBtn !== btn){
       stopRecording(currentBtn);
     }
@@ -1772,12 +2052,10 @@ window.addEventListener('beforeunload', function(e){
     }
   };
 
-  // ページを離れるとき停止
   window.addEventListener('beforeunload', function(){ stopRecording(currentBtn); });
 
-  // テキストエリア・input要素に音声ボタンを自動付与
   function wrapWithVoice(el){
-    if(el.closest('.voice-wrap')) return; // 既にラップ済み
+    if(el.closest('.voice-wrap')) return;
     var wrap = document.createElement('div');
     wrap.className = 'voice-wrap';
     el.parentNode.insertBefore(wrap, el);
@@ -1791,19 +2069,17 @@ window.addEventListener('beforeunload', function(e){
     wrap.appendChild(btn);
   }
 
-  // DOMが安定してから付与
   function attachVoiceBtns(){
-    // 固定テキストエリア
     var ids = ['vpiMemo','valueMemo','zemiContent','baitoDetail','clubDetail',
                'hobby','skill','license','pcSkill','langSkill',
-               'gaku1','gaku2','selfpr','jiku','counselorMemo'];
+               'gaku1','gaku2','selfpr','jiku','counselorMemo',
+               'gaku1memo','gaku2memo','selfprmemo','jikumemo'];
     ids.forEach(function(id){
       var el = document.getElementById(id);
       if(el) wrapWithVoice(el);
     });
   }
 
-  // 面談記録（動的生成）にも対応：MutationObserver
   var observer = new MutationObserver(function(mutations){
     mutations.forEach(function(m){
       m.addedNodes.forEach(function(node){
