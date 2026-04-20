@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>面談カルテv5.1｜多摩大学 キャリア支援課</title>
+<title>面談カルテv5改訂版｜多摩大学 キャリア支援課</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 /* ログイン画面 */
@@ -200,7 +200,7 @@ textarea.fi.tall{min-height:88px;}
 <div id="loginScreen">
   <div class="login-box">
     <div style="font-size:2rem;margin-bottom:8px;">🌳</div>
-    <h2>面談カルテ v5.1</h2>
+    <h2>面談カルテ v5改訂版</h2>
     <p>多摩大学 キャリア支援課</p>
     <input type="password" id="loginPw" placeholder="パスワードを入力" autocomplete="off">
     <span class="hint-toggle" id="hintToggle">💡 ヒントを見る</span>
@@ -541,8 +541,9 @@ textarea.fi.tall{min-height:88px;}
   </div>
 
   <div class="card full">
-    <div class="ch b" style="display:flex;align-items:center;">
+    <div class="ch b" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
       🗒 面談記録（時系列）
+      <button id="claudeExportBtn" onclick="claudeExport()" style="background:#1a237e;border:1px solid rgba(255,255,255,0.4);color:white;padding:3px 13px;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;">🤖 Claudeエクスポート</button>
       <button id="addMemoBtn" style="margin-left:auto;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:white;padding:3px 13px;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;">＋ 新しい記録を追加</button>
     </div>
     <div class="cb" id="memoContainer" style="display:flex;flex-direction:column;gap:10px;"></div>
@@ -685,7 +686,7 @@ textarea.fi.tall{min-height:88px;}
 </div>
 
 <div class="kf">
-  <span>多摩大学 キャリア支援課 ／ 面談準備カルテ v5.1</span>
+  <span>多摩大学 キャリア支援課 ／ 面談準備カルテ v5改訂版</span>
   <span id="footerName">―</span>
 </div>
 
@@ -991,12 +992,29 @@ function _applySaveFields(data){
 function _collectMemos(){
   var memos=[];
   g('memoContainer').querySelectorAll('.me').forEach(function(e){
-    var di=e.querySelector('.medate');var tas=e.querySelectorAll('textarea');
+    var di=e.querySelector('.medate');
+    var tas=e.querySelectorAll('textarea');
+    var typeSelect=e.querySelector('select');
+    var recType=typeSelect?typeSelect.value:'対面';
+    // Claudeサポート種別
+    var claudeTypes=[];
+    var cbGroup=e.querySelector('div[style*="flex-wrap"]');
+    if(cbGroup){
+      cbGroup.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+        if(cb.checked)claudeTypes.push(cb.value);
+      });
+    }
+    // Claude添削メモ
+    var allTa=e.querySelectorAll('textarea');
+    var claudeNote=allTa[2]?allTa[2].value:'';
     memos.push({
       idx: e.dataset.idx,
       date: di?di.value:'',
+      recType: recType,
       memo: tas[0]?tas[0].value:'',
-      action: tas[1]?tas[1].value:''
+      action: tas[1]?tas[1].value:'',
+      claudeTypes: claudeTypes,
+      claudeNote: claudeNote
     });
   });
   return memos;
@@ -1223,22 +1241,79 @@ function addMemo(data){
   var date=data?(data.date||''):new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
   var memo=data?(data.memo||''):'';
   var action=data?(data.action||''):'';
+  var recType=data?(data.recType||'対面'):'対面';
+  var claudeTypes=data?(data.claudeTypes||[]):[];
+  var claudeNote=data?(data.claudeNote||''):'';
 
   var wrap=document.createElement('div');
   wrap.className='me';wrap.dataset.idx=idx;
 
+  // ヘッダー行
   var hd=document.createElement('div');hd.className='meh';
-  var left=document.createElement('div');left.style.cssText='display:flex;align-items:center;gap:7px;';
+  var left=document.createElement('div');left.style.cssText='display:flex;align-items:center;gap:7px;flex-wrap:wrap;';
   var badge=document.createElement('span');badge.className='mebadge';badge.textContent=count+'回目';
   var di=document.createElement('input');di.className='medate';di.value=date;di.placeholder='面談日';
-  left.appendChild(badge);left.appendChild(di);
+
+  // 記録タイプ選択
+  var typeSelect=document.createElement('select');
+  typeSelect.className='medate';
+  typeSelect.style.cssText='width:auto;padding:2px 6px;font-size:0.75rem;';
+  typeSelect.dataset.recType='true';
+  ['対面','オンライン','メール','LINE','その他'].forEach(function(t){
+    var opt=document.createElement('option');
+    opt.value=t;opt.textContent=t;
+    if(t===recType)opt.selected=true;
+    typeSelect.appendChild(opt);
+  });
+
+  left.appendChild(badge);left.appendChild(di);left.appendChild(typeSelect);
   var del=document.createElement('button');del.className='medel';del.textContent='🗑';
   del.addEventListener('click',(function(w){return function(){if(!confirm('この面談記録を削除しますか？'))return;w.remove();container.querySelectorAll('.me').forEach(function(e,i){var b=e.querySelector('.mebadge');if(b)b.textContent=(i+1)+'回目';});};})(wrap));
   hd.appendChild(left);hd.appendChild(del);wrap.appendChild(hd);
 
-  var mta=document.createElement('textarea');mta.className='fi';mta.style.cssText='min-height:76px;border-radius:0;border:none;border-top:1px solid var(--border);';mta.placeholder='面談メモ・所感…';mta.value=memo;wrap.appendChild(mta);
+  // 面談メモ
+  var mta=document.createElement('textarea');mta.className='fi';
+  mta.style.cssText='min-height:76px;border-radius:0;border:none;border-top:1px solid var(--border);';
+  mta.placeholder='面談メモ・相談内容・所感…（サイボウズ記録をそのまま貼り付けOK）';
+  mta.value=memo;wrap.appendChild(mta);
+
+  // 次回アクション
   var ah=document.createElement('div');ah.className='meah';ah.textContent='✅ 次回アクション';wrap.appendChild(ah);
-  var ata=document.createElement('textarea');ata.className='fi';ata.style.cssText='min-height:48px;border-radius:0;border:none;border-top:1px solid var(--border);';ata.placeholder='次回の課題…';ata.value=action;wrap.appendChild(ata);
+  var ata=document.createElement('textarea');ata.className='fi';
+  ata.style.cssText='min-height:48px;border-radius:0;border:none;border-top:1px solid var(--border);';
+  ata.placeholder='次回の課題…';ata.value=action;wrap.appendChild(ata);
+
+  // Claudeサポート欄
+  var csh=document.createElement('div');
+  csh.style.cssText='background:#e8eaf6;border-top:1.5px solid #9fa8da;padding:8px 12px;';
+  csh.innerHTML='<div style="font-size:0.7rem;font-weight:700;color:#1a237e;margin-bottom:6px;">🤖 Claudeサポート記録</div>';
+
+  // チェックボックスグループ
+  var cbGroup=document.createElement('div');
+  cbGroup.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px;';
+  var types=['ES添削','志望動機','ガクチカ','自己PR','想定問答','企業リサーチ','面談記録整理','その他'];
+  types.forEach(function(t){
+    var lbl=document.createElement('label');
+    lbl.style.cssText='display:flex;align-items:center;gap:3px;font-size:0.73rem;background:white;border:1px solid #9fa8da;border-radius:5px;padding:2px 8px;cursor:pointer;';
+    var cb=document.createElement('input');
+    cb.type='checkbox';cb.value=t;cb.style.accentColor='#1a237e';
+    if(claudeTypes.indexOf(t)>=0)cb.checked=true;
+    lbl.appendChild(cb);lbl.appendChild(document.createTextNode(t));
+    cbGroup.appendChild(lbl);
+  });
+  csh.appendChild(cbGroup);
+
+  // Claude添削・アドバイス保存欄
+  var cnLbl=document.createElement('div');
+  cnLbl.style.cssText='font-size:0.7rem;color:#3949ab;margin-bottom:3px;font-weight:600;';
+  cnLbl.textContent='📋 Claudeの添削・アドバイス（Claudeとのやり取りから良かった部分をペースト）';
+  var cnTa=document.createElement('textarea');
+  cnTa.className='fi';cnTa.dataset.claudeNote='true';
+  cnTa.style.cssText='min-height:60px;background:white;border:1px solid #9fa8da;border-radius:6px;font-size:0.79rem;';
+  cnTa.placeholder='Claudeが添削・提案した内容をここに保存…';
+  cnTa.value=claudeNote;
+  csh.appendChild(cnLbl);csh.appendChild(cnTa);
+  wrap.appendChild(csh);
 
   container.appendChild(wrap);
   if(!data)wrap.scrollIntoView({behavior:'smooth'});
@@ -1260,7 +1335,94 @@ window.saveAll = function(){
   }
 };
 
-// ===== AI機能（Claude API連携） =====
+// ===== Claudeエクスポート機能 =====
+window.claudeExport = function(){
+  var name = _headerState.name || g('hName').textContent.trim() || '（氏名なし）';
+  var gakuseki = _headerState.gakuseki || '―';
+  var zemi = _headerState.zemi || '―';
+  var grade = _headerState.grade || '―';
+  var email = _headerState.email || '―';
+  var career = _headerState.career || '―';
+  var target = _headerState.target || '―';
+  var jobs = _headerState.jobs || '―';
+  var support = _headerState.support || '―';
+  var progress = _headerState.progress || '―';
+  var anxiety = _headerState.anxiety || '―';
+  var themes = _headerState.themes || '―';
+  var confirmed = g('confirmedDate')?g('confirmedDate').value:'―';
+
+  var v=function(id){return g(id)?g(id).value.trim():'（未記入）';};
+
+  // 面談記録テキスト生成
+  var memoText='';
+  g('memoContainer').querySelectorAll('.me').forEach(function(e,i){
+    var di=e.querySelector('.medate');
+    var typeSelect=e.querySelector('select');
+    var recType=typeSelect?typeSelect.value:'対面';
+    var tas=e.querySelectorAll('textarea');
+    var memo=tas[0]?tas[0].value.trim():'';
+    var action=tas[1]?tas[1].value.trim():'';
+    var claudeNote=tas[2]?tas[2].value.trim():'';
+    // チェックボックス取得
+    var claudeTypes=[];
+    e.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+      if(cb.checked)claudeTypes.push(cb.value);
+    });
+    memoText+='【'+(i+1)+'回目 '+(di?di.value:'')+'】（'+recType+'）\n';
+    if(memo)memoText+='面談内容：\n'+memo+'\n';
+    if(action)memoText+='次回アクション：'+action+'\n';
+    if(claudeTypes.length)memoText+='Claudeサポート：'+claudeTypes.join('・')+'\n';
+    if(claudeNote)memoText+='Claude添削・アドバイス：\n'+claudeNote+'\n';
+    memoText+='\n';
+  });
+
+  var exportDate = new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+
+  var text =
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+    '【面談カルテ Claudeエクスポート】\n' +
+    '多摩大学 キャリア支援課｜エクスポート日：'+exportDate+'\n' +
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+    '■ 基本情報\n' +
+    '氏名：'+name+'　学籍番号：'+gakuseki+'\n' +
+    'ゼミ：'+zemi+'　学年：'+grade+'\n' +
+    'メール：'+email+'\n' +
+    '希望進路：'+career+'　志望先：'+target+'\n' +
+    '希望職種：'+jobs+'\n' +
+    'サポート希望：'+support+'　進み具合：'+progress+'\n' +
+    '不安なこと：'+anxiety+'\n' +
+    '相談テーマ：'+themes+'\n' +
+    '面談確定日時：'+confirmed+'\n\n' +
+    '■ 検査結果\n' +
+    'VPI：'+(g('vpiCheck')&&g('vpiCheck').checked?'受領済み':'未受領')+'　'+v('vpiMemo')+'\n' +
+    '価値観検査：'+(g('valueCheck')&&g('valueCheck').checked?'受領済み':'未受領')+'　'+v('valueMemo')+'\n\n' +
+    '■ ヒアリング情報\n' +
+    'ゼミ内容：'+v('zemiContent')+'\n' +
+    'アルバイト：'+v('baitoDetail')+'\n' +
+    '部活・サークル：'+v('clubDetail')+'\n' +
+    '趣味：'+v('hobby')+'　特技：'+v('skill')+'\n' +
+    '資格：'+v('license')+'\n' +
+    'PCスキル：'+v('pcSkill')+'　語学：'+v('langSkill')+'\n\n' +
+    '■ 面談記録（時系列）\n' +
+    (memoText||'（記録なし）\n') +
+    '■ ES素材帳\n\n' +
+    '【ガクチカ①（学業）】\n'+v('gaku1')+'\n' +
+    (v('gaku1memo')!=='（未記入）'?'補足：'+v('gaku1memo')+'\n':'')+'\n' +
+    '【ガクチカ②（学業以外）】\n'+v('gaku2')+'\n' +
+    (v('gaku2memo')!=='（未記入）'?'補足：'+v('gaku2memo')+'\n':'')+'\n' +
+    '【自己PR】\n'+v('selfpr')+'\n' +
+    (v('selfprmemo')!=='（未記入）'?'補足：'+v('selfprmemo')+'\n':'')+'\n' +
+    '【企業選びの軸・志望動機】\n'+v('jiku')+'\n' +
+    (v('jikumemo')!=='（未記入）'?'補足：'+v('jikumemo')+'\n':'')+'\n' +
+    '【カウンセラーコメント】\n'+v('counselorMemo')+'\n\n' +
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+    '以上が'+name+'さんのカルテデータです。\nこのデータをもとにサポートをお願いします。\n' +
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━';
+
+  doCopy(text,'🤖 '+name+'さんのカルテをClaudeエクスポートしました！\nClaude.aiに貼り付けて相談してください。');
+};
+
+
 window.saveApiKey = function(){
   var key = document.getElementById('aiApiKey').value.trim();
   if(!key){ toast('⚠️ APIキーを入力してください'); return; }
@@ -1933,36 +2095,8 @@ window._restoreMemosOnly = function(memos){
   if(!container) return;
   container.innerHTML = '';
   if(!memos || !memos.length) return;
-  memos.forEach(function(m, i){
-    var count = i + 1;
-    var wrap = document.createElement('div');
-    wrap.className = 'me';
-    wrap.dataset.idx = m.idx || (Date.now() + i);
-    var hd = document.createElement('div'); hd.className = 'meh';
-    var left = document.createElement('div'); left.style.cssText = 'display:flex;align-items:center;gap:7px;';
-    var badge = document.createElement('span'); badge.className = 'mebadge'; badge.textContent = count + '回目';
-    var di = document.createElement('input'); di.className = 'medate'; di.value = m.date || ''; di.placeholder = '面談日';
-    left.appendChild(badge); left.appendChild(di);
-    var del = document.createElement('button'); del.className = 'medel'; del.textContent = '🗑';
-    del.addEventListener('click', (function(w){ return function(){
-      if(!confirm('この面談記録を削除しますか？')) return;
-      w.remove();
-      container.querySelectorAll('.me').forEach(function(e,i){
-        var b = e.querySelector('.mebadge'); if(b) b.textContent = (i+1) + '回目';
-      });
-    };})(wrap));
-    hd.appendChild(left); hd.appendChild(del); wrap.appendChild(hd);
-    var mta = document.createElement('textarea'); mta.className = 'fi';
-    mta.style.cssText = 'min-height:76px;border-radius:0;border:none;border-top:1px solid var(--border);';
-    mta.placeholder = '面談メモ・所感…'; mta.value = m.memo || '';
-    wrap.appendChild(mta);
-    var ah = document.createElement('div'); ah.className = 'meah'; ah.textContent = '✅ 次回アクション';
-    wrap.appendChild(ah);
-    var ata = document.createElement('textarea'); ata.className = 'fi';
-    ata.style.cssText = 'min-height:48px;border-radius:0;border:none;border-top:1px solid var(--border);';
-    ata.placeholder = '次回の課題…'; ata.value = m.action || '';
-    wrap.appendChild(ata);
-    container.appendChild(wrap);
+  memos.forEach(function(m){
+    addMemo(m);
   });
 };
 </script>
