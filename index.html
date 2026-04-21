@@ -390,6 +390,77 @@ window.firebaseReady = true;
           <label class="radio-item"><input type="radio" name="progress" value="ほとんど動けていない">😟 ほとんど動けていない</label>
         </div>
       </div>
+      <!-- アルバイト経験 -->
+      <div class="field">
+        <label>💼 アルバイト経験</label>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="parttime" value="あり" onchange="onParttimeChange()">✅ あり</label>
+          <label class="radio-item"><input type="radio" name="parttime" value="なし" onchange="onParttimeChange()">— なし</label>
+        </div>
+      </div>
+      <div id="parttimeDetail" style="display:none;background:#f3faf0;border:1.5px solid #c8dfc2;border-radius:10px;padding:12px 14px;margin-bottom:10px;">
+        <div class="field" style="margin-bottom:10px;">
+          <label>職種・業種（複数選択可）</label>
+          <div class="check-group">
+            <label class="check-item"><input type="checkbox" name="parttimeType" value="接客・飲食">🍽 接客・飲食</label>
+            <label class="check-item"><input type="checkbox" name="parttimeType" value="販売・小売">🛍 販売・小売</label>
+            <label class="check-item"><input type="checkbox" name="parttimeType" value="事務・PC作業">💻 事務・PC</label>
+            <label class="check-item"><input type="checkbox" name="parttimeType" value="塾・家庭教師">📚 塾・家庭教師</label>
+            <label class="check-item"><input type="checkbox" name="parttimeType" value="配送・軽作業">📦 配送・軽作業</label>
+            <label class="check-item"><input type="checkbox" name="parttimeType" value="その他">その他</label>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:10px;">
+          <label>継続期間</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="parttimePeriod" value="3ヶ月未満">3ヶ月未満</label>
+            <label class="radio-item"><input type="radio" name="parttimePeriod" value="3ヶ月〜1年未満">3ヶ月〜1年</label>
+            <label class="radio-item"><input type="radio" name="parttimePeriod" value="1年〜2年未満">1〜2年</label>
+            <label class="radio-item"><input type="radio" name="parttimePeriod" value="2年以上">2年以上</label>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>印象に残っていること・頑張ったこと<span style="font-weight:400;color:var(--tl);font-size:0.75rem;">（50字程度）</span></label>
+          <textarea id="fParttimeMemo" placeholder="例：繁忙期でもチームで協力してクレームゼロを達成しました。" style="min-height:60px;font-size:0.85rem;"></textarea>
+        </div>
+      </div>
+
+      <!-- スポーツ・課外活動経験 -->
+      <div class="field">
+        <label>🏃 スポーツ・部活・課外活動の経験</label>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="sports" value="あり" onchange="onSportsChange()">✅ あり</label>
+          <label class="radio-item"><input type="radio" name="sports" value="なし" onchange="onSportsChange()">— なし</label>
+        </div>
+      </div>
+      <div id="sportsDetail" style="display:none;background:#f3faf0;border:1.5px solid #c8dfc2;border-radius:10px;padding:12px 14px;margin-bottom:10px;">
+        <div class="field" style="margin-bottom:10px;">
+          <label>種目・活動名</label>
+          <input type="text" id="fSportsName" placeholder="例：バスケットボール、サッカー、吹奏楽 など">
+        </div>
+        <div class="field" style="margin-bottom:10px;">
+          <label>活動期間</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="sportsPeriod" value="1年未満">1年未満</label>
+            <label class="radio-item"><input type="radio" name="sportsPeriod" value="1〜3年未満">1〜3年</label>
+            <label class="radio-item"><input type="radio" name="sportsPeriod" value="3〜5年未満">3〜5年</label>
+            <label class="radio-item"><input type="radio" name="sportsPeriod" value="5年以上">5年以上</label>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:10px;">
+          <label>チーム競技 or 個人競技</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="sportsStyle" value="チーム競技">👥 チーム競技</label>
+            <label class="radio-item"><input type="radio" name="sportsStyle" value="個人競技">🙋 個人競技</label>
+            <label class="radio-item"><input type="radio" name="sportsStyle" value="どちらも">どちらも</label>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>上達・向上のために自分なりに工夫したこと<span style="font-weight:400;color:var(--tl);font-size:0.75rem;">（50字程度）</span></label>
+          <textarea id="fSportsMemo" placeholder="例：試合動画を毎週見直し、自分のフォームと比較して改善点をノートに記録しました。" style="min-height:60px;font-size:0.85rem;"></textarea>
+        </div>
+      </div>
+
       <div class="field"><label>相談したいこと</label>
         <div class="check-group" id="themesGroup">
           <label class="check-item"><input type="checkbox" value="自己分析">自己分析</label>
@@ -1353,6 +1424,18 @@ function buildConfirm() {
   document.getElementById('confirmContent').innerHTML=html;
 }
 
+// ===== アルバイト・スポーツ 表示切り替え =====
+function onParttimeChange(){
+  var val = document.querySelector('input[name="parttime"]:checked');
+  document.getElementById('parttimeDetail').style.display =
+    (val && val.value === 'あり') ? 'block' : 'none';
+}
+function onSportsChange(){
+  var val = document.querySelector('input[name="sports"]:checked');
+  document.getElementById('sportsDetail').style.display =
+    (val && val.value === 'あり') ? 'block' : 'none';
+}
+
 // ===== 送信 =====
 // サポート希望度の表示切り替え
 function onSupportChange(){
@@ -1414,6 +1497,39 @@ function sendMail() {
     if(anxiety.length) body+='・不安なこと　：'+anxiety.join('、')+'\n';
     body+='\n';
     body+='【相談したいこと・不安なこと】\n'+(themes.join('、')||'―')+'\n\n';
+
+    // アルバイト経験
+    var parttime = document.querySelector('input[name="parttime"]:checked');
+    body+='【アルバイト経験】\n';
+    if(parttime && parttime.value==='あり'){
+      var ptTypes=[...document.querySelectorAll('input[name="parttimeType"]:checked')].map(function(e){return e.value;});
+      var ptPeriod=document.querySelector('input[name="parttimePeriod"]:checked');
+      var ptMemo=document.getElementById('fParttimeMemo').value;
+      body+='・経験　　　　：あり\n';
+      body+='・職種・業種　：'+(ptTypes.join('、')||'―')+'\n';
+      body+='・継続期間　　：'+(ptPeriod?ptPeriod.value:'―')+'\n';
+      body+='・頑張ったこと：'+(ptMemo||'―')+'\n\n';
+    } else {
+      body+='・経験　　　　：'+(parttime?parttime.value:'―')+'\n\n';
+    }
+
+    // スポーツ・課外活動経験
+    var sports = document.querySelector('input[name="sports"]:checked');
+    body+='【スポーツ・部活・課外活動】\n';
+    if(sports && sports.value==='あり'){
+      var sportsName=document.getElementById('fSportsName').value;
+      var sportsPeriod=document.querySelector('input[name="sportsPeriod"]:checked');
+      var sportsStyle=document.querySelector('input[name="sportsStyle"]:checked');
+      var sportsMemo=document.getElementById('fSportsMemo').value;
+      body+='・経験　　　　：あり\n';
+      body+='・種目・活動名：'+(sportsName||'―')+'\n';
+      body+='・活動期間　　：'+(sportsPeriod?sportsPeriod.value:'―')+'\n';
+      body+='・競技スタイル：'+(sportsStyle?sportsStyle.value:'―')+'\n';
+      body+='・工夫したこと：'+(sportsMemo||'―')+'\n\n';
+    } else {
+      body+='・経験　　　　：'+(sports?sports.value:'―')+'\n\n';
+    }
+
   } else {
     const types=[...document.querySelectorAll('input[name="consultType"]:checked')].map(function(e){return e.value;});
     const interview=document.querySelector('input[name="interviewType"]:checked');
