@@ -857,6 +857,19 @@ function fillInfo(s){
   if(_prepBody)    _prepBody.style.display = 'none';
   if(_prepBtn)     _prepBtn.textContent = '▼ 開く';
 
+  // ★ 面談記録メモをクリア（別の学生のデータが残らないように）
+  // restoreJSONが後から呼ばれる場合は上書きされるので安全
+  var _memo = g('memoContainer');
+  if(_memo) _memo.innerHTML = '';
+
+  // ★ data-save フィールドを全クリア（ES素材等）
+  // restoreJSONが後から呼ばれる場合は上書きされるので安全
+  document.querySelectorAll('[data-save="true"]').forEach(function(el){
+    if(el.id === 'prepCardContent') return; // 上で処理済み
+    if(el.type === 'checkbox') el.checked = false;
+    else el.value = '';
+  });
+
   // 内部状態を更新
   _headerState.name = s['氏名']||'';
   _headerState.zemi = s['ゼミ']||'';
