@@ -1576,6 +1576,109 @@ function sendMail() {
     submitBtn.classList.add('sent');
     submitBtn.innerHTML = '✅ メール内容を作成済み（下のボタンから送信してください）';
   }
+
+  // ===== カルテ連携：アンケートデータをURLパラメータ化 =====
+  try {
+    var karteData = {};
+
+    // 基本情報
+    karteData['氏名']      = document.getElementById('fName').value || '';
+    karteData['学籍番号']  = document.getElementById('fGakuseki').value || '';
+    karteData['ゼミ']      = document.getElementById('fZemi').value || '';
+    karteData['大学メール']= document.getElementById('fEmail').value || '';
+    var _gradeEl = document.querySelector('input[name="grade"]:checked');
+    karteData['学年'] = _gradeEl ? _gradeEl.value : '';
+    karteData['相談種別'] = isFirst ? '初回相談' : '2回目以降';
+    karteData['担当相談員'] = selectedCounselor ? (selectedCounselor.name || '') : '';
+
+    if(isFirst){
+      // 就活状況
+      var _careerEl   = document.querySelector('input[name="career"]:checked');
+      var _statusEl   = document.querySelector('input[name="jobstatus"]:checked');
+      var _supportEl  = document.querySelector('input[name="support"]:checked');
+      var _progressEl = document.querySelector('input[name="progress"]:checked');
+      var _anxietyVals= [...document.querySelectorAll('input[name="anxiety"]:checked')].map(function(e){return e.value;});
+      var _themeVals  = [...document.querySelectorAll('#themesGroup input:checked')].map(function(e){return e.value;});
+      karteData['希望進路']    = _careerEl   ? _careerEl.value   : '';
+      karteData['活動状況']    = _statusEl   ? _statusEl.value   : '';
+      karteData['サポート希望']= _supportEl  ? _supportEl.value  : '';
+      karteData['進み具合']    = _progressEl ? _progressEl.value : '';
+      karteData['不安なこと']  = _anxietyVals.join('、');
+      karteData['相談テーマ']  = _themeVals.join('、');
+
+      // アルバイト経験 → baitoDetail へ整形
+      var _pt = document.querySelector('input[name="parttime"]:checked');
+      if(_pt && _pt.value === 'あり'){
+        var _ptTypes  = [...document.querySelectorAll('input[name="parttimeType"]:checked')].map(function(e){return e.value;});
+        var _ptPeriod = document.querySelector('input[name="parttimePeriod"]:checked');
+        var _ptMemo   = document.getElementById('fParttimeMemo').value;
+        var _baitoStr = (_ptTypes.join('・') || '―') + '　' + (_ptPeriod ? _ptPeriod.value : '―');
+        if(_ptMemo) _baitoStr += '　／　' + _ptMemo;
+        karteData['baitoDetail'] = _baitoStr;
+      } else {
+        karteData['baitoDetail'] = _pt ? 'なし' : '';
+      }
+
+      // スポーツ・部活経験 → clubDetail へ整形
+      var _sp = document.querySelector('input[name="sports"]:checked');
+      if(_sp && _sp.value === 'あり'){
+        var _spName   = document.getElementById('fSportsName').value;
+        var _spPeriod = document.querySelector('input[name="sportsPeriod"]:checked');
+        var _spStyle  = document.querySelector('input[name="sportsStyle"]:checked');
+        var _spMemo   = document.getElementById('fSportsMemo').value;
+        var _clubStr  = (_spName || '―') + '　' + (_spPeriod ? _spPeriod.value : '―');
+        if(_spStyle) _clubStr += '　' + _spStyle.value;
+        if(_spMemo)  _clubStr += '　／　' + _spMemo;
+        karteData['clubDetail'] = _clubStr;
+      } else {
+        karteData['clubDetail'] = _sp ? 'なし' : '';
+      }
+
+    } else {
+      // 2回目以降
+      var _consultVals = [...document.querySelectorAll('input[name="consultType"]:checked')].map(function(e){return e.value;});
+      var _interviewEl = document.querySelector('input[name="interviewType"]:checked');
+      karteData['相談テーマ'] = _consultVals.join('、');
+      karteData['面接種別']   = _interviewEl ? _interviewEl.value : '';
+      karteData['応募企業']   = document.getElementById('fCompany') ? document.getElementById('fCompany').value : '';
+    }
+
+    // 希望日時・自由記入
+    karteData['第1希望']  = wishes[0] ? wishes[0].label : '';
+    karteData['第2希望']  = wishes[1] ? wishes[1].label : '';
+    karteData['第3希望']  = wishes[2] ? wishes[2].label : '';
+    karteData['相談詳細'] = document.getElementById('fFree').value || '';
+
+    // カルテURLを生成（karte_v5.htmlと同ディレクトリ想定）
+    window._karteUrl = './karte_v5.html?from_form=1&data=' + encodeURIComponent(JSON.stringify(karteData));
+
+    // 「カルテで開く」ボタンを追加（初回のみ生成）
+    if(!document.getElementById('karteOpenBtn')){
+      var _karteBtn = document.createElement('button');
+      _karteBtn.id = 'karteOpenBtn';
+      _karteBtn.style.cssText = [
+        'width:100%','padding:14px','margin-top:10px',
+        'background:#6b4c2a','color:white','border:none',
+        'border-radius:50px',
+        'font-family:\'Noto Sans JP\',sans-serif',
+        'font-size:1rem','font-weight:700','cursor:pointer',
+        'box-shadow:0 4px 14px rgba(107,76,42,0.35)',
+        'letter-spacing:0.04em'
+      ].join(';');
+      _karteBtn.innerHTML = '📋 面談カルテを開く（アンケートを自動転記）';
+      _karteBtn.addEventListener('click', function(){
+        window.open(window._karteUrl, '_blank');
+      });
+      // ボタン群の最後に追加
+      var _btnArea = document.querySelector('#mailPreviewArea > div:last-child');
+      if(_btnArea) _btnArea.appendChild(_karteBtn);
+    } else {
+      // 再生成時はURLだけ更新
+      window._karteUrl = './karte_v5.html?from_form=1&data=' + encodeURIComponent(JSON.stringify(karteData));
+    }
+  } catch(e){
+    console.warn('カルテ連携エラー:', e);
+  }
 }
 
 function copyMailContent(){

@@ -1660,6 +1660,77 @@ function genPrompt(){
 // イベント登録
 document.addEventListener('DOMContentLoaded',function(){
 
+  // ===== ★ 予約フォーム連携：URLパラメータ自動読み込み =====
+  (function(){
+    try {
+      var params = new URLSearchParams(window.location.search);
+      if(params.get('from_form') !== '1') return;
+      var raw = params.get('data');
+      if(!raw) return;
+      var fd = JSON.parse(decodeURIComponent(raw)); // fd = formData
+
+      // fillInfo() へ渡すオブジェクトを構築
+      var s = {};
+      s['氏名']        = fd['氏名']        || '';
+      s['学籍番号']    = fd['学籍番号']    || '';
+      s['ゼミ']        = (fd['ゼミ'] || '').replace(/ゼミ$/, '');
+      s['学年']        = fd['学年']        || '';
+      s['大学メール']  = fd['大学メール']  || '';
+      s['希望進路']    = fd['希望進路']    || '';
+      s['活動状況']    = fd['活動状況']    || '';
+      s['志望先']      = fd['応募企業']    || '';
+      s['希望職種']    = '';
+      s['サポート希望']= fd['サポート希望']|| '';
+      s['進み具合']    = fd['進み具合']    || '';
+      s['不安なこと']  = fd['不安なこと']  || '';
+      s['相談テーマ']  = fd['相談テーマ']  || '';
+      s['第1希望']     = fd['第1希望']     || '';
+      s['第2希望']     = fd['第2希望']     || '';
+      s['第3希望']     = fd['第3希望']     || '';
+      s['相談詳細']    = fd['相談詳細']    || '';
+      s['履修科目']    = '';
+
+      // 起動モーダルをスキップしてカルテを直接表示
+      fillInfo(s);
+      g('startModal').classList.add('hide');
+
+      // baitoDetail・clubDetail を直接セット（data-save要素なので保存対象）
+      if(fd['baitoDetail']){
+        var _baito = g('baitoDetail');
+        if(_baito && !_baito.value) _baito.value = fd['baitoDetail'];
+      }
+      if(fd['clubDetail']){
+        var _club = g('clubDetail');
+        if(_club && !_club.value) _club.value = fd['clubDetail'];
+      }
+
+      // counselorMemo に担当・種別を自動挿入
+      var _note = [];
+      if(fd['担当相談員']) _note.push('担当：' + fd['担当相談員']);
+      if(fd['相談種別'])   _note.push('種別：' + fd['相談種別']);
+      if(fd['面接種別'])   _note.push('面接：' + fd['面接種別']);
+      if(_note.length){
+        var _memoEl = g('counselorMemo');
+        if(_memoEl && !_memoEl.value){
+          _memoEl.value = '【予約フォームより】' + _note.join('　');
+        }
+      }
+
+      // 過去データがあればCloud自動マージ
+      if(s['学籍番号'] && window._autoCloudMerge){
+        window._autoCloudMerge(s['学籍番号']);
+      }
+
+      // 完了トースト
+      setTimeout(function(){
+        toast('📋 予約フォームのアンケートを自動転記しました！\nアルバイト・部活情報も反映済みです。');
+      }, 600);
+
+    } catch(e){
+      console.warn('URLパラメータ読み込みエラー:', e);
+    }
+  })();
+
   // 起動モーダル選択肢
   [1,2,3].forEach(function(n){
     var el=g('opt'+n);

@@ -612,6 +612,17 @@ function parseAndAdd() {
     support: get('サポート希望'),
     progress: get('進み具合'),
     anxiety: get('不安なこと'),
+    // アルバイト経験（初回のみ）
+    parttimeYN:     (function(){ var b=getBlock('【アルバイト経験】','【'); return b.includes('あり')?'あり':(b.includes('なし')?'なし':''); })(),
+    parttimeType:   get('職種・業種'),
+    parttimePeriod: get('継続期間'),
+    parttimeMemo:   get('頑張ったこと'),
+    // スポーツ・部活経験（初回のみ）
+    sportsYN:       (function(){ var b=getBlock('【スポーツ・部活・課外活動】','【'); return b.includes('あり')?'あり':(b.includes('なし')?'なし':''); })(),
+    sportsName:     get('種目・活動名'),
+    sportsPeriod:   get('活動期間'),
+    sportsStyle:    get('競技スタイル'),
+    sportsMemo:     get('工夫したこと'),
     // 2回目以降専用
     consultType: get('相談種別') || get('今回の相談種別'),
     interviewType: get('面接種別'),
@@ -1295,8 +1306,30 @@ function generateCSV() {
   if (students.length === 0) { alert('データがありません。'); return; }
   const headers = ['種別','氏名','学籍番号','ゼミ','学年','大学メール','活動状況',
     'サポート希望','進み具合','不安なこと',
+    'アルバイト経験','スポーツ・部活経験',
     '相談テーマ','第1希望','第2希望','第3希望','確定日時','ステータス'];
   const rows = students.map(function(s) {
+    // アルバイト整形
+    var baitoStr = '';
+    if (s.parttimeYN === 'なし') { baitoStr = 'なし'; }
+    else if (s.parttimeYN === 'あり') {
+      var bp = [];
+      if (s.parttimeType)   bp.push(s.parttimeType);
+      if (s.parttimePeriod) bp.push(s.parttimePeriod);
+      if (s.parttimeMemo)   bp.push('／ ' + s.parttimeMemo);
+      baitoStr = bp.join('　') || 'あり';
+    }
+    // スポーツ整形
+    var clubStr = '';
+    if (s.sportsYN === 'なし') { clubStr = 'なし'; }
+    else if (s.sportsYN === 'あり') {
+      var cp = [];
+      if (s.sportsName)   cp.push(s.sportsName);
+      if (s.sportsPeriod) cp.push(s.sportsPeriod);
+      if (s.sportsStyle)  cp.push(s.sportsStyle);
+      if (s.sportsMemo)   cp.push('／ ' + s.sportsMemo);
+      clubStr = cp.join('　') || 'あり';
+    }
     return [
       s.isSecond ? '2回目以降' : '初回',
       s.name, s.gakuseki, s.zemi, s.grade, s.emailUniv,
@@ -1304,6 +1337,8 @@ function generateCSV() {
       s.support||'―',
       s.progress||'―',
       s.anxiety||'―',
+      baitoStr||'―',
+      clubStr||'―',
       s.themes,
       s.w1, s.w2, s.w3,
       (s._confirmed && s._confirmed !== '__reapply__') ? s._confirmed : '',
@@ -1672,6 +1707,27 @@ window.saveAllStudentsToFirebase = async function(students) {
       counselorName: counselorInfo.name || '北山 四郎',
       _confirmedAt:  now,
       _source:       'NO2NO3',
+      // ★ アルバイト経験
+      baitoDetail: (function(){
+        if (!s.parttimeYN) return '';
+        if (s.parttimeYN === 'なし') return 'なし';
+        var parts = [];
+        if (s.parttimeType)   parts.push(s.parttimeType);
+        if (s.parttimePeriod) parts.push(s.parttimePeriod);
+        if (s.parttimeMemo)   parts.push('／ ' + s.parttimeMemo);
+        return parts.join('　') || 'あり';
+      })(),
+      // ★ スポーツ・部活経験
+      clubDetail: (function(){
+        if (!s.sportsYN) return '';
+        if (s.sportsYN === 'なし') return 'なし';
+        var parts = [];
+        if (s.sportsName)   parts.push(s.sportsName);
+        if (s.sportsPeriod) parts.push(s.sportsPeriod);
+        if (s.sportsStyle)  parts.push(s.sportsStyle);
+        if (s.sportsMemo)   parts.push('／ ' + s.sportsMemo);
+        return parts.join('　') || 'あり';
+      })(),
     };
     try {
       await setDoc(doc(db, 'karte', gakuseki), karteBase, { merge: true });
