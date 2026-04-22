@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学生カルテ一覧｜多摩大学 キャリア支援課</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gl:#7db96a;--gp:#e8f5e3;
+  --bark:#6b4c2a;--cream:#fdfaf5;--text:#2a2a2a;--tl:#888;
+  --border:#d0e4c8;--shadow:0 2px 16px rgba(45,90,39,0.10);
+  --blue:#1565c0;--gold:#c8860a;--red:#c0392b;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:#eef4eb;color:var(--text);min-height:100vh;}
+
+/* ===== ログイン ===== */
+#loginScreen{position:fixed;inset:0;background:#eef4eb;z-index:9999;display:flex;align-items:center;justify-content:center;}
+.login-box{background:white;border-radius:16px;padding:40px 36px;box-shadow:0 4px 24px rgba(45,90,39,0.15);text-align:center;width:320px;}
+.login-box .icon{font-size:2.5rem;margin-bottom:8px;}
+.login-box h2{color:var(--gd);font-size:1.1rem;margin-bottom:4px;}
+.login-box p{color:#888;font-size:0.78rem;margin-bottom:20px;}
+.login-box input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:1rem;margin-bottom:12px;font-family:inherit;outline:none;}
+.login-box input:focus{border-color:var(--gm);}
+.login-btn{width:100%;padding:10px;background:var(--gd);color:white;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;}
+.login-btn:hover{background:var(--gm);}
+.login-err{color:var(--red);font-size:0.8rem;margin-top:8px;display:none;}
+
+/* ===== ヘッダー ===== */
+.header{background:var(--gd);color:white;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.2);}
+.header-top{display:flex;align-items:center;padding:10px 20px;gap:12px;min-height:56px;}
+.header-top h1{font-family:'Noto Serif JP',serif;font-size:1.1rem;font-weight:700;flex:1;}
+.header-sub{font-size:0.68rem;opacity:0.7;}
+.hbtn{padding:5px 14px;border:none;border-radius:20px;font-family:'Noto Sans JP',sans-serif;font-size:0.74rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.hbtn-active{background:white;color:var(--gd);}
+.hbtn-inactive{background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);}
+.hbtn-inactive:hover{background:rgba(255,255,255,0.25);}
+.mode-btns{display:flex;gap:6px;}
+.header-bar{background:rgba(0,0,0,0.15);padding:7px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.search-inp{padding:5px 12px;border:1.5px solid rgba(255,255,255,0.3);border-radius:20px;background:rgba(255,255,255,0.1);color:white;font-family:inherit;font-size:0.8rem;width:200px;outline:none;}
+.search-inp::placeholder{color:rgba(255,255,255,0.5);}
+.search-inp:focus{border-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.18);}
+.filter-sel{padding:5px 10px;border:1.5px solid rgba(255,255,255,0.3);border-radius:20px;background:rgba(255,255,255,0.1);color:white;font-family:inherit;font-size:0.78rem;outline:none;cursor:pointer;}
+.filter-sel option{background:#2d5a27;color:white;}
+.stat-badge{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:white;font-size:0.68rem;padding:3px 10px;border-radius:20px;margin-left:auto;}
+.reload-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.8);padding:4px 12px;border-radius:20px;font-size:0.74rem;cursor:pointer;font-family:inherit;}
+.reload-btn:hover{background:rgba(255,255,255,0.22);}
+
+/* ===== メイン ===== */
+.main{max-width:1100px;margin:0 auto;padding:16px 14px;}
+
+/* ===== ローディング ===== */
+.loading{text-align:center;padding:60px 20px;color:var(--tl);}
+.loading .spin{font-size:2rem;animation:spin 1s linear infinite;display:inline-block;margin-bottom:10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ===== カード表示 ===== */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+.kcard{background:white;border-radius:13px;overflow:hidden;box-shadow:var(--shadow);transition:transform 0.15s,box-shadow 0.15s;}
+.kcard:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(45,90,39,0.15);}
+.kcard-header{background:var(--gd);color:white;padding:12px 15px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.kcard-name{font-family:'Noto Serif JP',serif;font-size:1.05rem;font-weight:700;}
+.kcard-gaku{font-size:0.68rem;opacity:0.75;margin-top:2px;}
+.kcard-meta{font-size:0.68rem;opacity:0.8;text-align:right;line-height:1.6;}
+.kcard-body{padding:12px 15px;}
+.kcard-info{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.info-tag{background:var(--gp);border:1px solid var(--border);border-radius:5px;padding:2px 8px;font-size:0.72rem;color:var(--gd);}
+.kcard-section{margin-bottom:8px;}
+.kcard-section-title{font-size:0.69rem;font-weight:700;color:var(--tl);margin-bottom:5px;letter-spacing:0.05em;}
+.progress-row{display:flex;gap:5px;flex-wrap:wrap;}
+.prog-item{display:flex;align-items:center;gap:3px;font-size:0.72rem;padding:3px 8px;border-radius:5px;font-weight:500;}
+.prog-done{background:#e8f5e3;color:var(--gd);border:1px solid var(--gl);}
+.prog-none{background:#f5f5f5;color:#aaa;border:1px solid #e0e0e0;}
+.memo-count{display:flex;align-items:center;gap:6px;font-size:0.78rem;}
+.memo-badge{background:var(--gd);color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;}
+.open-btn{width:100%;margin-top:10px;padding:7px;background:var(--gd);color:white;border:none;border-radius:7px;font-family:'Noto Sans JP',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
+.open-btn:hover{background:var(--gm);}
+
+/* ===== テーブル表示 ===== */
+#tableView{display:none;}
+.table-wrap{background:white;border-radius:13px;overflow:hidden;box-shadow:var(--shadow);}
+.table-actions{padding:10px 14px;background:var(--gp);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.print-btn{padding:6px 16px;background:var(--bark);color:white;border:none;border-radius:7px;font-family:inherit;font-size:0.8rem;font-weight:700;cursor:pointer;}
+.print-btn:hover{background:#8a6030;}
+table{width:100%;border-collapse:collapse;font-size:0.78rem;}
+thead th{background:var(--gd);color:white;padding:8px 10px;text-align:center;white-space:nowrap;font-weight:700;font-size:0.74rem;position:sticky;top:0;}
+thead th:first-child{text-align:left;}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+tbody tr:hover{background:var(--gp);}
+tbody tr:nth-child(even){background:#fafff8;}
+tbody tr:nth-child(even):hover{background:var(--gp);}
+tbody td{padding:7px 10px;vertical-align:middle;}
+.td-name{font-weight:700;white-space:nowrap;}
+.td-gaku{font-size:0.72rem;color:var(--tl);}
+.td-center{text-align:center;}
+.check-yes{color:var(--gm);font-size:1rem;}
+.check-no{color:#ddd;font-size:1rem;}
+.memo-pill{background:var(--gd);color:white;border-radius:20px;padding:1px 8px;font-size:0.7rem;font-weight:700;display:inline-block;}
+.date-small{font-size:0.7rem;color:var(--tl);}
+.tbl-open{padding:3px 10px;background:var(--blue);color:white;border:none;border-radius:5px;font-size:0.72rem;cursor:pointer;font-family:inherit;font-weight:700;white-space:nowrap;}
+.tbl-open:hover{background:#1976d2;}
+
+/* ===== 空の状態 ===== */
+.empty{text-align:center;padding:60px 20px;color:var(--tl);}
+.empty .emoji{font-size:3rem;margin-bottom:12px;}
+
+/* ===== トースト ===== */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--gd);color:white;padding:11px 18px;border-radius:11px;font-size:0.82rem;box-shadow:0 4px 20px rgba(0,0,0,0.2);display:none;z-index:999;max-width:320px;line-height:1.5;}
+
+/* ===== 印刷 ===== */
+@media print{
+  .header,.table-actions,.print-btn,.tbl-open{display:none!important;}
+  body{background:white;}
+  .table-wrap{box-shadow:none;border-radius:0;}
+  #cardView{display:none!important;}
+  #tableView{display:block!important;}
+  table{font-size:0.72rem;}
+  thead th{background:#2d5a27!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .check-yes{color:#2d5a27!important;}
+}
+
+@media(max-width:600px){
+  .cards-grid{grid-template-columns:1fr;}
+  .search-inp{width:140px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ログイン -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="icon">🌳</div>
+    <h2>学生カルテ一覧</h2>
+    <p>多摩大学 キャリア支援課</p>
+    <input type="password" id="loginPw" placeholder="パスワードを入力" autocomplete="off">
+    <button class="login-btn" id="loginBtn">ログイン</button>
+    <div class="login-err" id="loginErr">❌ パスワードが違います</div>
+  </div>
+</div>
+
+<!-- ヘッダー -->
+<div class="header">
+  <div class="header-top">
+    <span style="font-size:1.4rem;">🌳</span>
+    <h1>学生カルテ一覧 <span style="font-size:0.7rem;font-weight:400;opacity:0.7;font-family:'Noto Sans JP',sans-serif;">多摩大学 キャリア支援課</span></h1>
+    <div class="mode-btns">
+      <button class="hbtn hbtn-active" id="btnCard" onclick="setMode('card')">🗂 カード</button>
+      <button class="hbtn hbtn-inactive" id="btnTable" onclick="setMode('table')">📋 一覧</button>
+    </div>
+    <button class="reload-btn" onclick="loadAll()">🔄 再読込</button>
+  </div>
+  <div class="header-bar">
+    <input class="search-inp" id="searchInp" placeholder="🔍 氏名・学籍番号・ゼミ…" oninput="applyFilter()">
+    <select class="filter-sel" id="filterGrade" onchange="applyFilter()">
+      <option value="">全学年</option>
+      <option value="3年生">3年生</option>
+      <option value="4年生">4年生</option>
+    </select>
+    <select class="filter-sel" id="filterZemi" onchange="applyFilter()">
+      <option value="">全ゼミ</option>
+    </select>
+    <span class="stat-badge" id="statBadge">読込中…</span>
+  </div>
+</div>
+
+<!-- メイン -->
+<div class="main">
+  <div id="loadingArea" class="loading">
+    <div class="spin">🌱</div>
+    <div>カルテデータを読み込んでいます…</div>
+  </div>
+
+  <!-- カード表示 -->
+  <div id="cardView" style="display:none;">
+    <div class="cards-grid" id="cardsGrid"></div>
+    <div class="empty" id="cardEmpty" style="display:none;">
+      <div class="emoji">📭</div>
+      <div>該当する学生がいません</div>
+    </div>
+  </div>
+
+  <!-- テーブル表示 -->
+  <div id="tableView">
+    <div class="table-wrap">
+      <div class="table-actions">
+        <span style="font-size:0.8rem;font-weight:700;color:var(--gd);">📋 学生カルテ進捗一覧</span>
+        <span id="tableCount" style="font-size:0.75rem;color:var(--tl);"></span>
+        <button class="print-btn" onclick="window.print()">🖨 印刷</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table id="mainTable">
+          <thead>
+            <tr>
+              <th style="text-align:left;min-width:120px;">氏名</th>
+              <th>学籍番号</th>
+              <th>学年</th>
+              <th>ゼミ</th>
+              <th>面談回数</th>
+              <th>ガクチカ</th>
+              <th>自己PR</th>
+              <th>志望動機</th>
+              <th>事前面談</th>
+              <th>想定問答</th>
+              <th>最終保存</th>
+              <th>開く</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="tableEmpty" style="display:none;padding:40px;">
+        <div class="emoji">📭</div>
+        <div>該当する学生がいません</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const FB = {
+  apiKey:            "AIzaSyBTxRgOvPYOmacVfJkEjLLgI2K-ASnZbq4",
+  authDomain:        "career-board-4a3f8.firebaseapp.com",
+  projectId:         "career-board-4a3f8",
+  storageBucket:     "career-board-4a3f8.firebasestorage.app",
+  messagingSenderId: "235913147040",
+  appId:             "1:235913147040:web:39c20d95267e2777ef4fc5"
+};
+
+const app = initializeApp(FB);
+const db  = getFirestore(app);
+
+window._loadKarteAll = async function(){
+  const snap = await getDocs(collection(db, 'karte'));
+  const list = [];
+  snap.forEach(doc => list.push(doc.data()));
+  return list;
+};
+</script>
+
+<script>
+// ===== ログイン =====
+(function(){
+  const PW = 'karigu2026';
+  const screen = document.getElementById('loginScreen');
+  if(sessionStorage.getItem('karte_auth')==='ok'){ screen.style.display='none'; init(); return; }
+  document.getElementById('loginBtn').addEventListener('click', tryLogin);
+  document.getElementById('loginPw').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
+  function tryLogin(){
+    if(document.getElementById('loginPw').value === PW){
+      sessionStorage.setItem('karte_auth','ok');
+      screen.style.display='none';
+      init();
+    } else {
+      document.getElementById('loginErr').style.display='block';
+      document.getElementById('loginPw').value='';
+    }
+  }
+})();
+
+let _allData = [];
+let _filtered = [];
+let _mode = 'card';
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none', 3500);
+}
+
+function init(){
+  // Firebaseモジュールのロードを待ってから実行
+  setTimeout(loadAll, 800);
+}
+
+window.loadAll = async function(){
+  document.getElementById('loadingArea').style.display='block';
+  document.getElementById('cardView').style.display='none';
+  document.getElementById('tableView').style.display='none';
+
+  try{
+    if(!window._loadKarteAll){
+      // モジュールがまだ読み込まれていない場合は再試行
+      setTimeout(loadAll, 500); return;
+    }
+    _allData = await window._loadKarteAll();
+    _allData.sort((a,b)=>{
+      // 最終保存日時の降順でソート
+      const da = a._cloudSavedAt || a._savedAt || '';
+      const db2 = b._cloudSavedAt || b._savedAt || '';
+      return db2.localeCompare(da);
+    });
+    buildZemiFilter();
+    applyFilter();
+    document.getElementById('loadingArea').style.display='none';
+    document.getElementById(_mode==='card'?'cardView':'tableView').style.display='block';
+    toast('✅ '+_allData.length+'件のカルテを読み込みました');
+  } catch(e){
+    document.getElementById('loadingArea').innerHTML='<div style="color:#c0392b;padding:40px;text-align:center;">❌ 読み込み失敗：'+e.message+'<br><small>GitHub Pages上でご利用ください</small></div>';
+    console.error(e);
+  }
+};
+
+function buildZemiFilter(){
+  const zemis = [...new Set(_allData.map(d=>d.zemi||'').filter(Boolean))].sort();
+  const sel = document.getElementById('filterZemi');
+  sel.innerHTML = '<option value="">全ゼミ</option>' +
+    zemis.map(z=>`<option value="${z}">${z}</option>`).join('');
+}
+
+function applyFilter(){
+  const kw  = (document.getElementById('searchInp').value||'').toLowerCase();
+  const gr  = document.getElementById('filterGrade').value;
+  const zm  = document.getElementById('filterZemi').value;
+
+  _filtered = _allData.filter(d=>{
+    if(kw){
+      const hay = ((d.name||'')+(d.gakuseki||'')+(d.zemi||'')).toLowerCase();
+      if(!hay.includes(kw)) return false;
+    }
+    if(gr && (d.grade||'') !== gr) return false;
+    if(zm && (d.zemi||'') !== zm) return false;
+    return true;
+  });
+
+  document.getElementById('statBadge').textContent = _filtered.length+'件 ／ 全'+_allData.length+'件';
+  document.getElementById('tableCount').textContent = _filtered.length+'件表示中';
+
+  renderCards();
+  renderTable();
+}
+
+// ===== 進捗判定 =====
+function getProgress(d){
+  const fields = d.fields || {};
+  // ガクチカ：gaku1またはgaku2に記入あり
+  const gaku = !!(fields.gaku1||d.gaku1||fields.gaku2||d.gaku2);
+  // 自己PR
+  const selfpr = !!(fields.selfpr||d.selfpr);
+  // 志望動機（就活の軸）
+  const jiku = !!(fields.jiku||d.jiku);
+  // 事前面談カード
+  const prep = !!(fields.prepCardContent||d.prepCardContent);
+  // 想定問答：面談記録のclaudeTypesに「想定問答」が含まれるか
+  let sodan = false;
+  const memos = d.memos || [];
+  memos.forEach(m=>{
+    if(m.claudeTypes && m.claudeTypes.includes('想定問答')) sodan = true;
+  });
+  return { gaku, selfpr, jiku, prep, sodan };
+}
+
+function progIcon(val){ return val ? '✅' : '―'; }
+
+function progClass(val){ return val ? 'check-yes' : 'check-no'; }
+
+function formatDate(d){
+  const s = d._cloudSavedAt || d._savedAt || '';
+  if(!s) return '―';
+  // "2026/4/15 10:23:45" → "4/15 10:23" などに短縮
+  return s.replace(/^\d{4}\//,'').replace(/:\d{2}$/,'');
+}
+
+function getMemoCount(d){
+  return (d.memos||[]).length;
+}
+
+// ===== カード描画 =====
+function renderCards(){
+  const grid = document.getElementById('cardsGrid');
+  const empty = document.getElementById('cardEmpty');
+  grid.innerHTML = '';
+
+  if(!_filtered.length){ empty.style.display='block'; return; }
+  empty.style.display='none';
+
+  _filtered.forEach(d=>{
+    const p = getProgress(d);
+    const memoCount = getMemoCount(d);
+    const savedAt = formatDate(d);
+
+    const card = document.createElement('div');
+    card.className='kcard';
+    card.innerHTML=`
+      <div class="kcard-header">
+        <div>
+          <div class="kcard-name">${d.name||'（氏名なし）'}</div>
+          <div class="kcard-gaku">🆔 ${d.gakuseki||'―'}</div>
+        </div>
+        <div class="kcard-meta">
+          ${d.grade||'―'}<br>
+          ${d.zemi ? d.zemi+'ゼミ' : '―'}
+        </div>
+      </div>
+      <div class="kcard-body">
+        <div class="kcard-info">
+          ${d.career?`<span class="info-tag">💼 ${d.career}</span>`:''}
+          ${d.status?`<span class="info-tag">📊 ${d.status}</span>`:''}
+        </div>
+
+        <div class="kcard-section">
+          <div class="kcard-section-title">ES・面接 進捗状況</div>
+          <div class="progress-row">
+            <span class="prog-item ${p.gaku?'prog-done':'prog-none'}">${p.gaku?'✅':'―'} ガクチカ</span>
+            <span class="prog-item ${p.selfpr?'prog-done':'prog-none'}">${p.selfpr?'✅':'―'} 自己PR</span>
+            <span class="prog-item ${p.jiku?'prog-done':'prog-none'}">${p.jiku?'✅':'―'} 志望動機</span>
+            <span class="prog-item ${p.prep?'prog-done':'prog-none'}">${p.prep?'✅':'―'} 事前面談</span>
+            <span class="prog-item ${p.sodan?'prog-done':'prog-none'}">${p.sodan?'✅':'―'} 想定問答</span>
+          </div>
+        </div>
+
+        <div class="kcard-section">
+          <div class="kcard-section-title">面談記録</div>
+          <div class="memo-count">
+            <span class="memo-badge">${memoCount}</span>
+            <span style="font-size:0.78rem;">${memoCount?memoCount+'回の面談記録あり':'未記録'}</span>
+            <span style="margin-left:auto;font-size:0.7rem;color:var(--tl);">保存：${savedAt}</span>
+          </div>
+        </div>
+
+        <button class="open-btn" onclick="openKarte('${d.gakuseki||''}')">📂 カルテを開く →</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ===== テーブル描画 =====
+function renderTable(){
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('tableEmpty');
+  tbody.innerHTML='';
+
+  if(!_filtered.length){ empty.style.display='block'; return; }
+  empty.style.display='none';
+
+  _filtered.forEach((d,i)=>{
+    const p = getProgress(d);
+    const memoCount = getMemoCount(d);
+    const savedAt = formatDate(d);
+    const tr = document.createElement('tr');
+    tr.innerHTML=`
+      <td>
+        <div class="td-name">${d.name||'（氏名なし）'}</div>
+        <div class="td-gaku">${d.career||''}</div>
+      </td>
+      <td class="td-center td-gaku">${d.gakuseki||'―'}</td>
+      <td class="td-center">${(d.grade||'―').replace('年生','年')}</td>
+      <td class="td-center">${d.zemi ? d.zemi+'ゼミ' : '―'}</td>
+      <td class="td-center"><span class="memo-pill">${memoCount}回</span></td>
+      <td class="td-center ${progClass(p.gaku)}">${progIcon(p.gaku)}</td>
+      <td class="td-center ${progClass(p.selfpr)}">${progIcon(p.selfpr)}</td>
+      <td class="td-center ${progClass(p.jiku)}">${progIcon(p.jiku)}</td>
+      <td class="td-center ${progClass(p.prep)}">${progIcon(p.prep)}</td>
+      <td class="td-center ${progClass(p.sodan)}">${progIcon(p.sodan)}</td>
+      <td class="td-center date-small">${savedAt}</td>
+      <td class="td-center"><button class="tbl-open" onclick="openKarte('${d.gakuseki||''}')">開く</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ===== モード切替 =====
+window.setMode = function(mode){
+  _mode = mode;
+  document.getElementById('cardView').style.display = mode==='card' ? 'block' : 'none';
+  document.getElementById('tableView').style.display = mode==='table' ? 'block' : 'none';
+  document.getElementById('btnCard').className = 'hbtn ' + (mode==='card'?'hbtn-active':'hbtn-inactive');
+  document.getElementById('btnTable').className = 'hbtn ' + (mode==='table'?'hbtn-active':'hbtn-inactive');
+};
+
+// ===== カルテを開く =====
+window.openKarte = function(gakuseki){
+  if(!gakuseki){ toast('⚠️ 学籍番号がありません'); return; }
+  // karte_v5.htmlが同じディレクトリにある前提
+  window.open('karte_v5.html?gakuseki='+encodeURIComponent(gakuseki), '_blank');
+};
+</script>
+</body>
+</html>
