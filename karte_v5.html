@@ -756,6 +756,31 @@ textarea.fi.tall{min-height:88px;}
   <span id="footerName">―</span>
 </div>
 
+<!-- 右下固定「なんでも相談」ボタン -->
+<div id="floatChatBtn" onclick="toggleFreeChat()" style="
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  z-index:9000;
+  background:#c8860a;
+  color:white;
+  border-radius:50px;
+  padding:12px 20px;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:0.85rem;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(200,134,10,0.4);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  transition:all 0.2s;
+  user-select:none;
+" onmouseover="this.style.background='#a06d08';this.style.transform='translateY(-2px)'"
+   onmouseout="this.style.background='#c8860a';this.style.transform='translateY(0)'">
+  💬 なんでも相談
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1811,7 +1836,14 @@ var _freeChatHistory = [];
 
 window.toggleFreeChat = function(){
   var area = document.getElementById('freeChatArea');
-  area.style.display = area.style.display === 'none' ? 'block' : 'none';
+  var isHidden = area.style.display === 'none';
+  area.style.display = isHidden ? 'block' : 'none';
+  // 開いたときはチャットエリアまでスクロール
+  if(isHidden){
+    setTimeout(function(){
+      area.scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 100);
+  }
 };
 
 window.clearFreeChat = function(){
