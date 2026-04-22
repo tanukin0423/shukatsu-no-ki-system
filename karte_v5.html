@@ -648,8 +648,13 @@ textarea.fi.tall{min-height:88px;}
         </div>
       </div>
 
-      <!-- 3つのAI機能ボタン -->
-      <div class="ai-btn-grid">
+      <!-- 4つのAI機能ボタン -->
+      <div class="ai-btn-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+        <button class="ai-func-btn" id="aiBtnPrep" onclick="aiAction('prep')"
+          style="background:rgba(255,200,50,0.25);border-color:rgba(255,200,50,0.6);">
+          <span class="ai-icon">📋</span>
+          事前面談<br>カード
+        </button>
         <button class="ai-func-btn" id="aiBtnES" onclick="aiAction('es')">
           <span class="ai-icon">✨</span>
           ガクチカを<br>ブラッシュアップ
@@ -1469,7 +1474,47 @@ window.aiAction = async function(type){
   var prompt = '';
   var title = '';
 
-  if(type==='es'){
+  if(type==='prep'){
+    title = '📋 事前面談カード：' + (s.name||'―') + 'さん';
+    // baitoDetail・clubDetailをDOMから直接取得
+    var baitoVal = (document.getElementById('baitoDetail') ? document.getElementById('baitoDetail').value : '') || '';
+    var clubVal  = (document.getElementById('clubDetail')  ? document.getElementById('clubDetail').value  : '') || '';
+    prompt =
+      'あなたは大学のキャリアカウンセラーのアシスタントです。\n' +
+      '以下のアンケートデータをもとに、カウンセラーが初回面談前に読む「事前面談カード」を作成してください。\n\n' +
+      '━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+      '【学生基本情報】\n' +
+      '氏名：' + (s.name||'―') + '　' + (s.zemi||'―') + 'ゼミ　' + (s.grade||'―') + '\n' +
+      '希望進路：' + (s.career||'―') + '\n' +
+      '活動状況：' + (s.career||'―') + '\n\n' +
+      '【就活の状況】\n' +
+      'サポート希望：' + (_headerState.support||'―') + '\n' +
+      '進み具合：' + (_headerState.progress||'―') + '\n' +
+      '不安なこと：' + (_headerState.anxiety||'―') + '\n\n' +
+      '【相談したいこと】\n' + (_headerState.themes||'―') + '\n\n' +
+      (baitoVal ? '【アルバイト経験】\n' + baitoVal + '\n\n' : '') +
+      (clubVal  ? '【スポーツ・部活経験】\n' + clubVal  + '\n\n' : '') +
+      (_headerState.free ? '【自由記入（学生の言葉）】\n' + _headerState.free + '\n\n' : '') +
+      '━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+      '【事前面談カードに含めてほしい内容】\n\n' +
+      '① この学生の第一印象・特徴の仮説（2〜3行）\n' +
+      '　アンケートから読み取れる人柄・傾向を簡潔に。\n\n' +
+      '② 強みになりそうなエピソードの仮説（箇条書き2〜3点）\n' +
+      '　アルバイト・部活・相談テーマから推察。\n\n' +
+      '③ 面談で深掘りすべきポイント（箇条書き3点）\n' +
+      '　「答えは学生の中にある」という視点で、引き出したい言葉を想定して。\n\n' +
+      '④ 注意が必要なサイン（あれば）\n' +
+      '　不安チェック・サポート希望・進み具合から読み取れるリスク。\n\n' +
+      '⑤ 最初の一言・アイスブレイク提案（1〜2文）\n' +
+      '　学生が安心して話し始められる自然な入り方。\n\n' +
+      '⑥ この面談のゴール設定（1〜2行）\n' +
+      '　今日の面談で学生に持ち帰ってほしいものを一言で。\n\n' +
+      '【出力の注意点】\n' +
+      '・決めつけず「〜かもしれない」「〜の可能性がある」という表現で。\n' +
+      '・学生を評価・採点しない。寄り添う視点で。\n' +
+      '・カウンセラーが2分で読めるコンパクトな分量で。\n' +
+      '・等身大の学生像を大切に。';
+  } else if(type==='es'){
     if(!s.gaku1 && !s.gaku2){
       alert('ES素材帳にガクチカを入力してから実行してください。'); return;
     }
@@ -1526,7 +1571,7 @@ window.aiAction = async function(type){
 
   document.getElementById('aiLoading').style.display = 'block';
   document.getElementById('aiResult').classList.remove('show');
-  ['aiBtnES','aiBtnQA','aiBtnResearch'].forEach(function(id){
+  ['aiBtnPrep','aiBtnES','aiBtnQA','aiBtnResearch'].forEach(function(id){
     var btn = document.getElementById(id);
     if(btn) btn.disabled = true;
   });
@@ -1570,7 +1615,7 @@ window.aiAction = async function(type){
     }
   } finally {
     document.getElementById('aiLoading').style.display = 'none';
-    ['aiBtnES','aiBtnQA','aiBtnResearch'].forEach(function(id){
+    ['aiBtnPrep','aiBtnES','aiBtnQA','aiBtnResearch'].forEach(function(id){
       var btn = document.getElementById(id);
       if(btn) btn.disabled = false;
     });
@@ -1659,77 +1704,6 @@ function genPrompt(){
 
 // イベント登録
 document.addEventListener('DOMContentLoaded',function(){
-
-  // ===== ★ 予約フォーム連携：URLパラメータ自動読み込み =====
-  (function(){
-    try {
-      var params = new URLSearchParams(window.location.search);
-      if(params.get('from_form') !== '1') return;
-      var raw = params.get('data');
-      if(!raw) return;
-      var fd = JSON.parse(decodeURIComponent(raw)); // fd = formData
-
-      // fillInfo() へ渡すオブジェクトを構築
-      var s = {};
-      s['氏名']        = fd['氏名']        || '';
-      s['学籍番号']    = fd['学籍番号']    || '';
-      s['ゼミ']        = (fd['ゼミ'] || '').replace(/ゼミ$/, '');
-      s['学年']        = fd['学年']        || '';
-      s['大学メール']  = fd['大学メール']  || '';
-      s['希望進路']    = fd['希望進路']    || '';
-      s['活動状況']    = fd['活動状況']    || '';
-      s['志望先']      = fd['応募企業']    || '';
-      s['希望職種']    = '';
-      s['サポート希望']= fd['サポート希望']|| '';
-      s['進み具合']    = fd['進み具合']    || '';
-      s['不安なこと']  = fd['不安なこと']  || '';
-      s['相談テーマ']  = fd['相談テーマ']  || '';
-      s['第1希望']     = fd['第1希望']     || '';
-      s['第2希望']     = fd['第2希望']     || '';
-      s['第3希望']     = fd['第3希望']     || '';
-      s['相談詳細']    = fd['相談詳細']    || '';
-      s['履修科目']    = '';
-
-      // 起動モーダルをスキップしてカルテを直接表示
-      fillInfo(s);
-      g('startModal').classList.add('hide');
-
-      // baitoDetail・clubDetail を直接セット（data-save要素なので保存対象）
-      if(fd['baitoDetail']){
-        var _baito = g('baitoDetail');
-        if(_baito && !_baito.value) _baito.value = fd['baitoDetail'];
-      }
-      if(fd['clubDetail']){
-        var _club = g('clubDetail');
-        if(_club && !_club.value) _club.value = fd['clubDetail'];
-      }
-
-      // counselorMemo に担当・種別を自動挿入
-      var _note = [];
-      if(fd['担当相談員']) _note.push('担当：' + fd['担当相談員']);
-      if(fd['相談種別'])   _note.push('種別：' + fd['相談種別']);
-      if(fd['面接種別'])   _note.push('面接：' + fd['面接種別']);
-      if(_note.length){
-        var _memoEl = g('counselorMemo');
-        if(_memoEl && !_memoEl.value){
-          _memoEl.value = '【予約フォームより】' + _note.join('　');
-        }
-      }
-
-      // 過去データがあればCloud自動マージ
-      if(s['学籍番号'] && window._autoCloudMerge){
-        window._autoCloudMerge(s['学籍番号']);
-      }
-
-      // 完了トースト
-      setTimeout(function(){
-        toast('📋 予約フォームのアンケートを自動転記しました！\nアルバイト・部活情報も反映済みです。');
-      }, 600);
-
-    } catch(e){
-      console.warn('URLパラメータ読み込みエラー:', e);
-    }
-  })();
 
   // 起動モーダル選択肢
   [1,2,3].forEach(function(n){
