@@ -1977,6 +1977,20 @@ document.addEventListener('DOMContentLoaded',function(){
 
 });// DOMContentLoaded
 
+// ===== URLパラメータから学籍番号を受け取って自動Cloud読み込み =====
+// karte_list.htmlの「開く」ボタンから ?gakuseki=○○ で渡された場合に自動実行
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var gaku = params.get('gakuseki');
+  if(!gaku) return;
+  var timer = setInterval(function(){
+    if(window._loadFromCloudDirect){
+      clearInterval(timer);
+      window._loadFromCloudDirect(gaku.trim());
+    }
+  }, 300);
+})();
+
 })();// IIFE
 </script>
 <div id="voiceStatus">🎙️ 録音中…話してください</div>
