@@ -558,6 +558,19 @@ textarea.fi.tall{min-height:88px;}
           style="min-height:300px;font-size:0.8rem;line-height:1.8;"
           placeholder="「📋 事前面談カード」ボタンを押すと、AI生成結果がここに自動保存されます。"></textarea>
       </div>
+      <!-- 事前面談カード修正チャット -->
+      <div id="prepChatArea" style="border-top:2px solid #9fa8da;background:#e8eaf6;padding:12px 15px;">
+        <div style="font-size:0.75rem;font-weight:700;color:#1a237e;margin-bottom:8px;">🤖 事前面談カード修正チャット（APIに直接相談）</div>
+        <div id="prepChatLog" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;margin-bottom:8px;"></div>
+        <div style="display:flex;gap:7px;align-items:flex-end;">
+          <textarea id="prepChatInput" rows="2"
+            style="flex:1;padding:8px 10px;border:1.5px solid #9fa8da;border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:0.82rem;resize:none;outline:none;"
+            placeholder="例：3段落目をもっと具体的にしてください　/ 志望動機の部分を強調してください"></textarea>
+          <button onclick="sendPrepChat()"
+            style="padding:8px 16px;background:#1a237e;color:white;border:none;border-radius:8px;font-family:inherit;font-size:0.8rem;font-weight:700;cursor:pointer;white-space:nowrap;">送信</button>
+        </div>
+        <div id="prepChatLoading" style="display:none;font-size:0.78rem;color:#3949ab;margin-top:6px;">🤖 考えています…</div>
+      </div>
       <div style="padding:10px 15px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
         <button class="sec-save-btn" style="padding:6px 18px;font-size:0.8rem;" onclick="saveAll()">💾☁️ 保存</button>
       </div>
@@ -568,8 +581,29 @@ textarea.fi.tall{min-height:88px;}
     <div class="ch b" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
       🗒 面談記録（時系列）
       <button id="claudeExportBtn" onclick="claudeExport()" style="background:#1a237e;border:1px solid rgba(255,255,255,0.4);color:white;padding:3px 13px;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;">🤖 Claudeエクスポート</button>
+      <button onclick="toggleFreeChat()" style="background:#c8860a;border:1px solid rgba(255,255,255,0.4);color:white;padding:3px 13px;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;">💬 なんでも相談</button>
       <button id="addMemoBtn" style="margin-left:auto;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:white;padding:3px 13px;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;">＋ 新しい記録を追加</button>
     </div>
+
+    <!-- なんでも相談チャット -->
+    <div id="freeChatArea" style="display:none;background:#fffbf0;border-bottom:2px solid #f0c040;padding:12px 15px;">
+      <div style="font-size:0.75rem;font-weight:700;color:#856404;margin-bottom:8px;">💬 なんでも相談チャット（APIに直接相談・会話履歴を保持）</div>
+      <div id="freeChatLog" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:7px;align-items:flex-end;">
+        <textarea id="freeChatInput" rows="2"
+          style="flex:1;padding:8px 10px;border:1.5px solid #f0c040;border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:0.82rem;resize:none;outline:none;"
+          placeholder="例：想定問答の3番目をもっと深掘りして　/ この自己PRをPREP法で整理して　/ 〇〇会社の面接で気をつけることは？"></textarea>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <button onclick="sendFreeChat()"
+            style="padding:8px 16px;background:#c8860a;color:white;border:none;border-radius:8px;font-family:inherit;font-size:0.8rem;font-weight:700;cursor:pointer;">送信</button>
+          <button onclick="clearFreeChat()"
+            style="padding:4px 10px;background:white;border:1px solid #f0c040;border-radius:8px;font-family:inherit;font-size:0.72rem;cursor:pointer;color:#856404;">クリア</button>
+        </div>
+      </div>
+      <div id="freeChatLoading" style="display:none;font-size:0.78rem;color:#856404;margin-top:6px;">🤖 考えています…</div>
+      <div style="font-size:0.7rem;color:#aaa;margin-top:6px;">💡 学生情報を自動的にコンテキストとして渡しています。会話履歴は保持されます（タブを閉じるとリセット）</div>
+    </div>
+
     <div class="cb" id="memoContainer" style="display:flex;flex-direction:column;gap:10px;"></div>
     <div style="padding:10px 15px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
       <button class="sec-save-btn" style="padding:6px 18px;font-size:0.8rem;" onclick="saveAll()">💾☁️ 保存</button>
@@ -1708,11 +1742,174 @@ window.copyAiResult = function(){
   });
 };
 
-// セッション保存済みキーを復元
-document.addEventListener('DOMContentLoaded', function(){
-  var saved = localStorage.getItem('ai_api_key');
-  if(saved) document.getElementById('aiApiKey').value = saved;
-});
+// ===== 事前面談カード 修正チャット =====
+var _prepChatHistory = [];
+
+window.sendPrepChat = async function(){
+  var key = localStorage.getItem('ai_api_key') || (document.getElementById('aiApiKey') ? document.getElementById('aiApiKey').value.trim() : '');
+  if(!key){ alert('APIキーを入力してください（AI面談サポートパネル）'); return; }
+
+  var input = document.getElementById('prepChatInput');
+  var userMsg = (input.value || '').trim();
+  if(!userMsg){ return; }
+
+  var prepContent = document.getElementById('prepCardContent');
+  var currentContent = prepContent ? prepContent.value.trim() : '';
+
+  // 初回は事前面談カードの内容をシステムとして渡す
+  if(_prepChatHistory.length === 0 && currentContent){
+    _prepChatHistory.push({
+      role: 'user',
+      content: '以下の事前面談カードを修正・改善するお手伝いをしてください。\n\n【現在の事前面談カード】\n' + currentContent
+    });
+    _prepChatHistory.push({
+      role: 'assistant',
+      content: '事前面談カードを確認しました。どのような修正をご希望ですか？'
+    });
+  }
+
+  _prepChatHistory.push({ role: 'user', content: userMsg });
+  appendChatMsg('prepChatLog', 'user', userMsg);
+  input.value = '';
+
+  document.getElementById('prepChatLoading').style.display = 'block';
+
+  try{
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1500,
+        system: 'あなたはキャリアカウンセラーのアシスタントです。事前面談カードの修正・改善をサポートしてください。修正版を提示する場合は全文を出力してください。',
+        messages: _prepChatHistory
+      })
+    });
+    var data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    var reply = data.content && data.content[0] ? data.content[0].text : '';
+    _prepChatHistory.push({ role: 'assistant', content: reply });
+    appendChatMsg('prepChatLog', 'assistant', reply, function(text){
+      // 「カードに反映」ボタン付き
+      if(prepContent) prepContent.value = text;
+      toast('📋 事前面談カードに反映しました！');
+    });
+  }catch(e){
+    appendChatMsg('prepChatLog', 'error', '❌ エラー：' + e.message);
+  } finally {
+    document.getElementById('prepChatLoading').style.display = 'none';
+  }
+};
+
+// ===== なんでも相談チャット =====
+var _freeChatHistory = [];
+
+window.toggleFreeChat = function(){
+  var area = document.getElementById('freeChatArea');
+  area.style.display = area.style.display === 'none' ? 'block' : 'none';
+};
+
+window.clearFreeChat = function(){
+  _freeChatHistory = [];
+  document.getElementById('freeChatLog').innerHTML = '';
+  toast('💬 チャット履歴をクリアしました');
+};
+
+window.sendFreeChat = async function(){
+  var key = localStorage.getItem('ai_api_key') || (document.getElementById('aiApiKey') ? document.getElementById('aiApiKey').value.trim() : '');
+  if(!key){ alert('APIキーを入力してください（AI面談サポートパネル）'); return; }
+
+  var input = document.getElementById('freeChatInput');
+  var userMsg = (input.value || '').trim();
+  if(!userMsg){ return; }
+
+  _freeChatHistory.push({ role: 'user', content: userMsg });
+  appendChatMsg('freeChatLog', 'user', userMsg);
+  input.value = '';
+
+  document.getElementById('freeChatLoading').style.display = 'block';
+
+  // 学生情報＋ES素材をシステムプロンプトに含める
+  var v = function(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  var studentInfo =
+    '【学生情報】\n' +
+    '氏名：' + (_headerState.name||'―') + '\n' +
+    '学年：' + (_headerState.grade||'―') + '\n' +
+    'ゼミ：' + (_headerState.zemi||'―') + '\n' +
+    '希望進路：' + (_headerState.career||'―') + '\n' +
+    '志望先：' + (_headerState.target||'―') + '\n' +
+    '活動状況：' + (_headerState.status||'―') + '\n\n' +
+    '【ES素材帳】\n' +
+    (v('gaku1') ? 'ガクチカ①（学業）：\n' + v('gaku1') + '\n\n' : '') +
+    (v('gaku2') ? 'ガクチカ②（学業以外）：\n' + v('gaku2') + '\n\n' : '') +
+    (v('selfpr') ? '自己PR：\n' + v('selfpr') + '\n\n' : '') +
+    (v('jiku')  ? '志望動機・就活の軸：\n' + v('jiku') + '\n\n' : '') +
+    '※貼り付けた内容についてはそちらを優先して参照してください。';
+
+  try{
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1500,
+        system: 'あなたはキャリアカウンセラーのアシスタントです。以下の学生情報を踏まえて、就職活動に関するあらゆる相談にお答えください。\n\n' + studentInfo,
+        messages: _freeChatHistory
+      })
+    });
+    var data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    var reply = data.content && data.content[0] ? data.content[0].text : '';
+    _freeChatHistory.push({ role: 'assistant', content: reply });
+    appendChatMsg('freeChatLog', 'assistant', reply);
+  }catch(e){
+    appendChatMsg('freeChatLog', 'error', '❌ エラー：' + e.message);
+  } finally {
+    document.getElementById('freeChatLoading').style.display = 'none';
+  }
+};
+
+// ===== チャットメッセージ描画共通関数 =====
+function appendChatMsg(logId, role, text, onApply){
+  var log = document.getElementById(logId);
+  if(!log) return;
+  var div = document.createElement('div');
+  var isUser = role === 'user';
+  var isError = role === 'error';
+  div.style.cssText = 'display:flex;flex-direction:column;align-items:' + (isUser?'flex-end':'flex-start') + ';gap:3px;';
+
+  var bubble = document.createElement('div');
+  bubble.style.cssText = 'max-width:90%;padding:8px 12px;border-radius:10px;font-size:0.8rem;line-height:1.7;white-space:pre-wrap;word-break:break-word;' +
+    (isUser ? 'background:#1a237e;color:white;' :
+     isError ? 'background:#fdecea;color:#c0392b;' :
+     'background:white;border:1px solid #d0d0e8;color:#2a2a2a;');
+  bubble.textContent = text;
+  div.appendChild(bubble);
+
+  // アシスタントの返答には「カードに反映」ボタンを付ける（onApplyがある場合）
+  if(!isUser && !isError && onApply){
+    var applyBtn = document.createElement('button');
+    applyBtn.textContent = '📋 カードに反映する';
+    applyBtn.style.cssText = 'padding:3px 12px;background:#3949ab;color:white;border:none;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;margin-top:3px;';
+    applyBtn.addEventListener('click', function(){ onApply(text); });
+    div.appendChild(applyBtn);
+  }
+
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+
 
 // ===== ブラッシュアッププロンプトコピー =====
 window.copyPrompt = function(mainId, memoId, label, format){
@@ -1976,20 +2173,6 @@ document.addEventListener('DOMContentLoaded',function(){
   });
 
 });// DOMContentLoaded
-
-// ===== URLパラメータから学籍番号を受け取って自動Cloud読み込み =====
-// karte_list.htmlの「開く」ボタンから ?gakuseki=○○ で渡された場合に自動実行
-(function(){
-  var params = new URLSearchParams(window.location.search);
-  var gaku = params.get('gakuseki');
-  if(!gaku) return;
-  var timer = setInterval(function(){
-    if(window._loadFromCloudDirect){
-      clearInterval(timer);
-      window._loadFromCloudDirect(gaku.trim());
-    }
-  }, 300);
-})();
 
 })();// IIFE
 </script>
