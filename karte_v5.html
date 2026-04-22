@@ -847,6 +847,16 @@ var _headerState = {
 };
 
 function fillInfo(s){
+  // ★ 事前面談カードをクリア（別の学生のデータが残らないように）
+  var _prepContent = g('prepCardContent');
+  var _prepDate    = g('prepCardDate');
+  var _prepBody    = g('prepCardBody');
+  var _prepBtn     = g('prepCardToggleBtn');
+  if(_prepContent) _prepContent.value = '';
+  if(_prepDate)    _prepDate.textContent = '';
+  if(_prepBody)    _prepBody.style.display = 'none';
+  if(_prepBtn)     _prepBtn.textContent = '▼ 開く';
+
   // 内部状態を更新
   _headerState.name = s['氏名']||'';
   _headerState.zemi = s['ゼミ']||'';
