@@ -847,7 +847,19 @@ var _headerState = {
 };
 
 function fillInfo(s){
-  // ★ 事前面談カードをクリア（別の学生のデータが残らないように）
+  // ★ AI結果表示エリアを全て非表示・クリア
+  var _aiResult = g('aiResult');
+  var _aiResultBody = g('aiResultBody');
+  var _aiResultTitle = g('aiResultTitle');
+  var _aiLoading = g('aiLoading');
+  var _researchInput = g('researchInputArea');
+  if(_aiResult){ _aiResult.classList.remove('show'); }
+  if(_aiResultBody){ _aiResultBody.innerHTML = ''; }
+  if(_aiResultTitle){ _aiResultTitle.textContent = ''; }
+  if(_aiLoading){ _aiLoading.style.display = 'none'; }
+  if(_researchInput){ _researchInput.style.display = 'none'; }
+
+  // ★ 事前面談カードをクリア
   var _prepContent = g('prepCardContent');
   var _prepDate    = g('prepCardDate');
   var _prepBody    = g('prepCardBody');
@@ -857,15 +869,13 @@ function fillInfo(s){
   if(_prepBody)    _prepBody.style.display = 'none';
   if(_prepBtn)     _prepBtn.textContent = '▼ 開く';
 
-  // ★ 面談記録メモをクリア（別の学生のデータが残らないように）
-  // restoreJSONが後から呼ばれる場合は上書きされるので安全
+  // ★ 面談記録メモをクリア
   var _memo = g('memoContainer');
   if(_memo) _memo.innerHTML = '';
 
-  // ★ data-save フィールドを全クリア（ES素材等）
-  // restoreJSONが後から呼ばれる場合は上書きされるので安全
+  // ★ data-save フィールドを全クリア
   document.querySelectorAll('[data-save="true"]').forEach(function(el){
-    if(el.id === 'prepCardContent') return; // 上で処理済み
+    if(el.id === 'prepCardContent') return;
     if(el.type === 'checkbox') el.checked = false;
     else el.value = '';
   });
