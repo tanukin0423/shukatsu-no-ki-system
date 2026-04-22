@@ -1458,7 +1458,7 @@ window.claudeExport = function(){
 window.saveApiKey = function(){
   var key = document.getElementById('aiApiKey').value.trim();
   if(!key){ toast('⚠️ APIキーを入力してください'); return; }
-  sessionStorage.setItem('ai_api_key', key);
+  localStorage.setItem('ai_api_key', key);
   toast('✅ APIキーを保存しました（このセッション中のみ有効）');
 };
 
@@ -1470,7 +1470,7 @@ window.toggleKeyVis = function(){
 };
 
 function getApiKey(){
-  var key = sessionStorage.getItem('ai_api_key') || document.getElementById('aiApiKey').value.trim();
+  var key = localStorage.getItem('ai_api_key') || document.getElementById('aiApiKey').value.trim();
   return key;
 }
 
@@ -1677,7 +1677,7 @@ window.copyAiResult = function(){
 
 // セッション保存済みキーを復元
 document.addEventListener('DOMContentLoaded', function(){
-  var saved = sessionStorage.getItem('ai_api_key');
+  var saved = localStorage.getItem('ai_api_key');
   if(saved) document.getElementById('aiApiKey').value = saved;
 });
 
