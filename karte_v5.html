@@ -540,6 +540,30 @@ textarea.fi.tall{min-height:88px;}
     </div>
   </div>
 
+  <!-- ★ 事前面談カード保存欄 -->
+  <div class="card full" id="prepCardSection">
+    <div class="ch" style="background:linear-gradient(135deg,#1a237e,#283593);display:flex;align-items:center;gap:6px;flex-wrap:wrap;cursor:pointer;"
+      onclick="togglePrepCard()">
+      📋 事前面談カード（AI生成・面談前の仮説）
+      <span id="prepCardDate" style="font-size:0.7rem;opacity:0.7;margin-left:6px;"></span>
+      <span id="prepCardToggleBtn" style="margin-left:auto;font-size:0.75rem;opacity:0.8;">▼ 開く</span>
+    </div>
+    <div id="prepCardBody" style="display:none;">
+      <div class="cb">
+        <div style="font-size:0.72rem;color:var(--tl);margin-bottom:8px;line-height:1.8;background:#f0f0fa;border-radius:7px;padding:8px 12px;">
+          💡 これは面談<strong>前</strong>にAIが生成した仮説です。面談記録（事実）とは別管理です。<br>
+          「📋 事前面談カード」ボタンを押すと自動的にここに保存されます。
+        </div>
+        <textarea class="fi" id="prepCardContent" data-save="true"
+          style="min-height:300px;font-size:0.8rem;line-height:1.8;"
+          placeholder="「📋 事前面談カード」ボタンを押すと、AI生成結果がここに自動保存されます。"></textarea>
+      </div>
+      <div style="padding:10px 15px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+        <button class="sec-save-btn" style="padding:6px 18px;font-size:0.8rem;" onclick="saveAll()">💾☁️ 保存</button>
+      </div>
+    </div>
+  </div>
+
   <div class="card full">
     <div class="ch b" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
       🗒 面談記録（時系列）
@@ -1604,6 +1628,23 @@ window.aiAction = async function(type){
     document.getElementById('aiResultBody').innerHTML = resultText.replace(/\n/g,'<br>');
     document.getElementById('aiResult').classList.add('show');
 
+    // ★ 事前面談カードの場合は専用欄に自動保存
+    if(type === 'prep'){
+      var prepContent = g('prepCardContent');
+      var prepDate    = g('prepCardDate');
+      var prepBody    = g('prepCardBody');
+      var prepBtn     = g('prepCardToggleBtn');
+      if(prepContent){
+        var now = new Date().toLocaleString('ja-JP');
+        prepContent.value = '【生成日時】' + now + '\n\n' + resultText;
+        if(prepDate) prepDate.textContent = '生成：' + new Date().toLocaleDateString('ja-JP');
+        // 自動的に開く
+        if(prepBody)  prepBody.style.display = 'block';
+        if(prepBtn)   prepBtn.textContent = '▲ 閉じる';
+        toast('📋 事前面談カードを保存欄に自動保存しました！\n💾☁️保存ボタンでCloudに保存してください。');
+      }
+    }
+
   } catch(e){
     var msg = e.message || String(e);
     if(msg.includes('401') || msg.includes('auth')){
@@ -1701,6 +1742,19 @@ function genPrompt(){
     +'━━━━━━━━━━━━━━━━━━━━━━━━\n【出力形式】\n各質問：ブラッシュアップ版＋【構成チェック】を出力。最後に全体コメントを記載。';
   doCopy(p,'🤖 AIプロンプトをコピーしました！');
 }
+
+// ===== 事前面談カード 開閉トグル =====
+window.togglePrepCard = function(){
+  var body = g('prepCardBody');
+  var btn  = g('prepCardToggleBtn');
+  if(body.style.display === 'none'){
+    body.style.display = 'block';
+    btn.textContent = '▲ 閉じる';
+  } else {
+    body.style.display = 'none';
+    btn.textContent = '▼ 開く';
+  }
+};
 
 // イベント登録
 document.addEventListener('DOMContentLoaded',function(){
