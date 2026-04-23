@@ -480,7 +480,8 @@ window.setMode = function(mode){
 window.openKarte = function(gakuseki){
   if(!gakuseki){ toast('⚠️ 学籍番号がありません'); return; }
   // karte_v5.htmlが同じディレクトリにある前提
-  window.open('karte_v5.html?gakuseki='+encodeURIComponent(gakuseki), '_blank');
+  // ?gakuseki=で学生を指定→起動モーダルをスキップしてCloud自動読み込み
+  window.open('karte_v5.html?gakuseki='+encodeURIComponent(gakuseki)+'&t='+Date.now(), '_blank');
 };
 </script>
 </body>

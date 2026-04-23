@@ -422,6 +422,9 @@ textarea.fi.tall{min-height:88px;}
   </div>
   <div class="khac">
     <span class="sst" id="saveStatus">💾 未保存</span>
+    <span id="apiKeyStatus" onclick="document.querySelector('.ai-panel').scrollIntoView({behavior:'smooth',block:'center'})"
+      style="font-size:0.7rem;padding:3px 10px;border-radius:20px;cursor:pointer;font-weight:700;background:#fdecea;color:#c0392b;border:1px solid #e57373;"
+      title="クリックしてAPIキー設定へ">🔑 APIキー未設定</span>
     <button class="hb hb-r" id="reloadBtn">🔄 最初から</button>
     <div class="hb-tooltip-wrap">
       <button class="hb hb-n" id="csvModalBtn">📋 CSV追加読み込み</button>
@@ -601,7 +604,7 @@ textarea.fi.tall{min-height:88px;}
         </div>
       </div>
       <div id="freeChatLoading" style="display:none;font-size:0.78rem;color:#856404;margin-top:6px;">🤖 考えています…</div>
-      <div style="font-size:0.7rem;color:#aaa;margin-top:6px;">💡 学生情報を自動的にコンテキストとして渡しています。会話履歴は保持されます（タブを閉じるとリセット）</div>
+      <div style="font-size:0.7rem;color:#aaa;margin-top:6px;">💡 学生情報・ES素材・事前面談カード・直近の面談メモを自動的にコンテキストとして渡しています。会話履歴は保持されます（タブを閉じるとリセット）</div>
     </div>
 
     <div class="cb" id="memoContainer" style="display:flex;flex-direction:column;gap:10px;"></div>
@@ -1551,7 +1554,8 @@ window.saveApiKey = function(){
   var key = document.getElementById('aiApiKey').value.trim();
   if(!key){ toast('⚠️ APIキーを入力してください'); return; }
   localStorage.setItem('ai_api_key', key);
-  toast('✅ APIキーを保存しました（このセッション中のみ有効）');
+  updateApiKeyStatus();
+  toast('✅ APIキーを保存しました（このブラウザに保持）');
 };
 
 window.toggleKeyVis = function(){
@@ -1561,9 +1565,37 @@ window.toggleKeyVis = function(){
   else { inp.type='password'; btn.textContent='表示'; }
 };
 
+// 起動時：localStorageのAPIキーを復元してステータスを反映
+(function(){
+  var saved = localStorage.getItem('ai_api_key');
+  if(saved){
+    var inp = document.getElementById('aiApiKey');
+    if(inp) inp.value = saved;
+  }
+  updateApiKeyStatus();
+})();
+
 function getApiKey(){
   var key = localStorage.getItem('ai_api_key') || document.getElementById('aiApiKey').value.trim();
   return key;
+}
+
+// APIキーステータスバッジを更新
+function updateApiKeyStatus(){
+  var key = localStorage.getItem('ai_api_key') || (document.getElementById('aiApiKey') ? document.getElementById('aiApiKey').value.trim() : '');
+  var badge = document.getElementById('apiKeyStatus');
+  if(!badge) return;
+  if(key && key.startsWith('sk-')){
+    badge.textContent = '🔑 APIキー設定済み ✅';
+    badge.style.background = '#e8f5e3';
+    badge.style.color = '#2d5a27';
+    badge.style.border = '1px solid #a5d6a7';
+  } else {
+    badge.textContent = '🔑 APIキー未設定';
+    badge.style.background = '#fdecea';
+    badge.style.color = '#c0392b';
+    badge.style.border = '1px solid #e57373';
+  }
 }
 
 function getStudentInfo(){
@@ -1605,7 +1637,7 @@ window.aiAction = async function(type){
       '【学生基本情報】\n' +
       '氏名：' + (s.name||'―') + '　' + (s.zemi||'―') + 'ゼミ　' + (s.grade||'―') + '\n' +
       '希望進路：' + (s.career||'―') + '\n' +
-      '活動状況：' + (s.career||'―') + '\n\n' +
+      '活動状況：' + (_headerState.status||'―') + '\n\n' +
       '【就活の状況】\n' +
       'サポート希望：' + (_headerState.support||'―') + '\n' +
       '進み具合：' + (_headerState.progress||'―') + '\n' +
@@ -1866,8 +1898,23 @@ window.sendFreeChat = async function(){
 
   document.getElementById('freeChatLoading').style.display = 'block';
 
-  // 学生情報＋ES素材をシステムプロンプトに含める
+  // 学生情報＋ES素材＋事前面談カード＋最新面談メモをシステムプロンプトに含める
   var v = function(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+
+  // 最新の面談メモを1件取得
+  var latestMemo = '';
+  var memoContainer = document.getElementById('memoContainer');
+  if(memoContainer){
+    var memoTexts = memoContainer.querySelectorAll('textarea');
+    if(memoTexts.length > 0){
+      var lastMemoEl = memoTexts[memoTexts.length - 1];
+      latestMemo = lastMemoEl ? lastMemoEl.value.trim() : '';
+    }
+  }
+
+  // 事前面談カードを取得
+  var prepCardText = v('prepCardContent');
+
   var studentInfo =
     '【学生情報】\n' +
     '氏名：' + (_headerState.name||'―') + '\n' +
@@ -1881,6 +1928,8 @@ window.sendFreeChat = async function(){
     (v('gaku2') ? 'ガクチカ②（学業以外）：\n' + v('gaku2') + '\n\n' : '') +
     (v('selfpr') ? '自己PR：\n' + v('selfpr') + '\n\n' : '') +
     (v('jiku')  ? '志望動機・就活の軸：\n' + v('jiku') + '\n\n' : '') +
+    (prepCardText ? '【事前面談カード（AI生成済み）】\n' + prepCardText + '\n\n' : '') +
+    (latestMemo   ? '【直近の面談メモ】\n' + latestMemo + '\n\n' : '') +
     '※貼り付けた内容についてはそちらを優先して参照してください。';
 
   try{
