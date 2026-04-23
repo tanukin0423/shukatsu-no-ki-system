@@ -144,6 +144,77 @@ textarea.fi.tall{min-height:88px;}
 .toast{position:fixed;bottom:22px;right:22px;background:var(--gd);color:white;padding:11px 18px;border-radius:11px;font-size:0.82rem;box-shadow:0 4px 20px rgba(0,0,0,0.2);display:none;z-index:999;max-width:320px;line-height:1.5;}
 .kf{max-width:900px;margin:4px auto 0;padding:5px 14px;font-size:0.67rem;color:var(--tl);display:flex;justify-content:space-between;}
 @media(max-width:640px){.main{grid-template-columns:1fr;}.full{grid-column:1;}.fg2{grid-template-columns:1fr;}.khn{font-size:1.1rem;}}
+
+/* ===== 学生サイドパネル ===== */
+#studentSidePanel{
+  position:fixed;top:0;right:0;height:100vh;width:260px;
+  background:white;z-index:2000;
+  box-shadow:-4px 0 24px rgba(0,0,0,0.15);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+#studentSidePanel.open{ transform:translateX(0); }
+#sidePanelToggle{
+  position:fixed;top:50%;right:0;z-index:2001;
+  transform:translateY(-50%);
+  background:var(--gd);color:white;
+  border:none;border-radius:8px 0 0 8px;
+  padding:14px 7px;cursor:pointer;
+  font-size:0.7rem;font-weight:700;
+  font-family:'Noto Sans JP',sans-serif;
+  writing-mode:vertical-rl;
+  letter-spacing:0.1em;
+  box-shadow:-2px 0 10px rgba(0,0,0,0.2);
+  transition:right 0.25s cubic-bezier(0.4,0,0.2,1), background 0.15s;
+  line-height:1.4;
+}
+#sidePanelToggle:hover{ background:var(--gm); }
+#sidePanelToggle.open{ right:260px; }
+.sp-header{
+  background:var(--gd);color:white;
+  padding:13px 14px 10px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.sp-header-title{ font-size:0.85rem;font-weight:700; }
+.sp-header-sub{ font-size:0.68rem;opacity:0.8;margin-top:2px; }
+.sp-close{
+  background:rgba(255,255,255,0.2);border:none;color:white;
+  border-radius:6px;padding:4px 9px;cursor:pointer;
+  font-size:0.75rem;font-family:inherit;
+}
+.sp-search{
+  padding:8px 10px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.sp-search input{
+  width:100%;padding:6px 10px;border:1.5px solid var(--border);
+  border-radius:7px;font-family:'Noto Sans JP',sans-serif;
+  font-size:0.78rem;outline:none;box-sizing:border-box;
+}
+.sp-search input:focus{ border-color:var(--gm); }
+.sp-list{
+  flex:1;overflow-y:auto;padding:6px 0;
+}
+.sp-item{
+  padding:9px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;
+  transition:background 0.1s;display:flex;flex-direction:column;gap:2px;
+}
+.sp-item:hover{ background:#e8f5e3; }
+.sp-item.active{ background:#d4edda;border-left:3px solid var(--gd); }
+.sp-item-name{ font-size:0.82rem;font-weight:700;color:var(--text); }
+.sp-item-gaku{ font-size:0.72rem;color:var(--tl); }
+.sp-item-sub{ font-size:0.68rem;color:#aaa; }
+.sp-footer{
+  padding:8px 12px;border-top:1px solid var(--border);
+  font-size:0.68rem;color:var(--tl);text-align:center;
+  flex-shrink:0;background:#fafafa;
+}
+.sp-loading{ padding:20px;text-align:center;color:var(--tl);font-size:0.78rem; }
+@media(max-width:640px){
+  #studentSidePanel{ width:85vw; }
+  #sidePanelToggle.open{ right:85vw; }
+}
 /* 音声入力ボタン */
 .voice-wrap{position:relative;display:flex;align-items:flex-start;gap:6px;}
 .voice-wrap textarea,.voice-wrap input{flex:1;}
@@ -193,6 +264,23 @@ textarea.fi.tall{min-height:88px;}
 /* バージョン表示 */
 .version-badge{font-size:0.65rem;color:rgba(255,255,255,0.4);margin-left:8px;}
 </style>
+<script>
+// ===== URLパラメータ即時チェック =====
+// Firebaseより先に実行してモーダルを即隠す
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var gakuseki = params.get('gakuseki') || params.get('studentId') || '';
+  if(gakuseki){
+    // DOMが構築される前でも動作するようにイベントで処理
+    document.addEventListener('DOMContentLoaded', function(){
+      var modal = document.getElementById('startModal');
+      if(modal) modal.classList.add('hide');
+    });
+    // Firebase読み込み完了を待つためのフラグ
+    window._autoOpenGakuseki = gakuseki;
+  }
+})();
+</script>
 </head>
 <body>
 
@@ -247,7 +335,7 @@ textarea.fi.tall{min-height:88px;}
 })();
 </script>
 
-<!-- 起動モーダル -->
+<!-- 起動モーダル（URLパラメータがある場合はJS側で即hide） -->
 <div class="ov" id="startModal">
   <div class="mb">
     <div class="mh">
@@ -437,6 +525,28 @@ textarea.fi.tall{min-height:88px;}
     <button id="saveAsBtn" style="display:none;"></button>
     <button id="fbSaveBtn" style="display:none;"></button>
   </div>
+</div>
+
+<!-- ===== 学生サイドパネル ===== -->
+<button id="sidePanelToggle" onclick="toggleStudentPanel()" title="学生リストを開く">
+  📋<br>学生<br>一覧
+</button>
+
+<div id="studentSidePanel">
+  <div class="sp-header">
+    <div>
+      <div class="sp-header-title">📋 学生一覧</div>
+      <div class="sp-header-sub" id="spCount">読み込み中…</div>
+    </div>
+    <button class="sp-close" onclick="toggleStudentPanel()">✕ 閉じる</button>
+  </div>
+  <div class="sp-search">
+    <input type="text" id="spSearchInput" placeholder="名前・学籍番号で検索…" oninput="filterStudentPanel(this.value)">
+  </div>
+  <div class="sp-list" id="spList">
+    <div class="sp-loading">⏳ 読み込み中…</div>
+  </div>
+  <div class="sp-footer" id="spFooter">クリックでカルテを開きます</div>
 </div>
 
 <!-- メイン -->
@@ -2365,6 +2475,9 @@ async function loadFromCloud(gakuseki, skipModal){
 
     document.querySelectorAll('.ov').forEach(function(ov){ ov.classList.add('hide'); });
 
+    // サイドパネルのハイライトを更新
+    document.dispatchEvent(new CustomEvent('karte:loaded', { detail: { gakuseki: gakuseki } }));
+
     var t = document.getElementById('toast');
     if(t){
       var msg = '';
@@ -2388,6 +2501,142 @@ async function loadFromCloud(gakuseki, skipModal){
 window._loadFromCloudDirect = function(gakuseki){
   loadFromCloud(gakuseki, true);
 };
+
+// ===== URLパラメータ（?gakuseki=xxx）自動読み込み =====
+// Firebaseが初期化完了したこのタイミングで実行
+(function(){
+  var gakuseki = window._autoOpenGakuseki || '';
+  if(!gakuseki) return;
+  // モーダルを確実に隠す
+  var modal = document.getElementById('startModal');
+  if(modal) modal.classList.add('hide');
+  // カルテを読み込む
+  loadFromCloud(gakuseki, true);
+})();
+
+// ===== 学生サイドパネル =====
+var _spAllStudents = [];  // 全学生キャッシュ
+var _spLoaded = false;
+
+// Firestoreから学生一覧を取得してサイドパネルを描画
+async function loadStudentSidePanel(){
+  if(_spLoaded) return;   // 2回目以降はキャッシュを使う
+  const listEl = document.getElementById('spList');
+  const countEl = document.getElementById('spCount');
+  if(!listEl) return;
+  try{
+    const snap = await getDocs(query(collection(db,'karte'), limit(300)));
+    const students = [];
+    snap.forEach(function(d){
+      const data = d.data();
+      students.push({
+        gakuseki: d.id,
+        name:  data.name  || data['氏名']  || '',
+        grade: data.grade || data['学年']  || '',
+        zemi:  data.zemi  || data['ゼミ']  || '',
+        status: data.colorStatus || ''
+      });
+    });
+    students.sort(function(a,b){ return a.gakuseki.localeCompare(b.gakuseki); });
+    _spAllStudents = students;
+    _spLoaded = true;
+    renderStudentPanel(students);
+    if(countEl) countEl.textContent = students.length + '名登録済み';
+  }catch(e){
+    if(listEl) listEl.innerHTML = '<div class="sp-loading" style="color:#c0392b;">❌ 読み込み失敗：'+e.message+'</div>';
+  }
+}
+
+// サイドパネルのリスト描画
+function renderStudentPanel(students){
+  const listEl = document.getElementById('spList');
+  if(!listEl) return;
+  if(!students.length){
+    listEl.innerHTML = '<div class="sp-loading">該当する学生がいません</div>';
+    return;
+  }
+  // 現在開いている学生の学籍番号
+  var curGaku = (window._headerState && window._headerState.gakuseki) || '';
+  listEl.innerHTML = '';
+  students.forEach(function(s){
+    var item = document.createElement('div');
+    item.className = 'sp-item' + (s.gakuseki === curGaku ? ' active' : '');
+    item.dataset.gakuseki = s.gakuseki;
+
+    // ステータスカラー
+    var dotColor = '#ccc';
+    if(s.status === 'green')  dotColor = '#4caf50';
+    else if(s.status === 'yellow') dotColor = '#f9a825';
+    else if(s.status === 'red')    dotColor = '#e53935';
+    else if(s.status === 'blue')   dotColor = '#1565c0';
+
+    item.innerHTML =
+      '<div class="sp-item-name">' +
+        '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+dotColor+';margin-right:5px;vertical-align:middle;"></span>' +
+        (s.name || '（氏名未登録）') +
+      '</div>' +
+      '<div class="sp-item-gaku">🆔 ' + s.gakuseki + '</div>' +
+      (s.grade || s.zemi ? '<div class="sp-item-sub">'+(s.grade||'')+(s.zemi ? '　'+s.zemi : '')+'</div>' : '');
+
+    item.addEventListener('click', function(){
+      // 保存確認
+      if(window._headerState && window._headerState.gakuseki && window._headerState.gakuseki !== s.gakuseki){
+        if(!confirm('⚠️ 別の学生（'+s.name+'さん）のカルテを開きます。\n現在のカルテを保存してから切り替えることをおすすめします。\n\n切り替えますか？')) return;
+      }
+      // アクティブ状態を更新
+      listEl.querySelectorAll('.sp-item').forEach(function(el){ el.classList.remove('active'); });
+      item.classList.add('active');
+      // カルテを読み込み
+      loadFromCloud(s.gakuseki, true);
+      // スマホはパネルを閉じる
+      if(window.innerWidth <= 640) toggleStudentPanel();
+    });
+    listEl.appendChild(item);
+  });
+}
+
+// 検索フィルター
+window.filterStudentPanel = function(q){
+  if(!q.trim()){
+    renderStudentPanel(_spAllStudents);
+    return;
+  }
+  var lower = q.toLowerCase();
+  var filtered = _spAllStudents.filter(function(s){
+    return s.name.toLowerCase().includes(lower) || s.gakuseki.includes(lower);
+  });
+  renderStudentPanel(filtered);
+};
+
+// パネル開閉
+window.toggleStudentPanel = function(){
+  var panel  = document.getElementById('studentSidePanel');
+  var toggle = document.getElementById('sidePanelToggle');
+  if(!panel) return;
+  var isOpen = panel.classList.contains('open');
+  if(isOpen){
+    panel.classList.remove('open');
+    toggle.classList.remove('open');
+  } else {
+    panel.classList.add('open');
+    toggle.classList.add('open');
+    // 開いたときにリストを読み込む（初回のみFirestore取得）
+    loadStudentSidePanel();
+    // 検索欄をクリア
+    var inp = document.getElementById('spSearchInput');
+    if(inp) inp.value = '';
+    if(_spAllStudents.length) renderStudentPanel(_spAllStudents);
+  }
+};
+
+// カルテ読み込み後にサイドパネルのアクティブ行を更新
+var _origLoadFromCloud = loadFromCloud;
+// loadFromCloud完了後に現在の学生行をハイライト（再描画トリガーをフック）
+document.addEventListener('karte:loaded', function(e){
+  if(e.detail && e.detail.gakuseki && _spLoaded){
+    renderStudentPanel(_spAllStudents);
+  }
+});
 
 // CSV読み込み後のCloud自動マージ
 // ★★★ 修正：基本情報はCSV優先、ES・面談記録・補足メモのみマージ ★★★
