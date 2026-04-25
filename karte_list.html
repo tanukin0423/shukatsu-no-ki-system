@@ -275,9 +275,62 @@ function toast(msg){
   setTimeout(()=>t.style.display='none', 3500);
 }
 
+const CACHE_KEY = 'karte_list_cache';
+const CACHE_TTL = 10 * 60 * 1000; // 10分（ミリ秒）
+
+function saveCache(data){
+  try{
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
+  }catch(e){ console.warn('キャッシュ保存失敗:', e); }
+}
+
+function loadCache(){
+  try{
+    const raw = localStorage.getItem(CACHE_KEY);
+    if(!raw) return null;
+    const obj = JSON.parse(raw);
+    if(Date.now() - obj.ts > CACHE_TTL) return null; // 10分超えたら無効
+    return obj.data;
+  }catch(e){ return null; }
+}
+
+function showData(data, fromCache){
+  _allData = data;
+  _allData.sort((a,b)=>{
+    const da = a._cloudSavedAt || a._savedAt || '';
+    const db2 = b._cloudSavedAt || b._savedAt || '';
+    return db2.localeCompare(da);
+  });
+  buildZemiFilter();
+  applyFilter();
+  document.getElementById('loadingArea').style.display='none';
+  document.getElementById(_mode==='card'?'cardView':'tableView').style.display='block';
+  if(fromCache){
+    document.getElementById('statBadge').textContent += '　📦キャッシュ';
+  }
+}
+
 function init(){
-  // Firebaseモジュールのロードを待ってから実行
-  setTimeout(loadAll, 800);
+  // キャッシュがあれば即表示
+  const cached = loadCache();
+  if(cached){
+    showData(cached, true);
+    // バックグラウンドでFirestoreを更新
+    setTimeout(refreshFromFirestore, 1000);
+  } else {
+    setTimeout(loadAll, 800);
+  }
+}
+
+// バックグラウンド更新（キャッシュヒット後）
+async function refreshFromFirestore(){
+  try{
+    if(!window._loadKarteAll) return;
+    const fresh = await window._loadKarteAll();
+    saveCache(fresh);
+    showData(fresh, false);
+    toast('🔄 最新データに更新しました（'+fresh.length+'件）');
+  }catch(e){ console.warn('バックグラウンド更新失敗:', e); }
 }
 
 window.loadAll = async function(){
@@ -287,23 +340,21 @@ window.loadAll = async function(){
 
   try{
     if(!window._loadKarteAll){
-      // モジュールがまだ読み込まれていない場合は再試行
       setTimeout(loadAll, 500); return;
     }
-    _allData = await window._loadKarteAll();
-    _allData.sort((a,b)=>{
-      // 最終保存日時の降順でソート
-      const da = a._cloudSavedAt || a._savedAt || '';
-      const db2 = b._cloudSavedAt || b._savedAt || '';
-      return db2.localeCompare(da);
-    });
-    buildZemiFilter();
-    applyFilter();
-    document.getElementById('loadingArea').style.display='none';
-    document.getElementById(_mode==='card'?'cardView':'tableView').style.display='block';
-    toast('✅ '+_allData.length+'件のカルテを読み込みました');
+    const data = await window._loadKarteAll();
+    saveCache(data); // キャッシュに保存
+    showData(data, false);
+    toast('✅ '+data.length+'件のカルテを読み込みました');
   } catch(e){
-    document.getElementById('loadingArea').innerHTML='<div style="color:#c0392b;padding:40px;text-align:center;">❌ 読み込み失敗：'+e.message+'<br><small>GitHub Pages上でご利用ください</small></div>';
+    // Firestoreが失敗してもキャッシュがあれば表示
+    const cached = loadCache();
+    if(cached){
+      showData(cached, true);
+      toast('⚠️ Firestore接続失敗。キャッシュを表示しています。');
+    } else {
+      document.getElementById('loadingArea').innerHTML='<div style="color:#c0392b;padding:40px;text-align:center;">❌ 読み込み失敗：'+e.message+'<br><small>GitHub Pages上でご利用ください</small></div>';
+    }
     console.error(e);
   }
 };
@@ -479,8 +530,8 @@ window.setMode = function(mode){
 // ===== カルテを開く =====
 window.openKarte = function(gakuseki){
   if(!gakuseki){ toast('⚠️ 学籍番号がありません'); return; }
-  // ?gakuseki= パラメータでkarte_v5に渡す→起動モーダルをスキップして即読み込み
-  window.open('karte_v5.html?gakuseki='+encodeURIComponent(gakuseki)+'&t='+Date.now(), '_blank');
+  // karte_v5.htmlが同じディレクトリにある前提
+  window.open('karte_v5.html?gakuseki='+encodeURIComponent(gakuseki), '_blank');
 };
 </script>
 </body>
