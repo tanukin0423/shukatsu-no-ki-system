@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>面談カルテv5改訂版｜多摩大学 キャリア支援課</title>
+<title>面談カルテv6｜多摩大学 キャリア支援課</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 /* ログイン画面 */
@@ -288,7 +288,7 @@ textarea.fi.tall{min-height:88px;}
 <div id="loginScreen">
   <div class="login-box">
     <div style="font-size:2rem;margin-bottom:8px;">🌳</div>
-    <h2>面談カルテ v5改訂版</h2>
+    <h2>面談カルテ v6</h2>
     <p>多摩大学 キャリア支援課</p>
     <input type="password" id="loginPw" placeholder="パスワードを入力" autocomplete="off">
     <span class="hint-toggle" id="hintToggle">💡 ヒントを見る</span>
@@ -487,13 +487,104 @@ textarea.fi.tall{min-height:88px;}
   </div>
 </div>
 
+<!-- ===== 印刷プレビューモーダル ===== -->
+<div class="ov hide" id="printModal">
+  <div class="mb" style="max-width:640px;">
+    <div class="mh" style="background:linear-gradient(135deg,#1a3a6b,#2e5090);">
+      <div class="ico">🖨</div>
+      <h2>印刷・PDF出力</h2>
+      <p>印刷する項目を選んでください</p>
+    </div>
+    <div class="mbody">
+      <!-- 印刷範囲プリセット -->
+      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+        <button onclick="printPreset('all')" style="padding:5px 14px;border:1.5px solid #1a3a6b;border-radius:20px;font-size:0.78rem;cursor:pointer;background:#1a3a6b;color:white;font-family:inherit;">✅ 全て選択</button>
+        <button onclick="printPreset('basic')" style="padding:5px 14px;border:1.5px solid var(--gd);border-radius:20px;font-size:0.78rem;cursor:pointer;background:white;color:var(--gd);font-family:inherit;">📋 基本情報のみ</button>
+        <button onclick="printPreset('es')" style="padding:5px 14px;border:1.5px solid var(--bark);border-radius:20px;font-size:0.78rem;cursor:pointer;background:white;color:var(--bark);font-family:inherit;">✏️ ES素材のみ</button>
+        <button onclick="printPreset('memo')" style="padding:5px 14px;border:1.5px solid var(--gm);border-radius:20px;font-size:0.78rem;cursor:pointer;background:white;color:var(--gm);font-family:inherit;">🗒 面談記録のみ</button>
+        <button onclick="printPreset('none')" style="padding:5px 14px;border:1.5px solid #ccc;border-radius:20px;font-size:0.78rem;cursor:pointer;background:white;color:#888;font-family:inherit;">✕ 全て解除</button>
+      </div>
+      <!-- チェックボックス一覧 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;">
+        <label style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;background:var(--cream);font-size:0.82rem;">
+          <input type="checkbox" id="pchk_basic" checked style="accent-color:var(--gm);width:16px;height:16px;"> 📋 基本情報・相談テーマ
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;background:var(--cream);font-size:0.82rem;">
+          <input type="checkbox" id="pchk_kensa" checked style="accent-color:var(--gm);width:16px;height:16px;"> 📊 検査結果メモ
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;background:var(--cream);font-size:0.82rem;">
+          <input type="checkbox" id="pchk_hearing" checked style="accent-color:var(--gm);width:16px;height:16px;"> 📝 ヒアリング情報
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;background:var(--cream);font-size:0.82rem;">
+          <input type="checkbox" id="pchk_prep" style="accent-color:var(--gm);width:16px;height:16px;"> 📋 事前面談カード
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;background:var(--cream);font-size:0.82rem;">
+          <input type="checkbox" id="pchk_memo" checked style="accent-color:var(--gm);width:16px;height:16px;"> 🗒 面談記録（時系列）
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;background:var(--cream);font-size:0.82rem;">
+          <input type="checkbox" id="pchk_es" checked style="accent-color:var(--gm);width:16px;height:16px;"> ✏️ ES素材帳（4大質問）
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;background:var(--cream);font-size:0.82rem;">
+          <input type="checkbox" id="pchk_freees" style="accent-color:var(--gm);width:16px;height:16px;"> 🎯 自由ESエリア
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;background:var(--cream);font-size:0.82rem;">
+          <input type="checkbox" id="pchk_counsel" checked style="accent-color:var(--gm);width:16px;height:16px;"> 💬 カウンセラーコメント
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;background:var(--cream);font-size:0.82rem;">
+          <input type="checkbox" id="pchk_quick" style="accent-color:var(--gm);width:16px;height:16px;"> 🧭 クイック分析結果
+        </label>
+      </div>
+      <!-- 印刷オプション -->
+      <div style="background:#f0f4ff;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:0.79rem;">
+        <div style="font-weight:700;color:#1a3a6b;margin-bottom:6px;">🖨 印刷オプション</div>
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;margin-bottom:4px;">
+          <input type="checkbox" id="popt_header" checked style="accent-color:#1a3a6b;"> ヘッダー（学生名・日時）を表示
+        </label>
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;">
+          <input type="checkbox" id="popt_charcount" style="accent-color:#1a3a6b;"> 文字数を表示
+        </label>
+      </div>
+      <div class="mbtn-row">
+        <button class="mbtn-cancel" id="printModalCancel">キャンセル</button>
+        <button class="mbtn" style="flex:2;margin-top:0;background:#1a3a6b;" onclick="execPrint()">🖨 印刷 / PDF保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== クイック分析結果モーダル ===== -->
+<div class="ov hide" id="quickModal">
+  <div class="mb" style="max-width:660px;max-height:90vh;overflow-y:auto;">
+    <div class="mh" style="background:linear-gradient(135deg,#2e7d32,#388e3c);">
+      <div class="ico" id="quickModalIco">🧭</div>
+      <h2 id="quickModalTitle">クイック分析</h2>
+      <p id="quickModalSub">AIが分析中です…</p>
+    </div>
+    <div class="mbody">
+      <div id="quickModalLoading" style="text-align:center;padding:30px;color:#888;font-size:0.9rem;">
+        🤖 Claudeが分析しています…少々お待ちください
+      </div>
+      <div id="quickModalBody" style="display:none;">
+        <div id="quickModalContent" style="font-size:0.84rem;line-height:1.9;white-space:pre-wrap;background:#f9fbe7;border-radius:9px;padding:14px;border:1.5px solid #c5e1a5;"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+          <button onclick="copyQuickResult()" style="padding:7px 18px;background:var(--gd);color:white;border:none;border-radius:20px;font-size:0.78rem;cursor:pointer;font-family:inherit;font-weight:700;">📋 コピー</button>
+          <button onclick="saveQuickToEs()" id="quickSaveBtn" style="padding:7px 18px;background:var(--bark);color:white;border:none;border-radius:20px;font-size:0.78rem;cursor:pointer;font-family:inherit;font-weight:700;display:none;">📥 ES欄に保存</button>
+        </div>
+      </div>
+      <div class="mbtn-row" style="margin-top:14px;">
+        <button class="mbtn-cancel" id="quickModalClose">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ヘッダー -->
 <div class="kh">
   <div class="kht">
     <div class="kha"></div>
     <div class="khm">
       <div>
-        <div class="khe">🌳 面談準備カルテ ／ 多摩大学 キャリア支援課<span class="version-badge">v5.1</span></div>
+        <div class="khe">🌳 面談準備カルテ ／ 多摩大学 キャリア支援課<span class="version-badge">v6.0</span></div>
         <div class="khn" id="hName">（学生名）</div>
         <div class="khmt">
           <span id="hZemi">―</span>
@@ -732,6 +823,7 @@ textarea.fi.tall{min-height:88px;}
       </div>
     </div>
     <div class="cb" style="display:flex;flex-direction:column;gap:13px;">
+      <!-- ガクチカ① -->
       <div>
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
           <span class="esbadge" style="background:var(--gd);">📚 ガクチカ①（学業）</span>
@@ -741,10 +833,15 @@ textarea.fi.tall{min-height:88px;}
         <div class="cc" id="c1">0文字</div>
         <div class="memo-add-box">
           <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
-          <textarea class="fi memo-add-ta" id="gaku1memo" data-save="true" placeholder="例：3回目面談で判明・数字が出た・失敗談も語れるようになった…"></textarea>
-          <button class="prompt-copy-btn" onclick="copyPrompt('gaku1','gaku1memo','ガクチカ①（学業）','S+STAR+F&C 六段論法・400字以内')">📋 ブラッシュアッププロンプトをコピー</button>
+          <textarea class="fi memo-add-ta" id="gaku1memo" data-save="true" placeholder="例：TACで会計士勉強中・ゼミで時事討論・3回目面談で判明…"></textarea>
+          <div style="display:flex;gap:7px;margin-top:7px;flex-wrap:wrap;">
+            <button class="prompt-copy-btn" onclick="aiGenEs('gaku1','gaku1memo','gakuchika1')">✨ AI生成（6段論法）</button>
+            <button class="prompt-copy-btn" style="background:#888;" onclick="copyPrompt('gaku1','gaku1memo','ガクチカ①（学業）','S+STAR+F&C 六段論法・400字以内')">📋 プロンプトをコピー</button>
+          </div>
+          <div class="ai-gen-hint" id="hint-gaku1" style="font-size:0.69rem;color:#3949ab;margin-top:4px;display:none;"></div>
         </div>
       </div>
+      <!-- ガクチカ② -->
       <div>
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
           <span class="esbadge" style="background:var(--bark);">☕ ガクチカ②（学業以外）</span>
@@ -755,9 +852,14 @@ textarea.fi.tall{min-height:88px;}
         <div class="memo-add-box">
           <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
           <textarea class="fi memo-add-ta" id="gaku2memo" data-save="true" placeholder="例：アルバイトでリーダー経験あり・具体的なエピソードが増えた…"></textarea>
-          <button class="prompt-copy-btn" onclick="copyPrompt('gaku2','gaku2memo','ガクチカ②（学業以外）','S+STAR+F&C 六段論法・400字以内')">📋 ブラッシュアッププロンプトをコピー</button>
+          <div style="display:flex;gap:7px;margin-top:7px;flex-wrap:wrap;">
+            <button class="prompt-copy-btn" onclick="aiGenEs('gaku2','gaku2memo','gakuchika2')">✨ AI生成（6段論法）</button>
+            <button class="prompt-copy-btn" style="background:#888;" onclick="copyPrompt('gaku2','gaku2memo','ガクチカ②（学業以外）','S+STAR+F&C 六段論法・400字以内')">📋 プロンプトをコピー</button>
+          </div>
+          <div class="ai-gen-hint" id="hint-gaku2" style="font-size:0.69rem;color:#3949ab;margin-top:4px;display:none;"></div>
         </div>
       </div>
+      <!-- 自己PR -->
       <div>
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
           <span class="esbadge" style="background:var(--gm);">🌟 自己PR</span>
@@ -768,9 +870,14 @@ textarea.fi.tall{min-height:88px;}
         <div class="memo-add-box">
           <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
           <textarea class="fi memo-add-ta" id="selfprmemo" data-save="true" placeholder="例：粘り強さが強み・チームをまとめる場面が多い…"></textarea>
-          <button class="prompt-copy-btn" onclick="copyPrompt('selfpr','selfprmemo','自己PR','PREP+TA形式・300字以内')">📋 ブラッシュアッププロンプトをコピー</button>
+          <div style="display:flex;gap:7px;margin-top:7px;flex-wrap:wrap;">
+            <button class="prompt-copy-btn" onclick="aiGenEs('selfpr','selfprmemo','selfpr')">✨ AI生成（PREP+TA）</button>
+            <button class="prompt-copy-btn" style="background:#888;" onclick="copyPrompt('selfpr','selfprmemo','自己PR','PREP+TA形式・300字以内')">📋 プロンプトをコピー</button>
+          </div>
+          <div class="ai-gen-hint" id="hint-selfpr" style="font-size:0.69rem;color:#3949ab;margin-top:4px;display:none;"></div>
         </div>
       </div>
+      <!-- 志望動機 -->
       <div>
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
           <span class="esbadge" style="background:#1a3a6b;">🧭 企業選びの軸・志望動機の素材</span>
@@ -781,15 +888,141 @@ textarea.fi.tall{min-height:88px;}
         <div class="memo-add-box">
           <div class="memo-add-lbl">💡 補足メモ（面談で気づいたことを追記）</div>
           <textarea class="fi memo-add-ta" id="jikumemo" data-save="true" placeholder="例：幼少期の体験が動機の根っこ・業界への共感ポイントが明確になった…"></textarea>
-          <button class="prompt-copy-btn" onclick="copyPrompt('jiku','jikumemo','志望動機・企業選びの軸','結論先行→きっかけ→動機→共感→仕事→将来像・400字以内')">📋 ブラッシュアッププロンプトをコピー</button>
+          <div style="display:flex;gap:7px;margin-top:7px;flex-wrap:wrap;">
+            <button class="prompt-copy-btn" onclick="aiGenEs('jiku','jikumemo','shibo')">✨ AI生成（就活の木6段）</button>
+            <button class="prompt-copy-btn" style="background:#888;" onclick="copyPrompt('jiku','jikumemo','志望動機・企業選びの軸','結論先行→きっかけ→動機→共感→仕事→将来像・400字以内')">📋 プロンプトをコピー</button>
+          </div>
+          <div class="ai-gen-hint" id="hint-jiku" style="font-size:0.69rem;color:#3949ab;margin-top:4px;display:none;"></div>
         </div>
       </div>
+
+      <!-- 自由エントリーシート作成 -->
+      <div style="background:linear-gradient(135deg,#f3e5f5,#ede7f6);border-radius:11px;padding:13px 15px;border:1.5px solid #ce93d8;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span class="esbadge" style="background:#7b1fa2;">🎯 自由エントリーシート作成</span>
+          <span style="font-size:0.69rem;color:#7b1fa2;font-weight:700;">面談記録×学生情報から自由テーマで作成</span>
+        </div>
+        <div style="font-size:0.72rem;color:#6a1b9a;margin-bottom:8px;line-height:1.7;">
+          💡 「他人を巻き込んで成し遂げたこと」「困難を乗り越えた経験」など、企業の設問に合わせて自由にテーマを入力してください。面談で聞いた宝の話が、そのままエントリーシートになります。
+        </div>
+        <div style="margin-bottom:8px;">
+          <div style="font-size:0.71rem;color:#6a1b9a;font-weight:700;margin-bottom:4px;">📝 設問テーマ（企業の質問文をそのまま貼り付けてもOK）</div>
+          <textarea id="freeEsTheme" style="width:100%;border:1.5px solid #ce93d8;border-radius:7px;padding:8px 10px;font-family:'Noto Sans JP',sans-serif;font-size:0.82rem;background:white;min-height:52px;resize:vertical;outline:none;" placeholder="例：他人を巻き込んで何かを成し遂げた経験を教えてください&#10;例：困難を乗り越えた経験と、そこから得た学びを教えてください&#10;例：チームで目標達成した経験を400字で"></textarea>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+          <div style="font-size:0.71rem;color:#6a1b9a;font-weight:700;">文字数：</div>
+          <label style="display:flex;align-items:center;gap:3px;font-size:0.78rem;cursor:pointer;"><input type="radio" name="freeEsLen" value="200" style="accent-color:#7b1fa2;">200字</label>
+          <label style="display:flex;align-items:center;gap:3px;font-size:0.78rem;cursor:pointer;"><input type="radio" name="freeEsLen" value="400" checked style="accent-color:#7b1fa2;">400字</label>
+          <label style="display:flex;align-items:center;gap:3px;font-size:0.78rem;cursor:pointer;"><input type="radio" name="freeEsLen" value="600" style="accent-color:#7b1fa2;">600字</label>
+          <label style="display:flex;align-items:center;gap:3px;font-size:0.78rem;cursor:pointer;"><input type="radio" name="freeEsLen" value="custom" style="accent-color:#7b1fa2;">自由</label>
+          <input type="number" id="freeEsCustomLen" placeholder="字数" style="width:70px;border:1px solid #ce93d8;border-radius:5px;padding:3px 7px;font-size:0.78rem;display:none;">
+        </div>
+        <textarea id="freeEsResult" style="width:100%;border:1.5px solid #ce93d8;border-radius:7px;padding:8px 10px;font-family:'Noto Sans JP',sans-serif;font-size:0.82rem;background:white;min-height:88px;resize:vertical;outline:none;display:none;" placeholder="ここに生成されたエントリーシートが入ります…" data-save="true"></textarea>
+        <div id="freeEsCharCount" style="font-size:0.67rem;color:#888;text-align:right;display:none;">0文字</div>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button onclick="aiGenFreeEs()" style="background:#7b1fa2;color:white;border:none;border-radius:20px;padding:7px 20px;font-family:'Noto Sans JP',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;">✨ エントリーシートを作成</button>
+          <button onclick="copyFreeEs()" id="freeEsCopyBtn" style="background:white;color:#7b1fa2;border:1.5px solid #ce93d8;border-radius:20px;padding:7px 16px;font-family:'Noto Sans JP',sans-serif;font-size:0.78rem;cursor:pointer;display:none;">📋 コピー</button>
+        </div>
+        <div id="freeEsHint" style="font-size:0.69rem;color:#7b1fa2;margin-top:6px;display:none;"></div>
+      </div>
+
       <div style="background:var(--gp);border-radius:9px;padding:10px 13px;">
         <div style="font-size:0.72rem;font-weight:700;color:var(--gd);margin-bottom:5px;">💬 カウンセラーコメント・添削メモ</div>
         <textarea class="fi" id="counselorMemo" data-save="true" style="background:white;min-height:63px;" placeholder="添削のポイント・気づきなど…"></textarea>
       </div>
       <div style="margin-top:12px;display:flex;justify-content:flex-end;">
         <button class="sec-save-btn es-style" style="padding:6px 18px;font-size:0.8rem;" onclick="saveAll()">💾☁️ 保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== クイックボタン パネル ===== -->
+  <div class="card full" id="quickBtnPanel">
+    <div class="ch" style="background:linear-gradient(135deg,#1b5e20,#2e7d32);color:white;display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
+      🚀 クイック分析ボタン
+      <span style="font-size:0.71rem;opacity:0.8;font-weight:400;">面談のキーポイントをワンクリックで整理</span>
+    </div>
+    <div class="cb" style="background:linear-gradient(135deg,#f1f8e9,#f9fbe7);">
+
+      <!-- 3列グリッド -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">
+
+        <!-- 就活軸 -->
+        <button onclick="quickAnalyze('jiku')"
+          style="border:2px solid #4caf50;border-radius:12px;padding:14px 10px;background:white;cursor:pointer;font-family:'Noto Sans JP',sans-serif;text-align:center;transition:all 0.2s;"
+          onmouseover="this.style.background='#e8f5e9'" onmouseout="this.style.background='white'">
+          <div style="font-size:1.6rem;margin-bottom:5px;">🧭</div>
+          <div style="font-size:0.85rem;font-weight:700;color:#2e7d32;margin-bottom:3px;">就活の軸を整理</div>
+          <div style="font-size:0.69rem;color:#888;line-height:1.5;">「なぜ働くのか」<br>価値観・動機の言語化</div>
+        </button>
+
+        <!-- WHY整理 -->
+        <button onclick="quickAnalyze('why')"
+          style="border:2px solid #ff8f00;border-radius:12px;padding:14px 10px;background:white;cursor:pointer;font-family:'Noto Sans JP',sans-serif;text-align:center;transition:all 0.2s;"
+          onmouseover="this.style.background='#fff8e1'" onmouseout="this.style.background='white'">
+          <div style="font-size:1.6rem;margin-bottom:5px;">❓</div>
+          <div style="font-size:0.85rem;font-weight:700;color:#e65100;margin-bottom:3px;">WHYを深堀り</div>
+          <div style="font-size:0.69rem;color:#888;line-height:1.5;">「なぜその業界？」<br>志望動機の核心を探る</div>
+        </button>
+
+        <!-- 強み整理 -->
+        <button onclick="quickAnalyze('strengths')"
+          style="border:2px solid #1565c0;border-radius:12px;padding:14px 10px;background:white;cursor:pointer;font-family:'Noto Sans JP',sans-serif;text-align:center;transition:all 0.2s;"
+          onmouseover="this.style.background='#e3f2fd'" onmouseout="this.style.background='white'">
+          <div style="font-size:1.6rem;margin-bottom:5px;">💪</div>
+          <div style="font-size:0.85rem;font-weight:700;color:#1565c0;margin-bottom:3px;">強みを発見する</div>
+          <div style="font-size:0.69rem;color:#888;line-height:1.5;">経験から読み取る<br>再現性のある強み</div>
+        </button>
+
+        <!-- 面談振り返り -->
+        <button onclick="quickAnalyze('review')"
+          style="border:2px solid #6a1b9a;border-radius:12px;padding:14px 10px;background:white;cursor:pointer;font-family:'Noto Sans JP',sans-serif;text-align:center;transition:all 0.2s;"
+          onmouseover="this.style.background='#f3e5f5'" onmouseout="this.style.background='white'">
+          <div style="font-size:1.6rem;margin-bottom:5px;">🔍</div>
+          <div style="font-size:0.85rem;font-weight:700;color:#6a1b9a;margin-bottom:3px;">面談振り返り</div>
+          <div style="font-size:0.69rem;color:#888;line-height:1.5;">今日の面談の要点<br>次回への申し送り</div>
+        </button>
+
+        <!-- 自己分析サポート -->
+        <button onclick="quickAnalyze('self')"
+          style="border:2px solid #00838f;border-radius:12px;padding:14px 10px;background:white;cursor:pointer;font-family:'Noto Sans JP',sans-serif;text-align:center;transition:all 0.2s;"
+          onmouseover="this.style.background='#e0f7fa'" onmouseout="this.style.background='white'">
+          <div style="font-size:1.6rem;margin-bottom:5px;">🪞</div>
+          <div style="font-size:0.85rem;font-weight:700;color:#00838f;margin-bottom:3px;">自己分析サポート</div>
+          <div style="font-size:0.69rem;color:#888;line-height:1.5;">価値観・興味・特性を<br>ひとつのコトバに</div>
+        </button>
+
+        <!-- 次のアクション -->
+        <button onclick="quickAnalyze('next')"
+          style="border:2px solid #c62828;border-radius:12px;padding:14px 10px;background:white;cursor:pointer;font-family:'Noto Sans JP',sans-serif;text-align:center;transition:all 0.2s;"
+          onmouseover="this.style.background='#ffebee'" onmouseout="this.style.background='white'">
+          <div style="font-size:1.6rem;margin-bottom:5px;">🎯</div>
+          <div style="font-size:0.85rem;font-weight:700;color:#c62828;margin-bottom:3px;">次のアクション提案</div>
+          <div style="font-size:0.69rem;color:#888;line-height:1.5;">今の状況に合わせた<br>具体的な行動リスト</div>
+        </button>
+
+      </div>
+      <div style="font-size:0.71rem;color:#888;text-align:center;line-height:1.7;">
+        💡 APIキーが設定されていると自動でAI分析します。未設定の場合はプロンプトをコピーします。
+      </div>
+
+      <!-- クイック分析の結果保存エリア -->
+      <!-- 保存用隠しフィールド（data-save="true"でCloud保存・復元の対象に） -->
+      <input type="hidden" id="quickSavedLabel" data-save="true" value="">
+      <input type="hidden" id="quickSavedDate"  data-save="true" value="">
+      <textarea id="quickSavedContent" data-save="true" style="display:none;"></textarea>
+
+      <div id="quickResultArea" style="display:none;margin-top:12px;background:white;border:1.5px solid #a5d6a7;border-radius:10px;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#e8f5e9;border-bottom:1.5px solid #a5d6a7;">
+          <span id="quickResultLabel" style="font-size:0.79rem;font-weight:700;color:#2e7d32;"></span>
+          <span id="quickResultDate" style="font-size:0.68rem;color:#888;"></span>
+        </div>
+        <div id="quickResultContent" style="padding:12px 13px;font-size:0.8rem;line-height:1.85;white-space:pre-wrap;color:var(--text);"></div>
+        <div style="padding:8px 13px;border-top:1px solid #e0e0e0;display:flex;gap:7px;flex-wrap:wrap;">
+          <button onclick="copyQuickResultInline()" style="padding:4px 14px;background:var(--gd);color:white;border:none;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;">📋 コピー</button>
+          <button onclick="saveQuickResult()" style="padding:4px 14px;background:#c8860a;color:white;border:none;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;font-weight:700;">💾☁️ この結果を保存</button>
+          <button onclick="document.getElementById('quickResultArea').style.display='none'" style="padding:4px 12px;background:white;border:1px solid #ccc;border-radius:20px;font-size:0.72rem;cursor:pointer;font-family:inherit;color:#888;">✕ 閉じる</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1241,17 +1474,18 @@ function _collectMemos(){
         if(cb.checked)claudeTypes.push(cb.value);
       });
     }
-    // Claude添削メモ
-    var allTa=e.querySelectorAll('textarea');
-    var claudeNote=allTa[2]?allTa[2].value:'';
+    // べたうち原文・整形済みメモ・次回アクション
+    var rawTa=e.querySelector('textarea[data-raw-text]');
+    var memoTa=e.querySelector('textarea[data-memo-text]');
+    var actionTa=e.querySelector('textarea:not([data-raw-text]):not([data-memo-text])');
     memos.push({
       idx: e.dataset.idx,
       date: di?di.value:'',
       recType: recType,
-      memo: tas[0]?tas[0].value:'',
-      action: tas[1]?tas[1].value:'',
-      claudeTypes: claudeTypes,
-      claudeNote: claudeNote
+      rawText: rawTa?rawTa.value:'',
+      memo: memoTa?memoTa.value:(tas[0]?tas[0].value:''),
+      action: actionTa?actionTa.value:(tas[1]?tas[1].value:''),
+      claudeTypes: claudeTypes
     });
   });
   return memos;
@@ -1477,10 +1711,10 @@ function addMemo(data){
   var idx=data?(data.idx||count):Date.now();
   var date=data?(data.date||''):new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
   var memo=data?(data.memo||''):'';
+  var rawText=data?(data.rawText||''):'';
   var action=data?(data.action||''):'';
   var recType=data?(data.recType||'対面'):'対面';
   var claudeTypes=data?(data.claudeTypes||[]):[];
-  var claudeNote=data?(data.claudeNote||''):'';
 
   var wrap=document.createElement('div');
   wrap.className='me';wrap.dataset.idx=idx;
@@ -1508,30 +1742,255 @@ function addMemo(data){
   del.addEventListener('click',(function(w){return function(){if(!confirm('この面談記録を削除しますか？'))return;w.remove();container.querySelectorAll('.me').forEach(function(e,i){var b=e.querySelector('.mebadge');if(b)b.textContent=(i+1)+'回目';});};})(wrap));
   hd.appendChild(left);hd.appendChild(del);wrap.appendChild(hd);
 
-  // 面談メモ
-  var mta=document.createElement('textarea');mta.className='fi';
+  // ── べたうち原文エリア（折りたたみ式）──
+  var rawWrap=document.createElement('div');
+  rawWrap.style.cssText='border-top:1px solid var(--border);background:#fffdf5;';
+  var rawToggle=document.createElement('div');
+  rawToggle.style.cssText='display:flex;align-items:center;gap:6px;padding:5px 10px;cursor:pointer;font-size:0.72rem;color:#856404;font-weight:700;user-select:none;';
+  rawToggle.innerHTML='<span class="raw-arrow">▶</span> べたうち原文を見る';
+  var rawBody=document.createElement('div');
+  rawBody.style.cssText='display:none;padding:0 10px 8px;';
+  var rawTa=document.createElement('textarea');
+  rawTa.className='fi';rawTa.dataset.rawText='true';
+  rawTa.style.cssText='min-height:60px;background:#fffbf0;border:1px dashed #f0c040;font-size:0.78rem;color:#6b4c2a;';
+  rawTa.placeholder='サイボウズのべたうち・口頭メモをそのままここに貼り付けてください\n↓「✨ べたうちを整形」ボタンで面談記録に清書されます';
+  rawTa.value=rawText;
+  rawBody.appendChild(rawTa);
+  rawToggle.addEventListener('click',function(){
+    var open=rawBody.style.display==='block';
+    rawBody.style.display=open?'none':'block';
+    rawToggle.querySelector('.raw-arrow').textContent=open?'▶':'▼';
+    rawToggle.childNodes[1].textContent=open?' べたうち原文を見る':' べたうち原文を隠す';
+  });
+  rawWrap.appendChild(rawToggle);rawWrap.appendChild(rawBody);wrap.appendChild(rawWrap);
+
+  // ── 整形ボタンバー ──
+  var fmtBar=document.createElement('div');
+  fmtBar.style.cssText='padding:6px 10px;background:#f0f4ff;border-top:1px solid #c5cae9;display:flex;align-items:center;gap:8px;flex-wrap:wrap;';
+  var fmtBtn=document.createElement('button');
+  fmtBtn.type='button';fmtBtn.textContent='✨ べたうちを整形';
+  fmtBtn.style.cssText='background:#3949ab;color:white;border:none;border-radius:16px;padding:4px 14px;font-size:0.73rem;font-family:inherit;font-weight:700;cursor:pointer;';
+  fmtBtn.title='べたうち原文をAIが面談記録として清書し、ES素材も自動抽出します';
+  var fmtHint=document.createElement('span');
+  fmtHint.style.cssText='font-size:0.68rem;color:#7986cb;';
+  fmtHint.textContent='べたうち原文を貼り付けて押してください';
+  fmtBar.appendChild(fmtBtn);fmtBar.appendChild(fmtHint);wrap.appendChild(fmtBar);
+
+  // ── 面談メモ（整形済み）──
+  var mta=document.createElement('textarea');mta.className='fi';mta.dataset.memoText='true';
   mta.style.cssText='min-height:76px;border-radius:0;border:none;border-top:1px solid var(--border);';
-  mta.placeholder='面談メモ・相談内容・所感…（サイボウズ記録をそのまま貼り付けOK）';
+  mta.placeholder='面談記録（整形済み）がここに入ります\n直接入力・手直しもできます';
   mta.value=memo;wrap.appendChild(mta);
 
-  // 次回アクション
+  // ── AI素材バッジエリア ──
+  var badgeArea=document.createElement('div');
+  badgeArea.dataset.badgeArea='true';
+  badgeArea.style.cssText='padding:6px 10px;background:#e8f5e3;border-top:1px solid #a5d6a7;display:none;flex-wrap:wrap;gap:6px;align-items:center;';
+  var badgeTitle=document.createElement('span');
+  badgeTitle.style.cssText='font-size:0.7rem;font-weight:700;color:#2d5a27;width:100%;margin-bottom:2px;';
+  badgeTitle.textContent='🌳 この面談から作成できるES文章（クリックでES素材帳に追記）：';
+  badgeArea.appendChild(badgeTitle);
+  wrap.appendChild(badgeArea);
+
+  // 整形ボタンの処理
+  fmtBtn.addEventListener('click', async function(){
+    var raw=rawTa.value.trim();
+    if(!raw){
+      // べたうちエリアが閉じている場合は開く
+      rawBody.style.display='block';
+      rawToggle.querySelector('.raw-arrow').textContent='▼';
+      rawToggle.childNodes[1].textContent=' べたうち原文を隠す';
+      rawTa.focus();
+      fmtHint.textContent='⬆️ べたうち原文を上の欄に貼り付けてください';
+      fmtHint.style.color='#c0392b';
+      return;
+    }
+    var key=getApiKey();
+    if(!key){alert('APIキーを設定してください（画面下部のAIアシスト欄）');return;}
+    var studentName=_headerState.name||'（氏名なし）';
+    var dateVal=di.value||'';
+
+    fmtBtn.disabled=true;fmtBtn.textContent='⏳ 整形中… (1/2)';
+    fmtHint.style.color='#7986cb';fmtHint.textContent='① 面談記録を清書しています…';
+    badgeArea.style.display='none';
+
+    // ===== 共通fetch関数 =====
+    var callApi=async function(messages, maxTokens){
+      var r=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key':key,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true'
+        },
+        body:JSON.stringify({model:'claude-opus-4-5',max_tokens:maxTokens,messages:messages})
+      });
+      var d=await r.json();
+      if(!d.content||!d.content[0])throw new Error('APIレスポンス異常');
+      return d.content[0].text.trim();
+    };
+
+    // ===== 共通JSONパース関数 =====
+    var parseJson=function(txt){
+      txt=txt.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+      var s=txt.indexOf('{'),e=txt.lastIndexOf('}');
+      if(s>=0&&e>s)txt=txt.slice(s,e+1);
+      try{ return JSON.parse(txt); }catch(e1){
+        var ef=function(key){
+          var re=new RegExp('"'+key+'"\\s*:\\s*(?:"((?:[^"\\\\]|\\\\[\\s\\S])*)"|(null))');
+          var m=txt.match(re);
+          if(!m)return null;
+          if(m[2]==='null')return null;
+          return m[1]?m[1].replace(/\\n/g,'\n').replace(/\\"/g,'"'):null;
+        };
+        return {memo:ef('memo')||txt,gakuchika1:ef('gakuchika1'),gakuchika2:ef('gakuchika2'),selfpr:ef('selfpr'),shibo:ef('shibo')};
+      }
+    };
+
+    try{
+      // ===== 第1回：べたうち → 面談記録に清書 =====
+      var txt1=await callApi([{
+        role:'user',
+        content:
+          '以下は大学キャリアカウンセラーの面談口頭メモ（サイボウズべたうち）です。\n'+
+          '【学生氏名】'+studentName+'\n'+
+          (dateVal?'【面談日】'+dateVal+'\n':'')+
+          '\n【べたうち原文】\n'+raw+'\n\n'+
+          '以下の形式で面談記録として清書してください。\n'+
+          '・誤変換・誤字を修正する\n'+
+          '・話し言葉を書き言葉に整える\n'+
+          '・内容を段落・箇条書きで整理する\n'+
+          '・カウンセラー視点（一人称：私）で記述する\n'+
+          '・前置き・後書き不要。清書した本文だけを出力する\n'+
+          '・原文にない情報は追加しない'
+      }], 2000);
+
+      // 面談記録を反映
+      mta.value=txt1;
+      fmtBtn.textContent='⏳ ES文章生成中… (2/2)';
+      fmtHint.textContent='② 面談記録からES文章を生成しています…';
+
+      // ===== 第2回：清書済み記録 → ES文章生成 =====
+      var txt2=await callApi([{
+        role:'user',
+        content:
+          '以下は大学キャリアカウンセラーが作成した面談記録です。\n'+
+          '【学生氏名】'+studentName+'\n'+
+          (dateVal?'【面談日】'+dateVal+'\n':'')+
+          '\n【面談記録】\n'+txt1+'\n\n'+
+          '以下のJSON形式のみで出力してください。前置き・説明・```マークは絶対に不要です。\n'+
+          '文字列内の改行は\\nで表現。各値は1行の文字列にしてください。\n\n'+
+          '=== ES作成の基本方針 ===\n'+
+          '【ガクチカ①（学業系）】S+STAR+F&C 六段論法・400字以内\n'+
+          '①S（Summary）結論：学業で最も力を入れたことを一文で\n'+
+          '②T（Theme）テーマ・動機＋WHY：なぜそれに取り組んだか、内なる動機を描く\n'+
+          '③A（Action）具体的行動：数字・エピソードを交えた行動描写\n'+
+          '④R（Result）成果：数字や目に見える変化で示す\n'+
+          '⑤F（Future）学びの応用：仕事にどう活かすか\n'+
+          '⑥C（Comment）再現性：どんな場面でも発揮できる強みとして締める\n\n'+
+          '【ガクチカ②（学業以外）】S+STAR+F&C 六段論法・400字以内\n'+
+          '※現場の臨場感（人の様子・雰囲気・数字）を必ず描写\n'+
+          '※失敗談はポジティブな学びに転換\n'+
+          '※WHY（なぜその行動を取ったか）を②Tに必ず入れること\n\n'+
+          '【自己PR】PREP+TA形式・300字以内\n'+
+          'P（結論）：具体的な現場名を入れた強みの一文\n'+
+          'R（理由）：現場の臨場感を描写。お客様の様子・雰囲気を具体的に\n'+
+          'E（具体例）：失敗談はポジティブに転換。行動の変化を示す\n'+
+          'P（再結論）/T（価値観）：強みの本質を一言で\n'+
+          'A（再現性）：志望業界に紐付けた活かし方で締める\n\n'+
+          '【志望動機・企業選びの軸】就活の木 6段構成・400字以内\n'+
+          '①結論→②きっかけ→③動機＋WHY→④共感→⑤仕事→⑥将来像\n\n'+
+          '=== 出力JSON ===\n'+
+          '{\n'+
+          '  "gakuchika1": "ガクチカ①学業系の完成文400字以内（素材不足ならnull）",\n'+
+          '  "gakuchika2": "ガクチカ②学業以外の完成文400字以内（素材不足ならnull）",\n'+
+          '  "selfpr": "自己PRの完成文300字以内（素材不足ならnull）",\n'+
+          '  "shibo": "志望動機・軸の完成文400字以内（素材不足ならnull）"\n'+
+          '}\n'+
+          '重要：素材が不足している項目はnullにしてください。原文にない情報は追加しないでください。'
+      }], 2500);
+
+      var parsed=parseJson(txt2);
+      // memoは第1回の清書結果を使用
+      parsed.memo=txt1;
+
+      // ES素材バッジを生成
+      badgeArea.querySelectorAll('[data-es-badge]').forEach(function(el){el.remove();});
+      var esMap=[
+        {key:'gakuchika1',label:'🌱 ガクチカ①（学業）',targetId:'gaku1'},
+        {key:'gakuchika2',label:'☕ ガクチカ②（学業以外）',targetId:'gaku2'},
+        {key:'selfpr',label:'🌟 自己PR',targetId:'selfpr'},
+        {key:'shibo',label:'🧭 志望動機・軸',targetId:'jiku'}
+      ];
+      var hasAny=false;
+      esMap.forEach(function(em){
+        if(!parsed[em.key]||parsed[em.key]==='null')return;
+        hasAny=true;
+        var btn=document.createElement('button');
+        btn.type='button';btn.dataset.esBadge='true';
+        btn.style.cssText='background:#2d5a27;color:white;border:none;border-radius:16px;padding:4px 12px;font-size:0.72rem;font-family:inherit;font-weight:700;cursor:pointer;transition:all 0.2s;';
+        btn.textContent=em.label+' → ES素材帳に追記（クリックで反映）';
+        btn.title=parsed[em.key];
+        (function(content,targetId,label,dateStr){
+          btn.addEventListener('click',function(){
+            var ta=document.getElementById(targetId);
+            if(!ta)return;
+            var prefix='\n\n【'+dateStr+' 面談より】\n';
+            ta.value=(ta.value+prefix+content).trim();
+            btn.style.background='#888';btn.textContent='✅ 追記済み';btn.disabled=true;
+            ta.scrollIntoView({behavior:'smooth',block:'center'});
+            toast('✅ '+label+'にES素材を追記しました！');
+          });
+        })(parsed[em.key],em.targetId,em.label,dateVal||date);
+        badgeArea.appendChild(btn);
+      });
+
+      if(hasAny){
+        badgeArea.style.display='flex';
+        fmtHint.textContent='✅ 整形完了！ES素材も見つかりました 👇';
+        fmtHint.style.color='#2d5a27';
+      } else {
+        fmtHint.textContent='✅ 整形完了！（今回はES素材なし）';
+        fmtHint.style.color='#2d5a27';
+      }
+
+    }catch(e){
+      console.error('整形エラー:', e);
+      var errMsg='❌ 整形失敗。';
+      if(e&&e.message&&e.message.indexOf('Failed to fetch')>=0){
+        errMsg+='ネットワークエラー。file://で開いている場合はChromeの設定が必要です。→ chrome://flags/#block-insecure-private-network-requests を無効にするか、http://localhost で開いてください。';
+      } else if(e&&e.message&&e.message.indexOf('JSON')>=0){
+        errMsg+='AIの応答を解析できませんでした。もう一度お試しください。';
+      } else {
+        errMsg+='APIキーを確認してください。';
+      }
+      fmtHint.textContent=errMsg;
+      fmtHint.style.color='#c0392b';
+    }finally{
+      fmtBtn.disabled=false;fmtBtn.textContent='✨ べたうちを整形';
+    }
+  });
+
+  // ── 次回アクション ──
   var ah=document.createElement('div');ah.className='meah';ah.textContent='✅ 次回アクション';wrap.appendChild(ah);
   var ata=document.createElement('textarea');ata.className='fi';
   ata.style.cssText='min-height:48px;border-radius:0;border:none;border-top:1px solid var(--border);';
   ata.placeholder='次回の課題…';ata.value=action;wrap.appendChild(ata);
 
-  // Claudeサポート欄
+  // ── Claudeサポート種別チェックボックス（コンパクト化）──
   var csh=document.createElement('div');
-  csh.style.cssText='background:#e8eaf6;border-top:1.5px solid #9fa8da;padding:8px 12px;';
-  csh.innerHTML='<div style="font-size:0.7rem;font-weight:700;color:#1a237e;margin-bottom:6px;">🤖 Claudeサポート記録</div>';
-
-  // チェックボックスグループ
+  csh.style.cssText='background:#e8eaf6;border-top:1.5px solid #9fa8da;padding:6px 10px;';
+  var cshTitle=document.createElement('div');
+  cshTitle.style.cssText='font-size:0.68rem;font-weight:700;color:#1a237e;margin-bottom:5px;';
+  cshTitle.textContent='🤖 今回のサポート種別';
+  csh.appendChild(cshTitle);
   var cbGroup=document.createElement('div');
-  cbGroup.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px;';
-  var types=['ES添削','志望動機','ガクチカ','自己PR','想定問答','模擬面接','企業リサーチ','面談記録整理','その他'];
+  cbGroup.style.cssText='display:flex;flex-wrap:wrap;gap:5px;';
+  var types=['ES添削','志望動機','ガクチカ','自己PR','想定問答','模擬面接','企業リサーチ','面談整理','その他'];
   types.forEach(function(t){
     var lbl=document.createElement('label');
-    lbl.style.cssText='display:flex;align-items:center;gap:3px;font-size:0.73rem;background:white;border:1px solid #9fa8da;border-radius:5px;padding:2px 8px;cursor:pointer;';
+    lbl.style.cssText='display:flex;align-items:center;gap:3px;font-size:0.71rem;background:white;border:1px solid #9fa8da;border-radius:5px;padding:2px 7px;cursor:pointer;';
     var cb=document.createElement('input');
     cb.type='checkbox';cb.value=t;cb.style.accentColor='#1a237e';
     if(claudeTypes.indexOf(t)>=0)cb.checked=true;
@@ -1539,17 +1998,6 @@ function addMemo(data){
     cbGroup.appendChild(lbl);
   });
   csh.appendChild(cbGroup);
-
-  // Claude添削・アドバイス保存欄
-  var cnLbl=document.createElement('div');
-  cnLbl.style.cssText='font-size:0.7rem;color:#3949ab;margin-bottom:3px;font-weight:600;';
-  cnLbl.textContent='📋 Claudeの添削・アドバイス（Claudeとのやり取りから良かった部分をペースト）';
-  var cnTa=document.createElement('textarea');
-  cnTa.className='fi';cnTa.dataset.claudeNote='true';
-  cnTa.style.cssText='min-height:60px;background:white;border:1px solid #9fa8da;border-radius:6px;font-size:0.79rem;';
-  cnTa.placeholder='Claudeが添削・提案した内容をここに保存…';
-  cnTa.value=claudeNote;
-  csh.appendChild(cnLbl);csh.appendChild(cnTa);
   wrap.appendChild(csh);
 
   container.appendChild(wrap);
@@ -1596,10 +2044,10 @@ window.claudeExport = function(){
     var di=e.querySelector('.medate');
     var typeSelect=e.querySelector('select');
     var recType=typeSelect?typeSelect.value:'対面';
-    var tas=e.querySelectorAll('textarea');
-    var memo=tas[0]?tas[0].value.trim():'';
-    var action=tas[1]?tas[1].value.trim():'';
-    var claudeNote=tas[2]?tas[2].value.trim():'';
+    var memoTa=e.querySelector('textarea[data-memo-text]');
+    var actionTa=e.querySelector('textarea:not([data-raw-text]):not([data-memo-text])');
+    var memo=memoTa?memoTa.value.trim():'';
+    var action=actionTa?actionTa.value.trim():'';
     // チェックボックス取得
     var claudeTypes=[];
     e.querySelectorAll('input[type=checkbox]').forEach(function(cb){
@@ -1609,7 +2057,6 @@ window.claudeExport = function(){
     if(memo)memoText+='面談内容：\n'+memo+'\n';
     if(action)memoText+='次回アクション：'+action+'\n';
     if(claudeTypes.length)memoText+='Claudeサポート：'+claudeTypes.join('・')+'\n';
-    if(claudeNote)memoText+='Claude添削・アドバイス：\n'+claudeNote+'\n';
     memoText+='\n';
   });
 
@@ -1659,6 +2106,261 @@ window.claudeExport = function(){
   doCopy(text,'🤖 '+name+'さんのカルテをClaudeエクスポートしました！\nClaude.aiに貼り付けて相談してください。');
 };
 
+
+// ===== ES欄 AI生成関数 =====
+window.aiGenEs = async function(mainId, memoId, esType){
+  var key=getApiKey();
+  if(!key){alert('APIキーを設定してください（画面下部のAIアシスト欄）');return;}
+  var mainTa=document.getElementById(mainId);
+  var memoTa=document.getElementById(memoId);
+  var hintEl=document.getElementById('hint-'+mainId);
+  if(!mainTa)return;
+
+  var existing=mainTa.value.trim();
+  var memo=memoTa?memoTa.value.trim():'';
+  if(!existing&&!memo){
+    alert('テキスト欄または補足メモに情報を入力してください。\n面談記録からの情報でも生成できます。');
+    return;
+  }
+
+  // 面談記録を収集
+  var memoText='';
+  document.querySelectorAll('#memoContainer .me').forEach(function(e,i){
+    var memoTaEl=e.querySelector('textarea[data-memo-text]');
+    var di=e.querySelector('.medate');
+    if(memoTaEl&&memoTaEl.value.trim()){
+      memoText+='【'+(i+1)+'回目 '+(di?di.value:'')+'】\n'+memoTaEl.value.trim()+'\n\n';
+    }
+  });
+
+  var s=getStudentInfo();
+  var typeMap={
+    gakuchika1:{label:'ガクチカ①（学業）',format:'S+STAR+F&C 六段論法・400字以内',prompt:
+      '【ガクチカ①（学業系）】S+STAR+F&C 六段論法・400字以内\n'+
+      '①S（Summary）結論：学業で最も力を入れたことを一文で\n'+
+      '②T（Theme）テーマ・動機＋WHY：なぜそれに取り組んだか\n'+
+      '③A（Action）具体的行動：数字・エピソードを交えて\n'+
+      '④R（Result）成果：数字や目に見える変化で\n'+
+      '⑤F（Future）学びの応用：仕事にどう活かすか\n'+
+      '⑥C（Comment）再現性：どんな場面でも発揮できる強みとして締める\n'+
+      '※TACや簿記・資格勉強・ゼミ活動なども学業素材として活用すること'},
+    gakuchika2:{label:'ガクチカ②（学業以外）',format:'S+STAR+F&C 六段論法・400字以内',prompt:
+      '【ガクチカ②（学業以外）】S+STAR+F&C 六段論法・400字以内\n'+
+      '①S（Summary）結論：学業以外で最も力を入れたことを一文で\n'+
+      '②T（Theme）テーマ・動機＋WHY：なぜそれに取り組んだか\n'+
+      '③A（Action）具体的行動：現場の臨場感・数字を交えて\n'+
+      '④R（Result）成果：数字や目に見える変化で\n'+
+      '⑤F（Future）学びの応用：仕事にどう活かすか\n'+
+      '⑥C（Comment）再現性：強みとして締める\n'+
+      '※失敗談はポジティブな学びに転換すること\n'+
+      '※WHYを②Tに必ず入れること'},
+    selfpr:{label:'自己PR',format:'PREP+TA形式・300字以内',prompt:
+      '【自己PR】PREP+TA形式・300字以内\n'+
+      'P（結論）：具体的な現場名・エピソード名を入れた強みの一文\n'+
+      'R（理由）：現場の臨場感を描写。様子・雰囲気・状況を具体的に\n'+
+      'E（具体例）：失敗談はポジティブに転換。行動の変化を示す\n'+
+      'P（再結論）/T（価値観）：強みの本質を一言で\n'+
+      'A（再現性）：志望業界・職種に紐付けた活かし方で締める'},
+    shibo:{label:'志望動機・企業選びの軸',format:'就活の木6段構成・400字以内',prompt:
+      '【志望動機・企業選びの軸】就活の木 6段構成・400字以内\n'+
+      '①結論（この業界・会社を志望する理由を一文で）\n'+
+      '②きっかけ（出会い・体験・原体験）\n'+
+      '③動機＋WHY（なぜこの業界・会社でなければならないか）\n'+
+      '④共感（会社の理念・事業への共鳴）\n'+
+      '⑤仕事（入社後にやりたいこと・貢献できること）\n'+
+      '⑥将来像（5〜10年後の自分と会社への貢献）'}
+  };
+
+  var tm=typeMap[esType];
+  if(!tm)return;
+
+  // ボタンを無効化
+  var btn=event.target;
+  btn.disabled=true;btn.textContent='⏳ 生成中…';
+  if(hintEl){hintEl.style.display='block';hintEl.textContent='Claudeが'+tm.label+'を生成しています…';hintEl.style.color='#3949ab';}
+
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-opus-4-5',
+        max_tokens:1200,
+        messages:[{
+          role:'user',
+          content:
+            '以下の学生情報・面談記録・素材をもとに、'+tm.label+'を作成してください。\n\n'+
+            '【学生氏名】'+(s.name||'（未記入）')+'\n'+
+            '【ゼミ】'+(s.zemi||'―')+'\n'+
+            '【志望】'+(s.career||'―')+'\n\n'+
+            (memoText?'【面談記録】\n'+memoText:'【面談記録】なし\n')+
+            (existing?'\n【既存の'+tm.label+'素材】\n'+existing+'\n':'')+
+            (memo?'\n【補足メモ】\n'+memo+'\n':'')+
+            '\n=== 作成方針 ===\n'+tm.prompt+
+            '\n\n前置き・後書き不要。完成した本文のみを出力してください。\n'+
+            '原文にない情報は追加しないでください。'
+        }]
+      })
+    });
+    var dat=await res.json();
+    if(!dat.content||!dat.content[0])throw new Error('APIエラー');
+    var result=dat.content[0].text.trim();
+
+    // 既存テキストがある場合は確認
+    if(existing){
+      if(!confirm('既存の内容を上書きしますか？\n\n「OK」→ 上書き\n「キャンセル」→ 末尾に追記')){
+        mainTa.value=existing+'\n\n【AI生成 追記】\n'+result;
+      } else {
+        mainTa.value=result;
+      }
+    } else {
+      mainTa.value=result;
+    }
+
+    if(hintEl){
+      hintEl.textContent='✅ '+tm.label+'を生成しました！内容を確認して手直ししてください。';
+      hintEl.style.color='#2d5a27';
+    }
+    // 文字数更新
+    var countMap={gaku1:'c1',gaku2:'c2',selfpr:'c3',jiku:'c4'};
+    var cEl=document.getElementById(countMap[mainId]);
+    if(cEl)cEl.textContent=mainTa.value.length+'文字';
+    mainTa.scrollIntoView({behavior:'smooth',block:'center'});
+    toast('✅ '+tm.label+'を生成しました！');
+
+  }catch(e){
+    if(hintEl){hintEl.textContent='❌ 生成に失敗しました。APIキーを確認してください。';hintEl.style.color='#c0392b';}
+    console.error(e);
+  }finally{
+    btn.disabled=false;btn.textContent='✨ AI生成（'+tm.format+')';
+  }
+};
+
+// ===== 自由ES作成関数 =====
+window.aiGenFreeEs = async function(){
+  var key=getApiKey();
+  if(!key){alert('APIキーを設定してください（画面下部のAIアシスト欄）');return;}
+  var themeTa=document.getElementById('freeEsTheme');
+  var resultTa=document.getElementById('freeEsResult');
+  var hintEl=document.getElementById('freeEsHint');
+  var copyBtn=document.getElementById('freeEsCopyBtn');
+  var charCount=document.getElementById('freeEsCharCount');
+
+  var theme=themeTa?themeTa.value.trim():'';
+  if(!theme){alert('設問テーマを入力してください。');return;}
+
+  var lenVal=document.querySelector('input[name="freeEsLen"]:checked');
+  var targetLen=400;
+  if(lenVal){
+    if(lenVal.value==='custom'){
+      targetLen=parseInt(document.getElementById('freeEsCustomLen').value)||400;
+    } else {
+      targetLen=parseInt(lenVal.value)||400;
+    }
+  }
+
+  // 全情報を収集
+  var s=getStudentInfo();
+  var memoText='';
+  document.querySelectorAll('#memoContainer .me').forEach(function(e,i){
+    var memoTaEl=e.querySelector('textarea[data-memo-text]');
+    var di=e.querySelector('.medate');
+    if(memoTaEl&&memoTaEl.value.trim()){
+      memoText+='【'+(i+1)+'回目 '+(di?di.value:'')+'】\n'+memoTaEl.value.trim()+'\n\n';
+    }
+  });
+  var g1=document.getElementById('gaku1')?document.getElementById('gaku1').value.trim():'';
+  var g2=document.getElementById('gaku2')?document.getElementById('gaku2').value.trim():'';
+  var sp=document.getElementById('selfpr')?document.getElementById('selfpr').value.trim():'';
+  var jk=document.getElementById('jiku')?document.getElementById('jiku').value.trim():'';
+
+  var btn=document.querySelector('button[onclick="aiGenFreeEs()"]');
+  if(btn){btn.disabled=true;btn.textContent='⏳ 作成中…';}
+  if(hintEl){hintEl.style.display='block';hintEl.textContent='Claudeがエントリーシートを作成しています…';hintEl.style.color='#7b1fa2';}
+
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-opus-4-5',
+        max_tokens:1500,
+        messages:[{
+          role:'user',
+          content:
+            '以下の学生情報・面談記録・ES素材をもとに、エントリーシートの設問に答える文章を作成してください。\n\n'+
+            '【学生氏名】'+(s.name||'（未記入）')+'\n'+
+            '【ゼミ】'+(s.zemi||'―')+'\n'+
+            '【志望業界】'+(s.career||'―')+'\n\n'+
+            (memoText?'【面談記録（時系列）】\n'+memoText:'')+
+            (g1?'【ガクチカ①（学業）】\n'+g1+'\n\n':'')+
+            (g2?'【ガクチカ②（学業以外）】\n'+g2+'\n\n':'')+
+            (sp?'【自己PR素材】\n'+sp+'\n\n':'')+
+            (jk?'【志望動機・軸】\n'+jk+'\n\n':'')+
+            '\n=== 設問 ===\n'+theme+'\n\n'+
+            '=== 作成方針 ===\n'+
+            '・文字数：'+targetLen+'字以内（できるだけ近づける）\n'+
+            '・具体的なエピソード・数字を使う\n'+
+            '・結論先行で読みやすく\n'+
+            '・学生の言葉・体験をそのまま活かす\n'+
+            '・原文にない情報は追加しない\n\n'+
+            '前置き・後書き不要。完成した本文のみを出力してください。'
+        }]
+      })
+    });
+    var dat=await res.json();
+    if(!dat.content||!dat.content[0])throw new Error('APIエラー');
+    var result=dat.content[0].text.trim();
+    resultTa.value=result;
+    resultTa.style.display='block';
+    charCount.style.display='block';
+    charCount.textContent=result.length+'文字';
+    copyBtn.style.display='block';
+    if(hintEl){
+      hintEl.textContent='✅ 作成完了！（'+result.length+'字）内容を確認して手直ししてください。';
+      hintEl.style.color='#2d5a27';
+    }
+    resultTa.scrollIntoView({behavior:'smooth',block:'center'});
+    // 文字数カウント連動
+    resultTa.addEventListener('input',function(){
+      charCount.textContent=resultTa.value.length+'文字';
+    });
+    toast('✅ エントリーシートを作成しました！');
+  }catch(e){
+    if(hintEl){hintEl.textContent='❌ 作成に失敗しました。APIキーを確認してください。';hintEl.style.color='#c0392b';}
+    console.error(e);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='✨ エントリーシートを作成';}
+  }
+};
+
+window.copyFreeEs = function(){
+  var ta=document.getElementById('freeEsResult');
+  if(!ta||!ta.value)return;
+  navigator.clipboard.writeText(ta.value).then(function(){
+    toast('📋 エントリーシートをコピーしました！');
+  });
+};
+
+// 自由ES文字数指定の「自由」選択時にカスタム入力を表示
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('input[name="freeEsLen"]').forEach(function(r){
+    r.addEventListener('change',function(){
+      var customInp=document.getElementById('freeEsCustomLen');
+      if(customInp)customInp.style.display=this.value==='custom'?'inline-block':'none';
+    });
+  });
+});
 
 window.saveApiKey = function(){
   var key = document.getElementById('aiApiKey').value.trim();
@@ -2148,8 +2850,10 @@ function genPrompt(){
   var v=function(id){return g(id)?g(id).value.trim():'（未記入）';};
   var mt='';
   g('memoContainer').querySelectorAll('.me').forEach(function(e,i){
-    var di=e.querySelector('.medate');var tas=e.querySelectorAll('textarea');
-    mt+='【'+(i+1)+'回目 '+(di?di.value:'')+'】\n'+(tas[0]?tas[0].value.trim():'')+'\n次回アクション：'+(tas[1]?tas[1].value.trim():'')+'\n\n';
+    var di=e.querySelector('.medate');
+    var memoTa=e.querySelector('textarea[data-memo-text]');
+    var actionTa=e.querySelector('textarea:not([data-raw-text]):not([data-memo-text])');
+    mt+='【'+(i+1)+'回目 '+(di?di.value:'')+'】\n'+(memoTa?memoTa.value.trim():'')+'\n次回アクション：'+(actionTa?actionTa.value.trim():'')+'\n\n';
   });
   var cm=v('counselorMemo');
   // 補足メモも取り込む（★根本修正で保存されるようになった補足情報を活用）
@@ -2301,8 +3005,10 @@ document.addEventListener('DOMContentLoaded',function(){
     if(confirm('最初からやり直しますか？\n未保存のデータは失われます。'))location.reload();
   });
 
-  // 印刷
-  g('printBtn').addEventListener('click',function(){window.print();});
+  // 印刷 → プレビューモーダル
+  g('printBtn').addEventListener('click',function(){ g('printModal').classList.remove('hide'); });
+  g('printModalCancel').addEventListener('click',function(){ g('printModal').classList.add('hide'); });
+  g('quickModalClose').addEventListener('click',function(){ g('quickModal').classList.add('hide'); });
 
   // 💾☁️ 保存ボタン（JSON+Cloud統合）
   g('saveBtn').addEventListener('click', function(){ saveAll(); });
@@ -2381,7 +3087,539 @@ document.addEventListener('DOMContentLoaded',function(){
 
 })();// IIFE
 </script>
-<div id="voiceStatus">🎙️ 録音中…話してください</div>
+
+<!-- ===== 印刷プレビュー & クイック分析 JS ===== -->
+<script>
+(function(){
+'use strict';
+
+// =============================
+// 印刷機能
+// =============================
+var PRINT_SECTIONS = {
+  basic:   ['iCareer','iStatus','iTarget','iJobs','iSupport','iProgress','iAnxiety','iSubjects','iThemes','iWishes','confirmedDate','iFree'],
+  kensa:   ['vpiCheck','vpiMemo','valueCheck','valueMemo'],
+  hearing: ['zemiContent','baitoDetail','clubDetail','hobby','skill','license','pcSkill','langSkill'],
+  prep:    ['prepCardContent'],
+  memo:    ['memoContainer'],
+  es:      ['gaku1','gaku1memo','gaku2','gaku2memo','selfpr','selfprmemo','jiku','jikumemo'],
+  freees:  ['freeEsTheme','freeEsResult'],
+  counsel: ['counselorMemo'],
+  quick:   ['quickResultArea']
+};
+
+window.printPreset = function(type){
+  var all = ['pchk_basic','pchk_kensa','pchk_hearing','pchk_prep','pchk_memo','pchk_es','pchk_freees','pchk_counsel','pchk_quick'];
+  if(type==='all'){
+    all.forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=true; });
+  } else if(type==='none'){
+    all.forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
+  } else if(type==='basic'){
+    all.forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
+    ['pchk_basic','pchk_kensa','pchk_hearing'].forEach(function(id){var el=document.getElementById(id);if(el)el.checked=true;});
+  } else if(type==='es'){
+    all.forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
+    ['pchk_es','pchk_freees','pchk_counsel'].forEach(function(id){var el=document.getElementById(id);if(el)el.checked=true;});
+  } else if(type==='memo'){
+    all.forEach(function(id){ var el=document.getElementById(id); if(el) el.checked=false; });
+    ['pchk_memo'].forEach(function(id){var el=document.getElementById(id);if(el)el.checked=true;});
+  }
+};
+
+window.execPrint = function(){
+  var showHeader  = document.getElementById('popt_header').checked;
+  var showCharCnt = document.getElementById('popt_charcount').checked;
+
+  var printChecks = {
+    basic:   document.getElementById('pchk_basic').checked,
+    kensa:   document.getElementById('pchk_kensa').checked,
+    hearing: document.getElementById('pchk_hearing').checked,
+    prep:    document.getElementById('pchk_prep').checked,
+    memo:    document.getElementById('pchk_memo').checked,
+    es:      document.getElementById('pchk_es').checked,
+    freees:  document.getElementById('pchk_freees').checked,
+    counsel: document.getElementById('pchk_counsel').checked,
+    quick:   document.getElementById('pchk_quick').checked
+  };
+
+  // 学生情報
+  var name    = document.getElementById('hName').textContent || '（未設定）';
+  var zemi    = document.getElementById('hZemi').textContent || '';
+  var grade   = document.getElementById('hGrade').textContent || '';
+  var gakuseki= document.getElementById('hGakuseki').textContent || '';
+  var confDate= document.getElementById('confirmedDate') ? document.getElementById('confirmedDate').value : '';
+  var printDate = new Date().toLocaleString('ja-JP');
+
+  // ヘルパー
+  function val(id){ var el=document.getElementById(id); if(!el) return ''; if(el.type==='checkbox') return el.checked?'✅ 受領済み':'未受領'; return el.value||''; }
+  function tagsText(id){ var el=document.getElementById(id); if(!el) return ''; return el.textContent.replace(/\s+/g,' ').trim(); }
+  function innerTxt(id){ var el=document.getElementById(id); if(!el) return ''; return el.innerText||el.textContent||''; }
+
+  var html = '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>面談カルテ印刷｜'+name+'</title>';
+  html += '<style>';
+  html += '@import url(\'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap\');';
+  html += 'body{font-family:\'Noto Sans JP\',sans-serif;font-size:10pt;color:#2a2a2a;margin:0;padding:0;background:white;}';
+  html += '.print-wrap{max-width:780px;margin:0 auto;padding:18px 24px;}';
+  html += '.ph{border-bottom:3px solid #2d5a27;padding-bottom:10px;margin-bottom:16px;}';
+  html += '.ph-name{font-size:18pt;font-weight:700;color:#2d5a27;margin-bottom:3px;}';
+  html += '.ph-sub{font-size:9pt;color:#666;}';
+  html += '.ph-date{font-size:8pt;color:#999;margin-top:4px;}';
+  html += '.sec{margin-bottom:18px;page-break-inside:avoid;}';
+  html += '.sec-title{font-size:10pt;font-weight:700;color:white;background:#2d5a27;padding:5px 10px;border-radius:4px 4px 0 0;margin:0;}';
+  html += '.sec-body{border:1.5px solid #c5e1a5;border-top:none;border-radius:0 0 6px 6px;padding:10px 13px;}';
+  html += '.sec-title.bark{background:#6b4c2a;}';
+  html += '.sec-title.blue{background:#1a3a6b;}';
+  html += '.sec-title.purple{background:#6a1b9a;}';
+  html += '.ig{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px;}';
+  html += '.ii{background:#f9fdf6;border:1px solid #d0e4c8;border-radius:5px;padding:6px 9px;}';
+  html += '.il{font-size:8pt;color:#888;margin-bottom:2px;}';
+  html += '.iv{font-size:9.5pt;font-weight:500;}';
+  html += '.field{margin-bottom:9px;}';
+  html += '.fl{font-size:8pt;color:#888;margin-bottom:2px;}';
+  html += '.fv{font-size:9pt;white-space:pre-wrap;line-height:1.7;background:#fafafa;border:1px solid #e0e0e0;border-radius:4px;padding:7px 9px;}';
+  html += '.es-badge{display:inline-block;color:white;padding:2px 8px;border-radius:20px;font-size:8pt;font-weight:700;margin-bottom:5px;}';
+  html += '.cc{font-size:8pt;color:#999;text-align:right;margin-top:2px;}';
+  html += '.memo-box{border:1.5px solid #f0c040;border-radius:7px;padding:9px 12px;margin-bottom:10px;background:#fffbf0;page-break-inside:avoid;}';
+  html += '.memo-date{font-size:8pt;color:#856404;font-weight:700;margin-bottom:5px;}';
+  html += '.memo-text{font-size:9pt;white-space:pre-wrap;line-height:1.7;}';
+  html += '.aha{font-size:8pt;color:#c8860a;font-weight:700;margin-bottom:4px;}';
+  html += 'h2{font-size:11pt;margin:0;}';
+  html += '@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style></head><body><div class="print-wrap">';
+
+  // ヘッダー
+  if(showHeader){
+    html += '<div class="ph">';
+    html += '<div class="ph-name">🌳 '+name+'</div>';
+    html += '<div class="ph-sub">'+zemi+'　'+grade+'　'+gakuseki+'</div>';
+    if(confDate) html += '<div class="ph-sub" style="color:#c8860a;font-weight:700;">📅 面談確定：'+confDate+'</div>';
+    html += '<div class="ph-date">出力日時：'+printDate+' ／ 多摩大学 キャリア支援課</div>';
+    html += '</div>';
+  }
+
+  // 基本情報
+  if(printChecks.basic){
+    html += '<div class="sec"><div class="sec-title">📋 基本情報・相談テーマ</div><div class="sec-body">';
+    html += '<div class="ig">';
+    html += '<div class="ii"><div class="il">希望進路</div><div class="iv">'+(innerTxt('iCareer')||'―')+'</div></div>';
+    html += '<div class="ii"><div class="il">活動状況</div><div class="iv">'+(innerTxt('iStatus')||'―')+'</div></div>';
+    html += '<div class="ii"><div class="il">志望先・業界</div><div class="iv">'+(innerTxt('iTarget')||'―')+'</div></div>';
+    html += '<div class="ii"><div class="il">希望職種</div><div class="iv">'+(innerTxt('iJobs')||'―')+'</div></div>';
+    html += '</div>';
+    html += '<div class="field"><div class="fl">相談テーマ</div><div class="fv">'+(tagsText('iThemes')||'―')+'</div></div>';
+    var w1=innerTxt('iWishes'); if(w1) html += '<div class="field"><div class="fl">希望内容</div><div class="fv">'+w1+'</div></div>';
+    var free=innerTxt('iFree'); if(free&&free!=='―') html += '<div class="field"><div class="fl">自由記入</div><div class="fv">'+free+'</div></div>';
+    html += '</div></div>';
+  }
+
+  // 検査結果
+  if(printChecks.kensa){
+    html += '<div class="sec"><div class="sec-title bark">📊 検査結果</div><div class="sec-body">';
+    html += '<div class="field"><div class="fl">VPI職業興味検査</div><div class="fv">'+val('vpiCheck')+'　'+val('vpiMemo')+'</div></div>';
+    html += '<div class="field"><div class="fl">仕事価値観検査</div><div class="fv">'+val('valueCheck')+'　'+val('valueMemo')+'</div></div>';
+    html += '</div></div>';
+  }
+
+  // ヒアリング
+  if(printChecks.hearing){
+    html += '<div class="sec"><div class="sec-title bark">📝 ヒアリング情報</div><div class="sec-body">';
+    var hFields=[['zemiContent','ゼミ内容・テーマ'],['baitoDetail','アルバイト経験'],['clubDetail','部活・サークル'],['hobby','趣味・好きなこと'],['skill','特技・得意なこと'],['license','保有資格'],['pcSkill','PCスキル'],['langSkill','語学スキル']];
+    hFields.forEach(function(f){
+      var v=val(f[0]); if(v) html+='<div class="field"><div class="fl">'+f[1]+'</div><div class="fv">'+v+'</div></div>';
+    });
+    html += '</div></div>';
+  }
+
+  // 事前面談カード
+  if(printChecks.prep){
+    var prepVal = val('prepCardContent');
+    if(prepVal){
+      html += '<div class="sec"><div class="sec-title blue">📋 事前面談カード（AI仮説）</div><div class="sec-body">';
+      html += '<div class="fv">'+prepVal+'</div>';
+      html += '</div></div>';
+    }
+  }
+
+  // 面談記録
+  if(printChecks.memo){
+    var memoEls = document.querySelectorAll('#memoContainer .me');
+    if(memoEls.length){
+      html += '<div class="sec"><div class="sec-title">🗒 面談記録（時系列）</div><div class="sec-body">';
+      memoEls.forEach(function(me){
+        var dt = me.querySelector('.medate') ? me.querySelector('.medate').value : '';
+        var ahaEl = me.querySelector('.meah');
+        var bodyEl = me.querySelector('textarea');
+        var txt = bodyEl ? bodyEl.value : '';
+        var esEl = me.querySelector('.esm-preview');
+        html += '<div class="memo-box">';
+        if(dt) html += '<div class="memo-date">📅 '+dt+'</div>';
+        if(ahaEl) html += '<div class="aha">'+ahaEl.textContent+'</div>';
+        if(txt) html += '<div class="memo-text">'+txt+'</div>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    }
+  }
+
+  // ES素材帳
+  if(printChecks.es){
+    html += '<div class="sec"><div class="sec-title">✏️ ES素材帳</div><div class="sec-body">';
+    var esItems=[
+      {id:'gaku1',mid:'gaku1memo',badge:'📚 ガクチカ①（学業）',bg:'#2d5a27'},
+      {id:'gaku2',mid:'gaku2memo',badge:'☕ ガクチカ②（学業以外）',bg:'#6b4c2a'},
+      {id:'selfpr',mid:'selfprmemo',badge:'🌟 自己PR',bg:'#4a8c3f'},
+      {id:'jiku',mid:'jikumemo',badge:'🧭 企業選びの軸・志望動機',bg:'#1a3a6b'},
+    ];
+    esItems.forEach(function(it){
+      var v=val(it.id); var mv=val(it.mid);
+      if(!v&&!mv) return;
+      html += '<div class="field">';
+      html += '<span class="es-badge" style="background:'+it.bg+'">'+it.badge+'</span>';
+      if(v){ html += '<div class="fv">'+v+'</div>'; if(showCharCnt) html+='<div class="cc">'+v.length+'文字</div>'; }
+      if(mv){ html += '<div style="font-size:8pt;color:#c8860a;font-weight:700;margin-top:5px;">💡 補足メモ</div><div class="fv" style="border-color:#f0c040;background:#fffbf0;">'+mv+'</div>'; }
+      html += '</div>';
+    });
+    html += '</div></div>';
+  }
+
+  // 自由ES
+  if(printChecks.freees){
+    var freeTheme=val('freeEsTheme'), freeResult=val('freeEsResult');
+    if(freeTheme||freeResult){
+      html += '<div class="sec"><div class="sec-title purple">🎯 自由エントリーシート</div><div class="sec-body">';
+      if(freeTheme) html += '<div class="field"><div class="fl">設問テーマ</div><div class="fv">'+freeTheme+'</div></div>';
+      if(freeResult){ html += '<div class="field"><div class="fl">生成されたES</div><div class="fv">'+freeResult+'</div>';if(showCharCnt)html+='<div class="cc">'+freeResult.length+'文字</div>'; html+='</div>';}
+      html += '</div></div>';
+    }
+  }
+
+  // カウンセラーコメント
+  if(printChecks.counsel){
+    var counsel=val('counselorMemo');
+    if(counsel){
+      html += '<div class="sec"><div class="sec-title">💬 カウンセラーコメント</div><div class="sec-body">';
+      html += '<div class="fv">'+counsel+'</div>';
+      html += '</div></div>';
+    }
+  }
+
+  // クイック分析
+  if(printChecks.quick){
+    var qArea=document.getElementById('quickResultArea');
+    var qLabel=document.getElementById('quickResultLabel');
+    var qContent=document.getElementById('quickResultContent');
+    if(qArea&&qArea.style.display!=='none'&&qContent&&qContent.textContent.trim()){
+      html += '<div class="sec"><div class="sec-title" style="background:#2e7d32;">🧭 '+((qLabel&&qLabel.textContent)||'クイック分析')+'</div><div class="sec-body">';
+      html += '<div class="fv">'+qContent.textContent+'</div>';
+      html += '</div></div>';
+    }
+  }
+
+  html += '</div></body></html>';
+
+  // 印刷ウィンドウを開く
+  document.getElementById('printModal').classList.add('hide');
+  var pw = window.open('','_blank','width=900,height=700');
+  pw.document.write(html);
+  pw.document.close();
+  pw.focus();
+  setTimeout(function(){ pw.print(); }, 600);
+};
+
+// =============================
+// クイック分析機能
+// =============================
+var _lastQuickType = '';
+var _lastQuickResult = '';
+
+function collectStudentContext(){
+  function v(id){ var el=document.getElementById(id); return el ? (el.value||'') : ''; }
+  function t(id){ var el=document.getElementById(id); return el ? el.textContent.trim() : ''; }
+  var memos = [];
+  document.querySelectorAll('#memoContainer .me').forEach(function(me){
+    var dt = me.querySelector('.medate') ? me.querySelector('.medate').value : '';
+    var ta = me.querySelector('textarea');
+    if(ta && ta.value) memos.push((dt?'['+dt+'] ':'')+ta.value);
+  });
+  return {
+    name: t('hName'),
+    zemi: t('hZemi'),
+    grade: t('hGrade'),
+    career: t('iCareer'),
+    status: t('iStatus'),
+    target: t('iTarget'),
+    jobs: t('iJobs'),
+    themes: t('iThemes'),
+    zemiContent: v('zemiContent'),
+    baito: v('baitoDetail'),
+    club: v('clubDetail'),
+    hobby: v('hobby'),
+    skill: v('skill'),
+    license: v('license'),
+    gaku1: v('gaku1'),
+    gaku2: v('gaku2'),
+    selfpr: v('selfpr'),
+    jiku: v('jiku'),
+    counselorMemo: v('counselorMemo'),
+    memos: memos.join('\n\n---\n\n')
+  };
+}
+
+function buildQuickPrompt(type, ctx){
+  var base = '【学生情報】\n'
+    +'氏名：'+ctx.name+'\n'
+    +'ゼミ：'+ctx.zemi+'　学年：'+ctx.grade+'\n'
+    +'希望進路：'+ctx.career+'　活動状況：'+ctx.status+'\n'
+    +'志望先・業界：'+ctx.target+'　希望職種：'+ctx.jobs+'\n'
+    +'相談テーマ：'+ctx.themes+'\n\n'
+    +'【経験・特性】\n'
+    +'ゼミ：'+ctx.zemiContent+'\n'
+    +'アルバイト：'+ctx.baito+'\n'
+    +'部活・サークル：'+ctx.club+'\n'
+    +'趣味：'+ctx.hobby+'　特技：'+ctx.skill+'\n\n'
+    +'【ES素材】\n'
+    +'ガクチカ①：'+ctx.gaku1+'\n'
+    +'ガクチカ②：'+ctx.gaku2+'\n'
+    +'自己PR：'+ctx.selfpr+'\n'
+    +'就活の軸メモ：'+ctx.jiku+'\n\n'
+    +'【面談記録】\n'+ctx.memos+'\n\n';
+
+  var prompts = {
+    jiku: base
+      +'あなたは経験豊富なキャリアカウンセラーです（ロジャーズ来談者中心療法・STAR法・フランクル哲学を活用）。\n'
+      +'上記の学生情報をもとに「就活の軸」を整理してください。\n\n'
+      +'以下の構成でわかりやすく出力してください：\n'
+      +'① 価値観ワード（3〜5個のキーワード）\n'
+      +'② この学生の「なぜ働くか」（2〜3文）\n'
+      +'③ 就活の軸候補（箇条書き3つ）\n'
+      +'④ カウンセラーへのコメント（面談で深掘りすべき点）\n\n'
+      +'日本語・敬体で、学生が読んでも伝わる表現にしてください。',
+
+    why: base
+      +'あなたは経験豊富なキャリアカウンセラーです。\n'
+      +'上記の学生情報をもとに「WHY（なぜその業界・企業を志望するのか）」を深掘り・整理してください。\n\n'
+      +'以下の構成で出力してください：\n'
+      +'① WHYの仮説（この学生が〇〇を選ぶ本質的な理由）\n'
+      +'② 原体験・動機の根っこ（面談記録・経験から推測）\n'
+      +'③ 企業選びの視点（価値観との一致ポイント）\n'
+      +'④ 面談で確認すべき問い（カウンセラー向け）\n\n'
+      +'日本語・敬体で出力してください。',
+
+    strengths: base
+      +'あなたは経験豊富なキャリアカウンセラーです。\n'
+      +'上記の学生情報をもとに、この学生の「強み」を発見・整理してください。\n\n'
+      +'以下の構成で出力してください：\n'
+      +'① コア強み（3つ、一言キーワード＋根拠）\n'
+      +'② 強みが発揮されたエピソードの要約\n'
+      +'③ 企業が評価しやすい表現への言い換え提案\n'
+      +'④ 弱みになりうる点と対策\n'
+      +'⑤ 面談で引き出すべき追加エピソード候補\n\n'
+      +'日本語・敬体で出力してください。',
+
+    review: base
+      +'あなたは経験豊富なキャリアカウンセラーです。\n'
+      +'上記の面談記録・学生情報をもとに「今回の面談の振り返り」をまとめてください。\n\n'
+      +'以下の構成で出力してください：\n'
+      +'① 今回の面談の要点（3〜5点）\n'
+      +'② 学生の変化・成長の兆し\n'
+      +'③ 未解決の課題・次回持ち越し事項\n'
+      +'④ 次回面談に向けての申し送り（カウンセラー向けメモ）\n'
+      +'⑤ 学生へのフィードバック案（一言メッセージ）\n\n'
+      +'日本語・敬体で出力してください。',
+
+    self: base
+      +'あなたは経験豊富なキャリアカウンセラーです。\n'
+      +'上記の学生情報をもとに「自己分析サポート」を提供してください。\n\n'
+      +'以下の構成で出力してください：\n'
+      +'① キャッチコピー（この学生を一言で表す言葉）\n'
+      +'② 価値観マップ（興味・得意・大切にしていること）\n'
+      +'③ 「過去→現在→未来」の物語（ナラティブ自己分析）\n'
+      +'④ 適性が高そうな仕事・業界の候補（3つ）\n'
+      +'⑤ 自己分析をさらに深めるための問い（3つ）\n\n'
+      +'日本語・敬体で出力してください。',
+
+    next: base
+      +'あなたは経験豊富なキャリアカウンセラーです。\n'
+      +'上記の学生情報・活動状況をもとに「次のアクション」を提案してください。\n\n'
+      +'以下の構成で出力してください：\n'
+      +'① 現在地の評価（今の状況をひと言で）\n'
+      +'② 今週中にやること（具体的タスク3つ）\n'
+      +'③ 今月中にやること（具体的タスク3つ）\n'
+      +'④ 注意点・落とし穴\n'
+      +'⑤ 背中を押す一言メッセージ（学生向け）\n\n'
+      +'日本語・敬体で出力してください。'
+  };
+
+  return prompts[type] || prompts['jiku'];
+}
+
+var QUICK_META = {
+  jiku:      { ico:'🧭', title:'就活の軸 整理', sub:'価値観・動機を言語化します' },
+  why:       { ico:'❓', title:'WHY 深堀り分析', sub:'志望動機の核心を探ります' },
+  strengths: { ico:'💪', title:'強み 発見レポート', sub:'経験から再現性のある強みを抽出' },
+  review:    { ico:'🔍', title:'面談振り返り', sub:'今回の面談の要点と申し送り' },
+  self:      { ico:'🪞', title:'自己分析サポート', sub:'価値観・興味・特性を整理' },
+  next:      { ico:'🎯', title:'次のアクション提案', sub:'具体的な行動リストを提案' }
+};
+
+window.quickAnalyze = function(type){
+  var apiKey = localStorage.getItem('ai_api_key') || (document.getElementById('aiApiKey') ? document.getElementById('aiApiKey').value.trim() : '') || '';
+  var ctx = collectStudentContext();
+  var meta = QUICK_META[type] || QUICK_META['jiku'];
+  _lastQuickType = type;
+
+  if(!apiKey){
+    // APIキーなし → プロンプトをコピー
+    var prompt = buildQuickPrompt(type, ctx);
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(prompt).then(function(){
+        showToastQ('📋 プロンプトをコピーしました。Claude等に貼り付けてください。');
+      });
+    } else {
+      var ta=document.createElement('textarea');
+      ta.value=prompt;ta.style.cssText='position:fixed;top:-9999px;';
+      document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');showToastQ('📋 プロンプトをコピーしました。');}catch(e){}
+      document.body.removeChild(ta);
+    }
+    return;
+  }
+
+  // APIキーあり → モーダル表示してAI実行
+  var modal = document.getElementById('quickModal');
+  var loading = document.getElementById('quickModalLoading');
+  var body = document.getElementById('quickModalBody');
+  var content = document.getElementById('quickModalContent');
+  var ico = document.getElementById('quickModalIco');
+  var title = document.getElementById('quickModalTitle');
+  var sub = document.getElementById('quickModalSub');
+
+  ico.textContent = meta.ico;
+  title.textContent = meta.title;
+  sub.textContent = meta.sub;
+  loading.style.display = 'block';
+  body.style.display = 'none';
+  modal.classList.remove('hide');
+
+  var prompt = buildQuickPrompt(type, ctx);
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-opus-4-6',
+      max_tokens: 1800,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    var text = '';
+    if(data.content && data.content.length){
+      data.content.forEach(function(c){ if(c.type==='text') text += c.text; });
+    }
+    _lastQuickResult = text;
+    loading.style.display = 'none';
+    content.textContent = text;
+    body.style.display = 'block';
+
+    // インライン結果エリアにも反映
+    var qArea = document.getElementById('quickResultArea');
+    var qLabel = document.getElementById('quickResultLabel');
+    var qDate = document.getElementById('quickResultDate');
+    var qContent = document.getElementById('quickResultContent');
+    if(qArea && qLabel && qContent){
+      qLabel.textContent = meta.ico + ' ' + meta.title;
+      qDate.textContent = new Date().toLocaleString('ja-JP');
+      qContent.textContent = text;
+      qArea.style.display = 'block';
+      // 隠しフィールドに同期（Cloud保存の対象になる）
+      var ql=document.getElementById('quickSavedLabel'); if(ql) ql.value=meta.ico+' '+meta.title;
+      var qd=document.getElementById('quickSavedDate');  if(qd) qd.value=new Date().toLocaleString('ja-JP');
+      var qc=document.getElementById('quickSavedContent'); if(qc) qc.value=text;
+      qArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  })
+  .catch(function(e){
+    loading.style.display = 'none';
+    body.style.display = 'block';
+    content.textContent = '❌ エラーが発生しました：' + e.message;
+  });
+};
+
+window.copyQuickResult = function(){
+  if(!_lastQuickResult) return;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(_lastQuickResult).then(function(){ showToastQ('📋 コピーしました'); });
+  }
+};
+
+window.copyQuickResultInline = function(){
+  var qContent = document.getElementById('quickResultContent');
+  if(!qContent) return;
+  var text = qContent.textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ showToastQ('📋 コピーしました'); });
+  }
+};
+
+window.saveQuickResult = function(){
+  // 隠しフィールドへの同期は既に実施済みなので saveAll() を呼ぶだけ
+  if(window.saveAll){
+    window.saveAll();
+  } else {
+    showToastQ('⚠️ saveAll関数が見つかりません');
+  }
+};
+
+// Cloud復元後にクイック結果を画面に再表示するフック
+// _restoreJSON が呼ばれた後に動作させる
+document.addEventListener('DOMContentLoaded', function(){
+  // MutationObserver で quickSavedContent に値がセットされたら表示を復活
+  var savedContent = document.getElementById('quickSavedContent');
+  if(!savedContent) return;
+  var observer = new MutationObserver(function(){ restoreQuickDisplay(); });
+  observer.observe(savedContent, { attributes: true, attributeFilter: ['value'] });
+
+  // restoreJSON 後のフックとして window._onAfterRestore を登録
+  var origRestore = window._restoreJSON;
+  window._restoreJSON = function(data){
+    if(origRestore) origRestore(data);
+    setTimeout(restoreQuickDisplay, 200);
+  };
+});
+
+function restoreQuickDisplay(){
+  var ql = document.getElementById('quickSavedLabel');
+  var qd = document.getElementById('quickSavedDate');
+  var qc = document.getElementById('quickSavedContent');
+  if(!qc || !qc.value) return;
+  var qArea    = document.getElementById('quickResultArea');
+  var qLabel   = document.getElementById('quickResultLabel');
+  var qDate    = document.getElementById('quickResultDate');
+  var qContent = document.getElementById('quickResultContent');
+  if(qArea && qLabel && qContent){
+    qLabel.textContent   = ql ? ql.value : 'クイック分析';
+    qDate.textContent    = qd ? qd.value : '';
+    qContent.textContent = qc.value;
+    qArea.style.display  = 'block';
+  }
+}
+
+function showToastQ(msg){
+  var t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(function(){ t.style.display='none'; }, 3500);
+}
+
+})();
+</script>
 
 <!-- Firebase SDK -->
 <script type="module">
