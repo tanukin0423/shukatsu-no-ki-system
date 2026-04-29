@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面談カルテv6 操作マニュアル｜多摩大学 キャリア支援課</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ font-family:'Noto Sans JP',sans-serif; font-size:0.92rem; color:#2a2a2a; background:#f5f7f2; line-height:1.8; }
+
+/* ヘッダー */
+.site-header{ background:linear-gradient(135deg,#1b4d1b,#2d5a27); color:white; padding:28px 40px; }
+.site-header h1{ font-size:1.5rem; font-weight:700; margin-bottom:4px; }
+.site-header p{ font-size:0.82rem; opacity:0.85; }
+.version-badge{ display:inline-block; background:rgba(255,255,255,0.2); border-radius:20px; padding:2px 12px; font-size:0.72rem; margin-left:10px; vertical-align:middle; }
+
+/* ナビ */
+.toc-wrap{ background:white; border-bottom:3px solid #2d5a27; padding:14px 40px; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+.toc-wrap ul{ display:flex; gap:6px; flex-wrap:wrap; list-style:none; }
+.toc-wrap a{ font-size:0.75rem; color:#2d5a27; text-decoration:none; padding:4px 12px; border:1.5px solid #2d5a27; border-radius:20px; transition:all 0.2s; white-space:nowrap; }
+.toc-wrap a:hover{ background:#2d5a27; color:white; }
+
+/* 本文 */
+.main{ max-width:900px; margin:0 auto; padding:30px 20px 60px; }
+
+/* セクション */
+.sec{ background:white; border-radius:12px; margin-bottom:24px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.sec-head{ padding:14px 22px; color:white; display:flex; align-items:center; gap:10px; }
+.sec-head h2{ font-size:1.05rem; font-weight:700; }
+.sec-head .num{ font-size:1.5rem; opacity:0.8; }
+.sec-body{ padding:20px 22px; }
+
+.bg-green { background:linear-gradient(135deg,#2d5a27,#4a8c3f); }
+.bg-bark   { background:linear-gradient(135deg,#6b4c2a,#8b6340); }
+.bg-blue   { background:linear-gradient(135deg,#1a3a6b,#2e5090); }
+.bg-teal   { background:linear-gradient(135deg,#00695c,#00897b); }
+.bg-amber  { background:linear-gradient(135deg,#e65100,#f57c00); }
+.bg-purple { background:linear-gradient(135deg,#6a1b9a,#8e24aa); }
+.bg-navy   { background:linear-gradient(135deg,#1a237e,#283593); }
+.bg-red    { background:linear-gradient(135deg,#b71c1c,#c62828); }
+
+/* ステップ */
+.steps{ counter-reset:step; }
+.step{ display:flex; gap:14px; margin-bottom:14px; align-items:flex-start; }
+.step-num{ background:#2d5a27; color:white; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; flex-shrink:0; margin-top:2px; }
+.step-body{ flex:1; }
+.step-body strong{ color:#2d5a27; }
+
+/* ボックス */
+.info-box{ background:#f1f8e9; border-left:4px solid #4a8c3f; border-radius:0 8px 8px 0; padding:12px 16px; margin:12px 0; font-size:0.85rem; }
+.warn-box{ background:#fff8e1; border-left:4px solid #f9a825; border-radius:0 8px 8px 0; padding:12px 16px; margin:12px 0; font-size:0.85rem; }
+.point-box{ background:#e8eaf6; border-left:4px solid #3949ab; border-radius:0 8px 8px 0; padding:12px 16px; margin:12px 0; font-size:0.85rem; }
+
+/* テーブル */
+table{ width:100%; border-collapse:collapse; margin:12px 0; font-size:0.85rem; }
+th{ background:#2d5a27; color:white; padding:8px 12px; text-align:left; font-weight:700; }
+td{ padding:8px 12px; border-bottom:1px solid #e0e0e0; vertical-align:top; }
+tr:nth-child(even) td{ background:#f9fdf6; }
+
+/* グリッド */
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+.grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:12px 0; }
+.card{ border:1.5px solid #e0e0e0; border-radius:8px; padding:12px; background:#fafafa; }
+.card-title{ font-weight:700; font-size:0.82rem; margin-bottom:5px; }
+.card-body{ font-size:0.78rem; color:#555; line-height:1.6; }
+
+/* バッジ */
+.badge{ display:inline-block; padding:2px 10px; border-radius:20px; font-size:0.72rem; font-weight:700; color:white; margin:2px; }
+.badge-green{ background:#2d5a27; }
+.badge-bark{ background:#6b4c2a; }
+.badge-blue{ background:#1a3a6b; }
+.badge-amber{ background:#e65100; }
+.badge-gray{ background:#757575; }
+
+/* クイックボタン説明 */
+.qbtn-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0; }
+.qbtn-card{ border-radius:10px; padding:12px; text-align:center; font-size:0.78rem; }
+.qbtn-ico{ font-size:1.4rem; margin-bottom:4px; }
+.qbtn-title{ font-weight:700; margin-bottom:3px; }
+.qbtn-desc{ color:#555; font-size:0.72rem; line-height:1.5; }
+
+/* フッター */
+.footer{ text-align:center; font-size:0.75rem; color:#888; padding:30px 0; }
+
+/* 印刷 */
+@media print{
+  .toc-wrap{ display:none; }
+  .sec{ box-shadow:none; border:1px solid #ddd; }
+  body{ background:white; }
+}
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<div class="site-header">
+  <h1>🌳 面談カルテ v6 操作マニュアル <span class="version-badge">2026年4月版</span></h1>
+  <p>多摩大学 キャリア支援課｜就活の木プロジェクト｜北山 四郎（キャリ爺）</p>
+</div>
+
+<!-- 目次ナビ -->
+<div class="toc-wrap">
+  <ul>
+    <li><a href="#sec1">①ログイン</a></li>
+    <li><a href="#sec2">②基本情報入力</a></li>
+    <li><a href="#sec3">③面談記録</a></li>
+    <li><a href="#sec4">④べたうち整形</a></li>
+    <li><a href="#sec5">⑤ES素材帳</a></li>
+    <li><a href="#sec6">⑥クイック分析</a></li>
+    <li><a href="#sec7">⑦二段階方式</a></li>
+    <li><a href="#sec8">⑧印刷・PDF</a></li>
+    <li><a href="#sec9">⑨Cloud保存</a></li>
+    <li><a href="#sec10">⑩注意事項</a></li>
+  </ul>
+</div>
+
+<div class="main">
+
+  <!-- はじめに -->
+  <div class="sec">
+    <div class="sec-head bg-green">
+      <div class="num">🌱</div>
+      <h2>はじめに：面談カルテv6 でできること</h2>
+    </div>
+    <div class="sec-body">
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">📋 学生情報の一元管理</div>
+          <div class="card-body">基本情報・検査結果・ヒアリング内容・面談記録・ES素材をひとつの画面で管理できます。</div>
+        </div>
+        <div class="card">
+          <div class="card-title">☁️ Cloud保存・復元</div>
+          <div class="card-body">Firebase連携により、学籍番号をキーにして学生データをクラウドに保存。別のPCやブラウザからも復元できます。</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🤖 AI面談サポート</div>
+          <div class="card-body">Claude APIと連携してES生成・べたうち整形・クイック分析（6種）を自動化。APIキーがなくても二段階方式で他のAIを活用できます。</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🖨 印刷・PDF出力</div>
+          <div class="card-body">印刷したい項目を選択してカルテを印刷。学生への配付資料やファイリング用に活用できます。</div>
+        </div>
+      </div>
+      <div class="info-box">
+        💡 <strong>基本的な使い方の流れ：</strong>
+        ログイン → ☁️Cloud読込（2回目以降）→ 面談記録を追加 → べたうち整形 → ES素材に反映 → クイック分析 → 💾Cloud保存
+      </div>
+    </div>
+  </div>
+
+  <!-- ①ログイン -->
+  <div class="sec" id="sec1">
+    <div class="sec-head bg-bark">
+      <div class="num">①</div>
+      <h2>ログイン</h2>
+    </div>
+    <div class="sec-body">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">ブラウザでカルテのHTMLファイルを開きます。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>パスワードを入力</strong>して「ログイン」ボタンを押します。<br><span style="font-size:0.78rem;color:#888;">※パスワードは管理者（北山）にご確認ください。</span></div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">カルテ画面が開きます。</div>
+        </div>
+      </div>
+      <div class="warn-box">⚠️ パスワードはブラウザに記憶させても構いません。ただし共用PCでは使用後にブラウザを閉じてください。</div>
+    </div>
+  </div>
+
+  <!-- ②基本情報入力 -->
+  <div class="sec" id="sec2">
+    <div class="sec-head bg-blue">
+      <div class="num">②</div>
+      <h2>基本情報の入力</h2>
+    </div>
+    <div class="sec-body">
+      <p style="margin-bottom:12px;">カルテ上部の各欄に学生の基本情報を入力します。</p>
+      <table>
+        <tr><th>項目</th><th>内容・入力例</th></tr>
+        <tr><td>学生氏名</td><td>例：小倉 陸</td></tr>
+        <tr><td>学籍番号</td><td>例：24311001（Cloud保存のキーになります）</td></tr>
+        <tr><td>ゼミ・学年</td><td>例：グローバル・3年生</td></tr>
+        <tr><td>希望進路</td><td>就職・院進学・留学 等から選択</td></tr>
+        <tr><td>活動状況</td><td>未着手・ES準備中・選考中 等</td></tr>
+        <tr><td>志望先・業界</td><td>例：商社・食品メーカー</td></tr>
+        <tr><td>相談テーマ</td><td>自己分析・ES添削・面接対策 等（複数選択可）</td></tr>
+      </table>
+      <div class="info-box">💡 <strong>学籍番号は必ず入力してください。</strong>Cloud保存・読込の際にキーとして使われます。</div>
+    </div>
+  </div>
+
+  <!-- ③面談記録 -->
+  <div class="sec" id="sec3">
+    <div class="sec-head bg-teal">
+      <div class="num">③</div>
+      <h2>面談記録の追加</h2>
+    </div>
+    <div class="sec-body">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">「🗒 面談記録を追加」ボタンを押します。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>面談日</strong>を選択します（カレンダーが開きます）。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">テキストエリアに<strong>面談内容・気づき・次回アクション</strong>を入力します。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">「💾 Cloud保存」ボタンで保存します。</div>
+        </div>
+      </div>
+      <div class="info-box">
+        💡 <strong>AHA！カード</strong>：面談中に学生が「はっ！」とした瞬間のキーワードを入力すると、後から振り返りやすくなります。
+      </div>
+      <div class="warn-box">⚠️ 面談記録は時系列で蓄積されます。削除は慎重に行ってください。</div>
+    </div>
+  </div>
+
+  <!-- ④べたうち整形 -->
+  <div class="sec" id="sec4">
+    <div class="sec-head bg-bark">
+      <div class="num">④</div>
+      <h2>べたうち原文の整形（AI活用）</h2>
+    </div>
+    <div class="sec-body">
+      <p style="margin-bottom:12px;">サイボウズ等に入力した口頭メモ（べたうち）をAIが面談記録として清書し、ES素材も自動抽出します。</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">面談記録ブロック内の「▶ べたうち原文を見る」をクリックして展開します。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">サイボウズのメモを<strong>そのままコピー＆ペースト</strong>します。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">「✨ べたうちを整形」ボタンを押します。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body"><strong>第1回AI処理</strong>：べたうちが面談記録として清書されます。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body"><strong>第2回AI処理</strong>：ES素材（ガクチカ・自己PR等）が自動抽出され、ES素材帳に追記されます。</div>
+        </div>
+      </div>
+      <div class="point-box">
+        🔑 <strong>ポイント：</strong>べたうちはA4用紙10枚分程度まで対応可能です。AIへの入力トークン数に余裕があるので、長文でも問題ありません。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ES素材帳 -->
+  <div class="sec" id="sec5">
+    <div class="sec-head bg-green">
+      <div class="num">⑤</div>
+      <h2>ES素材帳（4大質問）</h2>
+    </div>
+    <div class="sec-body">
+      <p style="margin-bottom:12px;">4つのES欄にAI生成・手動入力・べたうちからの自動抽出が可能です。</p>
+      <table>
+        <tr><th>ES欄</th><th>内容</th><th>操作</th></tr>
+        <tr>
+          <td><span class="badge badge-green">📚 ガクチカ①</span></td>
+          <td>学業・ゼミ・研究内容</td>
+          <td rowspan="4">✨AI生成ボタン<br>📋プロンプトコピー<br>手動入力</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-bark">☕ ガクチカ②</span></td>
+          <td>学業以外（バイト・部活等）</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-green">🌟 自己PR</span></td>
+          <td>強み・再現性のある行動</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-blue">🧭 志望動機・軸</span></td>
+          <td>企業選びの軸・志望動機</td>
+        </tr>
+      </table>
+      <div class="info-box">
+        💡 各ES欄の下に<strong>補足メモ欄</strong>があります。カウンセラーの気づきや添削ポイントを記録しておくと便利です。<br>
+        💡 面談記録の<strong>ES素材バッジ</strong>をクリックするとES欄に内容が追記されます。
+      </div>
+      <p style="margin-top:12px;font-weight:700;color:#6a1b9a;">🎯 自由エントリーシート作成欄</p>
+      <p style="font-size:0.85rem;margin-top:4px;">4大質問以外の設問（例：「10年後の自分を教えてください」など）に対してAIでES文を生成できます。設問テーマを入力して✨ボタンを押してください。</p>
+    </div>
+  </div>
+
+  <!-- ⑥クイック分析 -->
+  <div class="sec" id="sec6">
+    <div class="sec-head bg-navy">
+      <div class="num">⑥</div>
+      <h2>クイック分析ボタン（6種類）</h2>
+    </div>
+    <div class="sec-body">
+      <p style="margin-bottom:12px;">学生の全情報（基本情報・検査結果・ヒアリング・ES素材・面談記録・べたうち原文）をもとにAIが分析します。</p>
+
+      <div class="warn-box">
+        ⚠️ <strong>分析前に必ず「☁️ Cloud読込」を実行してください。</strong><br>
+        過去の面談記録がすべて画面に展開された状態で分析すると、精度の高い結果が得られます。
+      </div>
+
+      <div class="qbtn-grid">
+        <div class="qbtn-card" style="background:#e8f5e9;border:2px solid #4caf50;">
+          <div class="qbtn-ico">🧭</div>
+          <div class="qbtn-title" style="color:#2e7d32;">就活の軸を整理</div>
+          <div class="qbtn-desc">価値観ワード・なぜ働くか・軸候補3つ・深掘りポイント</div>
+        </div>
+        <div class="qbtn-card" style="background:#fff8e1;border:2px solid #ff8f00;">
+          <div class="qbtn-ico">❓</div>
+          <div class="qbtn-title" style="color:#e65100;">WHYを深堀り</div>
+          <div class="qbtn-desc">志望動機の核心・原体験・企業選びの視点・確認すべき問い</div>
+        </div>
+        <div class="qbtn-card" style="background:#e3f2fd;border:2px solid #1565c0;">
+          <div class="qbtn-ico">💪</div>
+          <div class="qbtn-title" style="color:#1565c0;">強みを発見する</div>
+          <div class="qbtn-desc">コア強み3つ・エピソード要約・企業向け言い換え・弱みと対策</div>
+        </div>
+        <div class="qbtn-card" style="background:#f3e5f5;border:2px solid #6a1b9a;">
+          <div class="qbtn-ico">🔍</div>
+          <div class="qbtn-title" style="color:#6a1b9a;">面談振り返り</div>
+          <div class="qbtn-desc">今回の要点・学生の変化・次回申し送り・フィードバック案</div>
+        </div>
+        <div class="qbtn-card" style="background:#e0f7fa;border:2px solid #00838f;">
+          <div class="qbtn-ico">🪞</div>
+          <div class="qbtn-title" style="color:#00838f;">自己分析サポート</div>
+          <div class="qbtn-desc">キャッチコピー・価値観マップ・過去→現在→未来のナラティブ</div>
+        </div>
+        <div class="qbtn-card" style="background:#ffebee;border:2px solid #c62828;">
+          <div class="qbtn-ico">🎯</div>
+          <div class="qbtn-title" style="color:#c62828;">次のアクション提案</div>
+          <div class="qbtn-desc">現在地評価・今週のタスク3つ・今月のタスク3つ・背中を押す一言</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        💡 分析結果はパネル内の緑エリアに表示されます。「💾☁️ この結果を保存」ボタンでCloud保存できます。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑦二段階方式 -->
+  <div class="sec" id="sec7">
+    <div class="sec-head bg-blue">
+      <div class="num">⑦</div>
+      <h2>二段階方式：APIキー未設定の場合</h2>
+    </div>
+    <div class="sec-body">
+      <p style="margin-bottom:12px;">Claude APIキーを設定していない場合でも、他のAI（ChatGPT・Gemini等）を使って同じ分析ができます。</p>
+
+      <div class="grid3">
+        <div class="card" style="background:#e3f2fd;border-color:#1565c0;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:6px;">①</div>
+          <div class="card-title" style="color:#1565c0;">コピー済み</div>
+          <div class="card-body">クイックボタンを押すと<br>プロンプトが自動でクリップボードにコピーされます</div>
+        </div>
+        <div class="card" style="background:#e8f5e9;border-color:#2e7d32;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:6px;">②</div>
+          <div class="card-title" style="color:#2e7d32;">AIに貼り付ける</div>
+          <div class="card-body">青いガイドパネルのリンクから好きなAIを開いて<strong>Ctrl+V</strong>で貼り付けて送信</div>
+        </div>
+        <div class="card" style="background:#fff8e1;border-color:#e65100;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:6px;">③</div>
+          <div class="card-title" style="color:#e65100;">結果を貼り戻す</div>
+          <div class="card-body">AIの分析結果をコピーしてガイドパネルの貼り付け欄に入力→💾保存</div>
+        </div>
+      </div>
+
+      <p style="margin-top:14px;margin-bottom:8px;font-weight:700;">利用できるAIサービス（ガイドパネルにリンクあり）</p>
+      <table>
+        <tr><th>AI</th><th>特徴</th><th>URL</th></tr>
+        <tr><td>🤖 Claude.ai</td><td>長文・日本語が得意。最もおすすめ</td><td>claude.ai</td></tr>
+        <tr><td>💬 ChatGPT</td><td>汎用性が高い。無料プランあり</td><td>chatgpt.com</td></tr>
+        <tr><td>✨ Gemini</td><td>Googleアカウントで利用可</td><td>gemini.google.com</td></tr>
+        <tr><td>🔍 Perplexity</td><td>最新情報の検索も同時にできる</td><td>perplexity.ai</td></tr>
+      </table>
+
+      <div class="point-box">
+        🔑 <strong>プロンプトには学生の全情報が含まれます：</strong><br>
+        基本情報・検査結果・ヒアリング情報・ES素材・カウンセラーコメント・面談記録（全件）・べたうち原文（全件）
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑧印刷・PDF -->
+  <div class="sec" id="sec8">
+    <div class="sec-head bg-navy">
+      <div class="num">⑧</div>
+      <h2>印刷・PDF出力（項目選択式）</h2>
+    </div>
+    <div class="sec-body">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">ヘッダーの「🖨 印刷」ボタンを押します。印刷設定モーダルが開きます。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>プリセット</strong>または<strong>個別チェック</strong>で印刷する項目を選びます。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">「🖨 印刷 / PDF保存」ボタンを押します。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">別ウィンドウで印刷プレビューが開きます。ブラウザの印刷機能でPDF保存も可能です。</div>
+        </div>
+      </div>
+
+      <table style="margin-top:12px;">
+        <tr><th>プリセット</th><th>対象項目</th></tr>
+        <tr><td>✅ 全て選択</td><td>全9項目</td></tr>
+        <tr><td>📋 基本情報のみ</td><td>基本情報・検査結果・ヒアリング情報</td></tr>
+        <tr><td>✏️ ES素材のみ</td><td>ES素材帳・自由ES・カウンセラーコメント</td></tr>
+        <tr><td>🗒 面談記録のみ</td><td>面談記録（時系列）</td></tr>
+      </table>
+
+      <div class="info-box">
+        💡 「ヘッダー（学生名・日時）を表示」オプションをONにすると、印刷物に学生名・出力日時が入ります。<br>
+        💡 「文字数を表示」オプションをONにすると、ES欄の文字数が印刷されます。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑨Cloud保存 -->
+  <div class="sec" id="sec9">
+    <div class="sec-head bg-teal">
+      <div class="num">⑨</div>
+      <h2>Cloud保存・読込（Firebase連携）</h2>
+    </div>
+    <div class="sec-body">
+      <div class="grid2">
+        <div>
+          <p style="font-weight:700;margin-bottom:8px;">💾 Cloud保存</p>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-body">ヘッダーの「💾 Cloud保存」ボタンを押します。</div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-body">学籍番号をキーに、全データがFirestoreに上書き保存されます。</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p style="font-weight:700;margin-bottom:8px;">☁️ Cloud読込</p>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-body">「☁️ Cloud読込」ボタンを押します。</div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-body">学籍番号を入力します。</div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-body">保存済みデータが画面に復元されます。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="warn-box">
+        ⚠️ <strong>保存は上書き方式です。</strong>同じ学籍番号で保存すると、以前のデータに上書きされます。<br>
+        ⚠️ <strong>クイック分析前は必ずCloud読込を実行してください。</strong>過去の全面談記録が画面に展開されてから分析すると精度が上がります。
+      </div>
+      <div class="info-box">
+        💡 <strong>データ容量の目安：</strong>1学生あたり5〜20KB。100名分でも数MB程度。Firestoreの無料枠（1GB）で十分対応できます。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑩注意事項 -->
+  <div class="sec" id="sec10">
+    <div class="sec-head bg-red">
+      <div class="num">⑩</div>
+      <h2>注意事項・よくある質問</h2>
+    </div>
+    <div class="sec-body">
+      <table>
+        <tr><th>よくある質問</th><th>回答</th></tr>
+        <tr>
+          <td>APIキーはどこで取得できますか？</td>
+          <td>console.anthropic.com で取得できます。新規登録で$5分の無料クレジットがあります。キーはブラウザのlocalStorageにのみ保存され、GitHubには送信されません。</td>
+        </tr>
+        <tr>
+          <td>クイック分析がうまく動かない</td>
+          <td>①APIキーが設定されているか確認 ②Cloud読込を実行してから分析 ③面談記録件数が「0件」になっていないか確認</td>
+        </tr>
+        <tr>
+          <td>印刷プレビューが開かない</td>
+          <td>ブラウザのポップアップブロックを解除してください。</td>
+        </tr>
+        <tr>
+          <td>Cloud保存に失敗する</td>
+          <td>学籍番号が入力されているか確認してください。インターネット接続も確認してください。</td>
+        </tr>
+        <tr>
+          <td>べたうち整形が途中で止まる</td>
+          <td>APIキーの残高を確認してください。べたうち原文が非常に長い場合は2回に分けて整形してください。</td>
+        </tr>
+      </table>
+
+      <div class="point-box" style="margin-top:16px;">
+        🔑 <strong>個人情報の取り扱いについて：</strong><br>
+        学生の個人情報が含まれるデータです。取り扱いには十分注意し、共用PCでの使用後はブラウザを閉じてください。APIキーを含むデータは外部に送信されません。
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<div class="footer">
+  🌳 就活の木プロジェクト｜多摩大学 キャリア支援課｜北山 四郎（キャリ爺）<br>
+  面談カルテ v6.0｜2026年4月
+</div>
+
+</body>
+</html>
