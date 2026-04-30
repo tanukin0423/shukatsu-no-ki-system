@@ -1883,7 +1883,7 @@ function addMemo(data){
           'anthropic-version':'2023-06-01',
           'anthropic-dangerous-direct-browser-access':'true'
         },
-        body:JSON.stringify({model:'claude-opus-4-5',max_tokens:maxTokens,messages:messages})
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,messages:messages})
       });
       var d=await r.json();
       if(!d.content||!d.content[0])throw new Error('APIレスポンス異常');
@@ -2248,7 +2248,7 @@ window.aiGenEs = async function(mainId, memoId, esType){
         'anthropic-dangerous-direct-browser-access':'true'
       },
       body:JSON.stringify({
-        model:'claude-opus-4-5',
+        model:'claude-sonnet-4-6',
         max_tokens:1200,
         messages:[{
           role:'user',
@@ -2352,7 +2352,7 @@ window.aiGenFreeEs = async function(){
         'anthropic-dangerous-direct-browser-access':'true'
       },
       body:JSON.stringify({
-        model:'claude-opus-4-5',
+        model:'claude-sonnet-4-6',
         max_tokens:1500,
         messages:[{
           role:'user',
@@ -2622,7 +2622,7 @@ window.aiAction = async function(type){
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -2726,7 +2726,7 @@ window.sendPrepChat = async function(){
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: 'あなたはキャリアカウンセラーのアシスタントです。事前面談カードの修正・改善をサポートしてください。修正版を提示する場合は全文を出力してください。',
         messages: _prepChatHistory
@@ -2827,7 +2827,7 @@ window.sendFreeChat = async function(){
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: 'あなたはキャリアカウンセラーのアシスタントです。以下の学生情報を踏まえて、就職活動に関するあらゆる相談にお答えください。\n\n' + studentInfo,
         messages: _freeChatHistory
@@ -3598,7 +3598,7 @@ window.quickAnalyze = function(type){
       'anthropic-dangerous-direct-browser-access': 'true'
     },
     body: JSON.stringify({
-      model: 'claude-opus-4-6',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1800,
       messages: [{ role: 'user', content: prompt }]
     })
