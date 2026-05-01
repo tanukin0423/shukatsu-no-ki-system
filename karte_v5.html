@@ -1108,6 +1108,25 @@ textarea.fi.tall{min-height:88px;}
             💡 APIキーは <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> で取得できます（新規登録で$5分無料）。<br>
             キーはこのブラウザのSessionStorageにのみ保存され、タブを閉じると消えます。GitHubには送信されません。
           </div>
+          <!-- モデル切り替えトグル -->
+          <div style="margin-top:10px;">
+            <div style="font-size:0.78rem;color:#555;margin-bottom:6px;font-weight:600;">🧠 使用モデル</div>
+            <div style="display:flex;border:1.5px solid #c5cae9;border-radius:8px;overflow:hidden;">
+              <button id="modelSonnetBtn"
+                onclick="setModel('sonnet')"
+                style="flex:1;padding:7px 0;border:none;background:#283593;color:white;font-size:0.8rem;font-family:inherit;font-weight:700;cursor:pointer;">
+                🧠 Sonnet 4.6（高品質）
+              </button>
+              <button id="modelHaikuBtn"
+                onclick="setModel('haiku')"
+                style="flex:1;padding:7px 0;border:none;background:white;color:#555;font-size:0.8rem;font-family:inherit;cursor:pointer;">
+                ⚡ Haiku 4.5（高速・低コスト）
+              </button>
+            </div>
+            <div style="font-size:0.72rem;color:#888;margin-top:4px;" id="modelHint">
+              Sonnet：高品質な分析向け　Haiku：問い返し・準備メモなど速度重視向け
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1883,7 +1902,7 @@ function addMemo(data){
           'anthropic-version':'2023-06-01',
           'anthropic-dangerous-direct-browser-access':'true'
         },
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,messages:messages})
+        body:JSON.stringify({model:getKarteModel(),max_tokens:maxTokens,messages:messages})
       });
       var d=await r.json();
       if(!d.content||!d.content[0])throw new Error('APIレスポンス異常');
@@ -2248,7 +2267,7 @@ window.aiGenEs = async function(mainId, memoId, esType){
         'anthropic-dangerous-direct-browser-access':'true'
       },
       body:JSON.stringify({
-        model:'claude-sonnet-4-6',
+        model:getKarteModel(),
         max_tokens:1200,
         messages:[{
           role:'user',
@@ -2352,7 +2371,7 @@ window.aiGenFreeEs = async function(){
         'anthropic-dangerous-direct-browser-access':'true'
       },
       body:JSON.stringify({
-        model:'claude-sonnet-4-6',
+        model:getKarteModel(),
         max_tokens:1500,
         messages:[{
           role:'user',
@@ -2428,6 +2447,38 @@ window.saveApiKey = function(){
   updateApiKeyStatus();
   toast('✅ APIキーを保存しました（このブラウザに保持）');
 };
+
+// ===== モデル管理 =====
+var currentKarteModel = 'sonnet'; // デフォルト
+
+const KARTE_MODEL_IDS = {
+  sonnet: 'claude-sonnet-4-6',
+  haiku:  'claude-haiku-4-5-20251001'
+};
+
+window.setModel = function(m){
+  currentKarteModel = m;
+  localStorage.setItem('karte_model', m);
+  var sb = document.getElementById('modelSonnetBtn');
+  var hb = document.getElementById('modelHaikuBtn');
+  if(m === 'sonnet'){
+    sb.style.background='#283593'; sb.style.color='white'; sb.style.fontWeight='700';
+    hb.style.background='white';   hb.style.color='#555';  hb.style.fontWeight='400';
+  } else {
+    hb.style.background='#283593'; hb.style.color='white'; hb.style.fontWeight='700';
+    sb.style.background='white';   sb.style.color='#555';  sb.style.fontWeight='400';
+  }
+};
+
+function getKarteModel(){
+  return KARTE_MODEL_IDS[currentKarteModel] || KARTE_MODEL_IDS.sonnet;
+}
+
+// 起動時：モデル設定を復元
+(function(){
+  var savedModel = localStorage.getItem('karte_model');
+  if(savedModel === 'haiku'){ window.setModel('haiku'); }
+})();
 
 window.toggleKeyVis = function(){
   var inp = document.getElementById('aiApiKey');
@@ -2622,7 +2673,7 @@ window.aiAction = async function(type){
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: getKarteModel(),
         max_tokens: 2000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -2726,7 +2777,7 @@ window.sendPrepChat = async function(){
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: getKarteModel(),
         max_tokens: 1500,
         system: 'あなたはキャリアカウンセラーのアシスタントです。事前面談カードの修正・改善をサポートしてください。修正版を提示する場合は全文を出力してください。',
         messages: _prepChatHistory
@@ -2827,7 +2878,7 @@ window.sendFreeChat = async function(){
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: getKarteModel(),
         max_tokens: 1500,
         system: 'あなたはキャリアカウンセラーのアシスタントです。以下の学生情報を踏まえて、就職活動に関するあらゆる相談にお答えください。\n\n' + studentInfo,
         messages: _freeChatHistory
@@ -3598,7 +3649,7 @@ window.quickAnalyze = function(type){
       'anthropic-dangerous-direct-browser-access': 'true'
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
+      model: getKarteModel(),
       max_tokens: 1800,
       messages: [{ role: 'user', content: prompt }]
     })
