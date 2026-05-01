@@ -154,7 +154,8 @@ tbody td{padding:6px 10px;border-bottom:1px solid var(--border);white-space:nowr
       <div class="note">
         ⚠️ Cloud登録はGitHub Pages版（https://）でのみ動作します。<br>
         📁 対応ファイル：3年生・4年生のExcelファイル（.xlsx）両方に対応しています。<br>
-        🔑 学籍番号をキーにFirestoreの「students」コレクションに保存されます。
+        🔑 学籍番号をキーにFirestoreの「students」コレクションに保存されます。<br>
+        🔍 <strong>Cloud検索は「students（マスター）」と「karte（カルテv6）」の両方を同時に検索します。</strong>
       </div>
     </div>
   </div>
@@ -257,13 +258,16 @@ tbody td{padding:6px 10px;border-bottom:1px solid var(--border);white-space:nowr
 
   <!-- Cloud検索 -->
   <div class="card">
-    <div class="card-header gold">🔍 Cloudデータ検索・確認</div>
+    <div class="card-header gold">🔍 Cloudデータ検索・確認（students ＋ karte 両方を検索）</div>
     <div class="card-body">
+      <div style="font-size:0.78rem;color:var(--tl);margin-bottom:8px;background:#fff8e1;border:1px solid #f0c040;border-radius:7px;padding:7px 12px;">
+        💡 studentsコレクション（マスター）とkarteコレクション（カルテv6）の<strong>両方を同時に検索</strong>します。どちらか一方にデータがあれば表示されます。
+      </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <input type="text" id="cloudSearchInput" placeholder="学籍番号を入力（例：22411001）"
+        <input type="text" id="cloudSearchInput" placeholder="学籍番号を入力（例：22411064）— students・karte 両方を検索"
                style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:inherit;font-size:0.85rem;">
         <button class="btn btn-gold" id="cloudSearchBtn">🔍 検索</button>
-        <button class="btn btn-red" id="cloudDeleteBtn" style="display:none;">🗑 削除</button>
+        <button class="btn btn-red" id="cloudDeleteBtn" style="display:none;">🗑 studentsから削除</button>
       </div>
       <div id="cloudResult" style="margin-top:12px;"></div>
     </div>
@@ -354,46 +358,110 @@ document.getElementById('checkCloudBtn').addEventListener('click', async()=>{
   }catch(e){ alert('取得失敗：'+e.message); }
 });
 
-// Cloud検索
+// Cloud検索（students + karte 両コレクション対応）
 document.getElementById('cloudSearchBtn').addEventListener('click', async()=>{
   const id = document.getElementById('cloudSearchInput').value.trim();
   if(!id){ alert('学籍番号を入力してください'); return; }
   const resultDiv = document.getElementById('cloudResult');
-  resultDiv.innerHTML = '🔄 検索中...';
+  resultDiv.innerHTML = '🔄 students・karte 両方を検索中...';
+
   try{
-    const snap = await getDoc(doc(db, COL, id));
-    if(!snap.exists()){
-      resultDiv.innerHTML = `<div style="color:var(--red);font-size:0.85rem;">⚠️ 学籍番号「${id}」はCloudに登録されていません</div>`;
+    // students と karte を同時に検索
+    const [snapS, snapK] = await Promise.all([
+      getDoc(doc(db, 'students', id)),
+      getDoc(doc(db, 'karte',    id))
+    ]);
+
+    const ds = snapS.exists() ? snapS.data() : null; // studentsのデータ
+    const dk = snapK.exists() ? snapK.data() : null; // karteのデータ
+
+    // どちらにも存在しない
+    if(!ds && !dk){
+      resultDiv.innerHTML = `<div style="color:var(--red);font-size:0.85rem;padding:10px;">
+        ⚠️ 学籍番号「${id}」はstudents・karteどちらにも登録されていません
+      </div>`;
       document.getElementById('cloudDeleteBtn').style.display='none';
       return;
     }
-    const d = snap.data();
+
+    // データを統合（studentsを優先、karteで補完）
+    const d = Object.assign({}, dk||{}, ds||{});
+    const foundIn = [ds?'📋 students（マスター）':'', dk?'📁 karte（カルテ）':''].filter(Boolean).join(' ＋ ');
+
+    // 面談記録の件数をカウント
+    let memoCount = 0;
+    if(dk){
+      for(let i=1; i<=20; i++){
+        if(dk[`memo_${i}`] || dk[`memo${i}`]) memoCount++;
+      }
+      // 配列形式の場合
+      if(dk.memos && Array.isArray(dk.memos)) memoCount = dk.memos.length;
+    }
+
     resultDiv.innerHTML = `
-      <div style="background:var(--gp);border:1.5px solid var(--border);border-radius:8px;padding:12px;font-size:0.83rem;">
-        <div style="font-weight:700;color:var(--gd);margin-bottom:8px;">✅ ${d.name}（${d.gakuseki}）</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-          <div>📚 学年：${d.grade}年生</div>
-          <div>👤 性別：${d.gender||'―'}</div>
-          <div>🏫 ゼミ：${d.zemi||'―'}</div>
-          <div>👨‍💼 担当：${d.tanto||'―'}</div>
-          <div>📱 電話：${d.tel||'―'}</div>
-          <div>📧 メール：${d.email||'―'}</div>
-          <div>💼 就職希望：${d.career||'―'}</div>
-          <div>📊 ステータス：${d.status||'―'}</div>
-          <div>🎓 内定月：${d.naiteiMonth||'―'}</div>
-          <div>🔄 継続状況：${d.keizoku||'―'}</div>
+      <div style="background:var(--gp);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;font-size:0.83rem;">
+
+        <!-- ヘッダー -->
+        <div style="background:var(--gd);color:white;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+          <div style="font-weight:700;font-size:0.95rem;">✅ ${d.name||'―'}（${id}）</div>
+          <div style="font-size:0.7rem;opacity:0.85;">検索元：${foundIn}</div>
         </div>
-        <div style="font-size:0.7rem;color:var(--tl);margin-top:6px;">登録日時：${d._importedAt||'―'}</div>
+
+        <!-- 基本情報 -->
+        <div style="padding:12px 14px;">
+          <div style="font-size:0.72rem;font-weight:700;color:var(--gd);margin-bottom:7px;border-bottom:1px solid var(--border);padding-bottom:4px;">📋 基本情報</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+            <div>📚 学年：${d.grade ? d.grade+'年生' : '―'}</div>
+            <div>👤 性別：${d.gender||'―'}</div>
+            <div>🏫 ゼミ：${d.zemi||'―'}</div>
+            <div>👨‍💼 担当：${d.tanto||'―'}</div>
+            <div>📱 電話：${d.tel||'―'}</div>
+            <div>📧 メール：${d.email||d.mail||'―'}</div>
+            <div>💼 就職希望：${d.career||'―'}</div>
+            <div>📊 ステータス：${d.status||'―'}</div>
+            ${d.naiteiMonth ? `<div>🎓 内定月：${d.naiteiMonth}</div>` : ''}
+            ${d.kokuseki ? `<div>🌏 国籍：${d.kokuseki}</div>` : ''}
+          </div>
+
+          ${dk ? `
+          <!-- カルテ情報 -->
+          <div style="font-size:0.72rem;font-weight:700;color:#1565c0;margin-bottom:7px;border-bottom:1px solid #bbdefb;padding-bottom:4px;">📁 カルテ情報（karte_v6）</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+            <div>📝 面談記録：${memoCount > 0 ? memoCount+'件' : dk.memoText ? 'あり' : '未記録'}</div>
+            <div>🎯 志望先：${dk.target||dk.kibou||'―'}</div>
+            <div>📅 最終保存：${dk._savedAt||dk.savedAt||'―'}</div>
+            <div>🔖 活動状況：${dk.actStatus||dk.status||'―'}</div>
+          </div>` : ''}
+
+          <!-- 登録元バッジ -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+            ${ds ? '<span class="badge badge-green">📋 studentsに登録済み</span>' : '<span class="badge badge-gray">📋 studentsに未登録</span>'}
+            ${dk ? '<span class="badge badge-blue">📁 karteに登録済み</span>' : '<span class="badge badge-gray">📁 karteに未登録</span>'}
+          </div>
+
+          <div style="font-size:0.68rem;color:var(--tl);margin-top:8px;">
+            ${ds ? '📋 students登録：'+(ds._importedAt||'―') : ''}
+            ${dk ? '　📁 karte保存：'+(dk._savedAt||dk.savedAt||'―') : ''}
+          </div>
+        </div>
       </div>`;
-    document.getElementById('cloudDeleteBtn').style.display='inline-block';
-    document.getElementById('cloudDeleteBtn').onclick = async()=>{
-      if(!confirm(`「${d.name}」のデータを削除しますか？`)) return;
-      await deleteDoc(doc(db, COL, id));
-      toast('🗑 削除しました');
-      resultDiv.innerHTML='';
-      document.getElementById('cloudDeleteBtn').style.display='none';
-    };
-  }catch(e){ resultDiv.innerHTML=`<div style="color:var(--red);">エラー：${e.message}</div>`; }
+
+    // 削除ボタン（studentsにある場合のみ表示）
+    const delBtn = document.getElementById('cloudDeleteBtn');
+    if(ds){
+      delBtn.style.display='inline-block';
+      delBtn.onclick = async()=>{
+        if(!confirm(`「${d.name}」をstudentsから削除しますか？\n※karteのデータは削除されません`)) return;
+        await deleteDoc(doc(db, 'students', id));
+        toast('🗑 studentsから削除しました');
+        resultDiv.innerHTML='';
+        delBtn.style.display='none';
+      };
+    } else {
+      delBtn.style.display='none';
+    }
+
+  }catch(e){ resultDiv.innerHTML=`<div style="color:var(--red);padding:10px;">エラー：${e.message}</div>`; }
 });
 
 // グローバルにCloud登録関数を公開（カルテv5連携用）
