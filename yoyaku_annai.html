@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面談予約のご案内｜多摩大学 キャリア支援課</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gl:#7db96a;--gp:#e8f5e3;--gbg:#f3faf0;
+  --bark:#6b4c2a;--cream:#fdfaf5;
+  --text:#2a2a2a;--tl:#888;--border:#c8dfc2;
+  --shadow:0 4px 24px rgba(45,90,39,0.10);
+  --blue:#185FA5;--blue-pale:#E6F1FB;
+  --amber:#BA7517;--amber-pale:#fff8e1;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'Noto Sans JP',sans-serif;
+  background:#dce8d8;
+  display:flex;flex-direction:column;align-items:center;
+  padding:24px 16px 48px;
+  min-height:100vh;
+  color:var(--text);
+}
+
+.print-btn{
+  margin-bottom:16px;
+  padding:10px 28px;
+  background:var(--gd);color:white;border:none;
+  border-radius:50px;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:0.9rem;font-weight:700;cursor:pointer;
+  box-shadow:0 3px 12px rgba(45,90,39,0.30);
+  letter-spacing:0.05em;
+}
+.print-btn:hover{background:var(--gm);}
+
+/* A4 */
+.a4{
+  width:210mm;min-height:297mm;
+  background:var(--cream);
+  box-shadow:0 6px 32px rgba(0,0,0,0.18);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* ヘッダー（index.htmlと同じ） */
+.header{
+  background:var(--gd);color:white;
+  padding:22px 28px 20px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.header::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.header-tree{font-size:1.8rem;margin-bottom:3px;position:relative;}
+.header h1{font-family:'Noto Serif JP',serif;font-size:1.15rem;font-weight:700;position:relative;}
+.header p{font-size:0.75rem;opacity:0.8;margin-top:3px;position:relative;}
+
+/* リード */
+.lead-bar{
+  background:var(--gp);border-bottom:2px solid var(--border);
+  padding:10px 28px;font-size:0.78rem;color:var(--gd);
+  line-height:1.8;text-align:center;
+}
+.lead-bar strong{font-weight:700;}
+
+/* 2カラム */
+.main-cols{display:flex;flex:1;gap:0;}
+
+.col-left{
+  flex:1;padding:18px 16px 18px 22px;
+  border-right:1.5px solid var(--border);
+  display:flex;flex-direction:column;gap:12px;
+}
+.col-right{
+  width:196px;flex-shrink:0;
+  padding:18px 18px 18px 16px;
+  display:flex;flex-direction:column;gap:12px;
+}
+
+/* セクションタイトル */
+.sec-ttl{
+  font-size:0.82rem;font-weight:700;color:var(--gd);
+  margin-bottom:8px;display:flex;align-items:center;gap:6px;
+  border-bottom:1.5px solid var(--border);padding-bottom:5px;
+}
+
+/* カード */
+.card{
+  background:white;border:1.5px solid var(--border);
+  border-radius:11px;padding:13px 14px;
+  box-shadow:var(--shadow);
+}
+
+/* 種類バッジ */
+.type-row{display:flex;gap:8px;margin-bottom:10px;}
+.type-badge{
+  flex:1;padding:9px 7px;border-radius:9px;
+  text-align:center;font-size:0.75rem;font-weight:700;line-height:1.6;
+}
+.type-badge.first{background:var(--gp);border:1.5px solid var(--gm);color:var(--gd);}
+.type-badge.second{background:var(--blue-pale);border:1.5px solid var(--blue);color:var(--blue);}
+.type-badge .tb-icon{font-size:1.1rem;display:block;margin-bottom:2px;}
+.type-badge .tb-desc{font-size:0.65rem;font-weight:400;color:var(--tl);margin-top:1px;line-height:1.4;}
+
+/* 箇条書き汎用 */
+.blist{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.blist li{
+  font-size:0.72rem;color:#3a3a3a;line-height:1.75;
+  padding-left:12px;position:relative;
+}
+.blist li::before{content:'▸';position:absolute;left:0;color:var(--gm);font-size:0.68rem;top:3px;}
+.blist li strong{color:var(--gd);}
+
+/* 2回目以降 */
+.second-box{
+  background:var(--blue-pale);border:1.5px solid var(--blue);
+  border-radius:10px;padding:11px 13px;
+}
+.second-box .sb-ttl{
+  font-size:0.75rem;font-weight:700;color:#1a3a6a;
+  margin-bottom:5px;display:flex;align-items:center;gap:5px;
+}
+.second-box .blist li::before{color:var(--blue);}
+.second-box .blist li{color:#1a3a6a;}
+
+/* 検査ボックス */
+.insp-box{
+  background:var(--amber-pale);border:2px solid #f0c040;
+  border-radius:11px;padding:11px 13px;
+}
+.insp-ttl{font-size:0.75rem;font-weight:700;color:#856404;margin-bottom:7px;display:flex;align-items:center;gap:5px;}
+.insp-item{
+  background:white;border:1px solid #f0c040;border-radius:7px;
+  padding:7px 10px;margin-bottom:5px;
+  font-size:0.7rem;line-height:1.7;color:#5a4000;
+}
+.insp-item:last-child{margin-bottom:0;}
+.insp-item strong{color:#856404;}
+.insp-item a{color:var(--gd);font-weight:700;text-decoration:none;}
+
+/* 連絡先 */
+.contact-box{
+  background:white;border:1.5px solid var(--border);
+  border-radius:10px;padding:10px 13px;margin-top:auto;
+}
+.contact-ttl{font-size:0.72rem;font-weight:700;color:var(--gd);margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+.contact-info{font-size:0.7rem;color:#3a3a3a;line-height:1.9;}
+.contact-info strong{color:var(--gd);}
+
+/* QRコード */
+.qr-box{
+  background:white;border:1.5px solid var(--border);
+  border-radius:11px;padding:13px 11px;
+  text-align:center;box-shadow:var(--shadow);
+}
+.qr-lbl{font-size:0.7rem;font-weight:700;color:var(--gd);margin-bottom:9px;display:block;line-height:1.6;}
+#qrcode{display:flex;justify-content:center;margin-bottom:7px;}
+#qrcode img,#qrcode canvas{border-radius:4px;}
+.qr-url{font-size:0.58rem;color:var(--tl);word-break:break-all;line-height:1.5;background:var(--gbg);border-radius:4px;padding:4px 5px;margin-top:3px;}
+
+/* ステップ */
+.steps-box{
+  background:white;border:1.5px solid var(--border);
+  border-radius:11px;padding:13px 11px;box-shadow:var(--shadow);
+}
+.step{display:flex;gap:7px;margin-bottom:9px;align-items:flex-start;}
+.step:last-child{margin-bottom:0;}
+.step-num{
+  width:21px;height:21px;background:var(--gd);color:white;
+  border-radius:50%;font-size:0.68rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.step:nth-child(2) .step-num{background:var(--gm);}
+.step:nth-child(3) .step-num{background:var(--gl);}
+.step:nth-child(4) .step-num{background:var(--bark);}
+.step-ttl{font-size:0.75rem;font-weight:700;color:var(--gd);margin-bottom:2px;}
+.step-desc{font-size:0.66rem;color:#4a4a4a;line-height:1.7;}
+.stag{display:inline-block;background:var(--gp);border:1px solid var(--border);color:var(--gd);font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:2px;}
+.stag.bl{background:var(--blue-pale);border-color:var(--blue);color:var(--blue);}
+
+/* 注意 */
+.caution-box{
+  background:white;border:1.5px solid var(--border);
+  border-radius:9px;padding:10px 11px;
+  font-size:0.66rem;color:#4a4a4a;line-height:1.8;
+}
+.caution-ttl{font-size:0.7rem;font-weight:700;color:var(--gd);margin-bottom:4px;}
+.caution-box .ci{padding-left:10px;position:relative;margin-bottom:2px;}
+.caution-box .ci::before{content:'▸';position:absolute;left:0;color:var(--gm);}
+
+/* フッター */
+.footer{
+  background:var(--gd);padding:10px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.footer-left{font-size:0.68rem;color:rgba(255,255,255,0.75);line-height:1.8;}
+.footer-left strong{color:white;}
+.footer-right{font-size:0.65rem;color:rgba(255,255,255,0.55);text-align:right;line-height:1.8;}
+
+@media print{
+  body{background:none;padding:0;}
+  .print-btn{display:none;}
+  .a4{box-shadow:none;width:100%;min-height:auto;}
+}
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">🖨️ 印刷する（A4）</button>
+
+<div class="a4">
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <div class="header-tree">🌳</div>
+    <h1>面談予約のご案内</h1>
+    <p>多摩大学 キャリア支援課｜QRコードからカンタンに予約できます</p>
+  </div>
+
+  <!-- リード -->
+  <div class="lead-bar">
+    就職活動・自己分析・ES作成・面接対策など、<strong>キャリアに関するあらゆる相談</strong>をお受けしています。<br>
+    右のQRコードを読み取り、スマートフォンから予約フォームにアクセスしてください。
+  </div>
+
+  <!-- 2カラム -->
+  <div class="main-cols">
+
+    <!-- 左カラム -->
+    <div class="col-left">
+
+      <!-- 相談の種類 -->
+      <div class="card">
+        <div class="sec-ttl"><span>📋</span>相談の種類を選んでください</div>
+        <div class="type-row">
+          <div class="type-badge first">
+            <span class="tb-icon">🌱</span>
+            初回相談
+            <div class="tb-desc">はじめての面談<br>就活の基本から相談できます</div>
+          </div>
+          <div class="type-badge second">
+            <span class="tb-icon">🔄</span>
+            2回目以降
+            <div class="tb-desc">ES添削・面接対策<br>企業研究など</div>
+          </div>
+        </div>
+        <div style="font-size:0.7rem;color:var(--tl);line-height:1.75;padding-top:2px;">
+          フォームの最初に種類を選びます。担当の先生が分からない場合は
+          <strong style="color:var(--gd);">北山 四郎</strong>を選んでください。
+        </div>
+      </div>
+
+      <!-- ①初回の入力内容（薄いグリーン背景） -->
+      <div style="background:var(--gp);border:1.5px solid var(--gm);border-radius:11px;padding:13px 14px;box-shadow:var(--shadow);">
+        <div class="sec-ttl"><span>🌱</span>① 初回相談の方へ　— 入力していただく内容</div>
+        <ul class="blist">
+          <li><strong>基本情報</strong>：氏名・学籍番号・大学メール（@tama.ac.jp）・学年・所属ゼミ</li>
+          <li><strong>就活状況</strong>：希望進路・活動状況・不安なこと・サポート希望度・相談テーマ</li>
+          <li><strong>経験</strong>：アルバイト（職種・期間・頑張ったこと）・スポーツ・部活・課外活動</li>
+          <li><strong>希望日時</strong>：第1〜第3希望をカレンダーから選択（赤い日付は不可）</li>
+          <li><strong>自由記入</strong>：気になること・聞いてみたいことを自由に記入</li>
+        </ul>
+      </div>
+
+      <!-- ②事前検査（初回のみ） -->
+      <div class="insp-box">
+        <div class="insp-ttl">📎 ② 初回相談の方は事前に受検してください（無料・約15分）</div>
+        <div class="insp-item">
+          📊 <strong>職業興味検査（VPI）</strong>　厚生労働省「jobtag」で受検<br>
+          <a href="https://shigoto.mhlw.go.jp/User/Search/Top" target="_blank">🔗 shigoto.mhlw.go.jp</a>　→　結果PDFをメール送信時に<strong>添付</strong>してください。
+        </div>
+        <div class="insp-item">
+          💡 <strong>仕事価値観検査</strong>　同じく「jobtag」で受検<br>
+          <a href="https://shigoto.mhlw.go.jp/User/ExplainMyself/Step2" target="_blank">🔗 shigoto.mhlw.go.jp</a>　→　結果PDFをメール送信時に<strong>添付</strong>してください。
+        </div>
+      </div>
+
+      <!-- ③2回目以降 -->
+      <div class="second-box">
+        <div class="sb-ttl"><span>🔄</span>③ 2回目以降の方へ　— 入力していただく内容</div>
+        <ul class="blist">
+          <li>相談種別（ES添削・面接対策・企業研究・就活全般・内定後の悩み など）</li>
+          <li>面接対策の場合：面接の種類（一次・二次・最終・GD）</li>
+          <li>応募中の企業名・自由記入欄</li>
+          <li>希望日時：第1〜第3希望をカレンダーから選択</li>
+        </ul>
+      </div>
+
+      <!-- 連絡先 -->
+      <div class="contact-box">
+        <div class="contact-ttl">📞 お問い合わせ</div>
+        <div class="contact-info">
+          <strong>多摩大学 キャリア支援課</strong>　担当：北山 四郎<br>
+          Tel：042-337-7118　／　受付：平日 10:00〜16:30<br>
+          Mail：<a href="mailto:kitayama@tama.ac.jp" style="color:var(--gd);font-weight:700;">kitayama@tama.ac.jp</a>
+        </div>
+      </div>
+
+    </div><!-- /col-left -->
+
+    <!-- 右カラム -->
+    <div class="col-right">
+
+      <!-- QRコード -->
+      <div class="qr-box">
+        <span class="qr-lbl">📱 カメラで読み取って<br>予約フォームへ</span>
+        <div id="qrcode"></div>
+        <div class="qr-url">https://tanukin0423.github.io/shukatsu-no-ki-system/index.html</div>
+      </div>
+
+      <!-- 手順 -->
+      <div class="steps-box">
+        <div class="sec-ttl" style="font-size:0.78rem;"><span>📋</span>予約の手順</div>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-ttl">QRを読み取る</div>
+            <div class="step-desc">
+              <span class="stag">iPhone</span>カメラアプリ<br>
+              <span class="stag">Android</span>カメラ起動
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-ttl">種類を選ぶ</div>
+            <div class="step-desc">
+              <span class="stag">🌱</span>初回 or<br>
+              <span class="stag bl">🔄</span>2回目以降
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-ttl">情報を入力</div>
+            <div class="step-desc">
+              氏名・学籍番号・<br>大学メール・<br>希望日時を入力
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-ttl">メールで送信</div>
+            <div class="step-desc">
+              「メール作成」を押す<br>→ Gmailが開く<br>
+              → <strong>送信して完了！</strong>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /steps-box -->
+
+      <!-- 注意 -->
+      <div class="caution-box">
+        <div class="caution-ttl">⚠️ ご注意</div>
+        <div class="ci"><strong>大学メール（@tama.ac.jp）から送信してください</strong></div>
+        <div class="ci" style="margin-top:6px;background:#fdecea;border:1.5px solid #e08080;border-radius:7px;padding:5px 8px 5px 18px;color:#a32d2d;">
+          <span style="position:absolute;left:6px;color:#e08080;top:8px;">▸</span>
+          <strong>確定メールが届くまで予約は完了していません</strong>
+        </div>
+        <div class="ci" style="margin-top:4px;background:#fdecea;border:1.5px solid #e08080;border-radius:7px;padding:5px 8px 5px 18px;color:#a32d2d;">
+          <span style="position:absolute;left:6px;color:#e08080;top:8px;">▸</span>
+          <strong>当日キャンセルは必ず事前にお電話を</strong>
+        </div>
+        <div class="ci" style="margin-top:6px;"><strong>面談は1回 45分です</strong></div>
+      </div>
+
+    </div><!-- /col-right -->
+
+  </div><!-- /main-cols -->
+
+  <!-- フッター -->
+  <div class="footer">
+    <div class="footer-left">
+      <strong>多摩大学　キャリア支援課</strong><br>
+      Tel: 042-337-7118　／　担当：北山 四郎
+    </div>
+    <div class="footer-right">
+      🌳 就活の木<br>
+      面談受付：平日 10:00〜16:30
+    </div>
+  </div>
+
+</div>
+
+<script>
+new QRCode(document.getElementById("qrcode"), {
+  text: "https://tanukin0423.github.io/shukatsu-no-ki-system/index.html",
+  width: 148,
+  height: 148,
+  colorDark: "#2d5a27",
+  colorLight: "#ffffff",
+  correctLevel: QRCode.CorrectLevel.H
+});
+</script>
+</body>
+</html>
