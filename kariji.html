@@ -6,12 +6,12 @@
 <title>キャリ爺 コントロールパネル | 就活の木</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap" rel="stylesheet">
 <!-- PWA対応 -->
-<link rel="manifest" href="./manifest.json">
+<link rel="manifest" href="https://tanukin0423.github.io/shukatsu-no-ki-system/manifest.json">
 <meta name="theme-color" content="#1a4a2e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="キャリ爺">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="https://tanukin0423.github.io/shukatsu-no-ki-system/icon-192.png">
 <style>
   :root {
     --green-deep: #1a4a2e;
@@ -104,6 +104,65 @@
     padding: 40px 20px;
     position: relative;
     z-index: 2;
+  }
+
+  /* ===== スマホ対応 ===== */
+  @media (max-width: 768px) {
+    header { padding: 10px 16px; }
+    .header-title { font-size: 14px; }
+    .header-sub { display: none; }
+    .clock { font-size: 11px; margin-left: 8px; }
+    .header-badge { font-size: 10px; padding: 3px 8px; }
+
+    svg.lines { display: none; }
+
+    .launcher-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 70px;
+      padding: 16px 16px 80px;
+      width: 100%;
+      grid-template-columns: unset;
+      grid-template-rows: unset;
+    }
+
+    .card-main {
+      order: -1;
+      width: 90%;
+      height: 150px;
+      border-radius: 20px;
+      grid-column: unset;
+      grid-row: unset;
+    }
+
+    .card-main .card-icon { font-size: 42px !important; }
+    .card-main .card-title { font-size: 16px !important; text-align: center; }
+    .card-main .card-desc { text-align: center; font-size: 10px !important; }
+
+    .card-sub {
+      width: 90%;
+      height: 80px;
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: 16px;
+      padding: 0 20px;
+      border-radius: 14px;
+      grid-column: unset;
+      grid-row: unset;
+    }
+
+    .card-icon { font-size: 28px !important; }
+    .card-title { font-size: 13px !important; text-align: left; }
+    .card-desc { font-size: 9px !important; text-align: left; }
+
+    .pos-top-left, .pos-top-center, .pos-top-right,
+    .pos-mid-left, .pos-mid-right,
+    .pos-bot-left, .pos-bot-center, .pos-bot-right {
+      grid-column: unset;
+      grid-row: unset;
+    }
   }
 
   /* カード共通 */
