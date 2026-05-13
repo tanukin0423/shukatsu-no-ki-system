@@ -26,32 +26,44 @@ body{
 .card-wrap{
   background:white;
   border-radius:20px;
-  padding:32px 28px;
-  max-width:480px;
+  padding:28px 24px;
+  max-width:640px;
   width:100%;
   box-shadow:0 8px 40px rgba(45,90,39,0.13);
 }
-.logo{text-align:center;margin-bottom:28px;}
-.logo-tree{font-size:2.6rem;line-height:1;}
-.logo-title{font-size:1.15rem;font-weight:700;color:var(--gd);margin-top:8px;}
-.logo-sub{font-size:0.75rem;color:var(--tl);margin-top:3px;}
+.logo{text-align:center;margin-bottom:22px;}
+.logo-tree{font-size:2.4rem;line-height:1;}
+.logo-title{font-size:1.1rem;font-weight:700;color:var(--gd);margin-top:6px;}
+.logo-sub{font-size:0.73rem;color:var(--tl);margin-top:3px;}
 .section-label{
-  font-size:0.7rem;font-weight:700;color:var(--tl);
+  font-size:0.68rem;font-weight:700;color:var(--tl);
   letter-spacing:0.08em;text-transform:uppercase;
-  margin:20px 0 10px;padding-left:2px;
+  margin:16px 0 8px;padding-left:2px;
   display:flex;align-items:center;gap:6px;
 }
 .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* PC：3列 / スマホ：2列 */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+@media(max-width:500px){
+  .grid{grid-template-columns:repeat(2,1fr);}
+  .card-wrap{padding:20px 16px;}
+}
+
 .btn{
-  display:flex;align-items:center;gap:11px;
-  padding:13px 15px;
+  display:flex;align-items:center;gap:9px;
+  padding:10px 11px;
   background:white;
   border:1.5px solid var(--border);
-  border-radius:12px;
+  border-radius:11px;
   cursor:pointer;
   text-decoration:none;
   transition:all 0.15s;
+  position:relative;
 }
 .btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(45,90,39,0.13);}
 .btn:active{transform:translateY(0);}
@@ -62,9 +74,9 @@ body{
 .btn.coral:hover{border-color:var(--coral);background:var(--coral-pale);}
 .btn.purple:hover{border-color:var(--purple);background:var(--purple-pale);}
 .btn-icon{
-  width:38px;height:38px;border-radius:9px;
+  width:32px;height:32px;border-radius:8px;
   display:flex;align-items:center;justify-content:center;
-  font-size:17px;flex-shrink:0;
+  font-size:15px;flex-shrink:0;
 }
 .green .btn-icon{background:var(--gp);color:var(--gd);}
 .blue  .btn-icon{background:var(--blue-pale);color:var(--blue);}
@@ -73,11 +85,25 @@ body{
 .coral .btn-icon{background:var(--coral-pale);color:var(--coral);}
 .purple .btn-icon{background:var(--purple-pale);color:var(--purple);}
 .btn-body{}
-.btn-name{font-size:0.83rem;font-weight:700;color:var(--text);line-height:1.3;}
-.btn-desc{font-size:0.68rem;color:var(--tl);margin-top:2px;line-height:1.4;}
+.btn-name{font-size:0.78rem;font-weight:700;color:var(--text);line-height:1.3;}
+.btn-desc{font-size:0.63rem;color:var(--tl);margin-top:2px;line-height:1.35;}
+
+/* 無料バッジ */
+.badge-free{
+  position:absolute;
+  top:6px;right:7px;
+  font-size:0.56rem;font-weight:700;
+  color:var(--teal);
+  background:var(--teal-pale);
+  border:1px solid var(--teal);
+  border-radius:4px;
+  padding:1px 4px;
+  letter-spacing:0.04em;
+}
+
 .footer{
-  text-align:center;margin-top:24px;
-  font-size:0.68rem;color:var(--tl);line-height:1.8;
+  text-align:center;margin-top:20px;
+  font-size:0.67rem;color:var(--tl);line-height:1.8;
 }
 .footer span{color:var(--gd);font-weight:700;}
 </style>
@@ -90,8 +116,12 @@ body{
     <div class="logo-sub">多摩大学 キャリア支援課　北山 四郎</div>
   </div>
 
-  <div class="section-label">📋 面談管理システム</div>
+  <div class="section-label">🗂 カウンセラー管理ツール</div>
   <div class="grid">
+    <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki-system/index.html" target="_blank">
+      <div class="btn-icon">📅</div>
+      <div class="btn-body"><div class="btn-name">予約フォーム</div><div class="btn-desc">学生用 面談予約</div></div>
+    </a>
     <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki-system/NO2NO3_merged_2026.html" target="_blank">
       <div class="btn-icon">📝</div>
       <div class="btn-body"><div class="btn-name">面談カルテ</div><div class="btn-desc">NO2NO3 メール管理</div></div>
@@ -108,10 +138,6 @@ body{
       <div class="btn-icon">🔧</div>
       <div class="btn-body"><div class="btn-name">管理画面</div><div class="btn-desc">カレンダー・相談員設定</div></div>
     </a>
-  </div>
-
-  <div class="section-label">🛠 管理・データツール</div>
-  <div class="grid">
     <a class="btn purple" href="https://tanukin0423.github.io/shukatsu-no-ki-system/student_master_import.html" target="_blank">
       <div class="btn-icon">📊</div>
       <div class="btn-body"><div class="btn-name">学生マスター登録</div><div class="btn-desc">ExcelをFirebaseに一括登録</div></div>
@@ -120,25 +146,116 @@ body{
       <div class="btn-icon">📋</div>
       <div class="btn-body"><div class="btn-name">学生カルテ一覧</div><div class="btn-desc">進捗確認・カード／一覧表示</div></div>
     </a>
+    <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki/kariji.html" target="_blank">
+      <div class="btn-icon">🌳</div>
+      <div class="btn-body"><div class="btn-name">キャリ爺パネル</div><div class="btn-desc">ビジュアル操作ランチャー</div></div>
+    </a>
   </div>
 
   <div class="section-label">🌱 学生向けツール</div>
   <div class="grid">
-    <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki-system/index.html" target="_blank">
-      <div class="btn-icon">📅</div>
-      <div class="btn-body"><div class="btn-name">予約フォーム</div><div class="btn-desc">学生用 面談予約</div></div>
-    </a>
     <a class="btn blue" href="https://tanukin0423.github.io/gaku-pr-shibou-mentai/" target="_blank">
       <div class="btn-icon">✏️</div>
-      <div class="btn-body"><div class="btn-name">ES添削ツール</div><div class="btn-desc">自己PR・ガクチカ・志望動機</div></div>
+      <div class="btn-body"><div class="btn-name">ES作成&添削ツール</div><div class="btn-desc">自己PR・ガクチカ・志望動機</div></div>
     </a>
-    <a class="btn teal" href="https://tanukin0423.github.io/gyo-kigyou-shoku/" target="_blank">
-      <div class="btn-icon">🔍</div>
-      <div class="btn-body"><div class="btn-name">業界・企業・職種研究</div><div class="btn-desc">19業界・20職種対応</div></div>
+    <a class="btn green" href="https://tanukin0423.github.io/shukatsu-es/" target="_blank">
+      <div class="btn-icon">🌱</div>
+      <div class="btn-body"><div class="btn-name">ES最強作成支援ツール</div><div class="btn-desc">STAR+WHY+F&C｜6ツール完備</div></div>
+    </a>
+    <a class="btn amber" href="https://tanukin0423.github.io/meta-assessment/" target="_blank">
+      <div class="btn-icon">🧠</div>
+      <div class="btn-body"><div class="btn-name">メタアセスメント</div><div class="btn-desc">自己分析・強み発見ツール</div></div>
+    </a>
+    <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/matrix-shindan-ver14.html" target="_blank">
+      <div class="btn-icon">🔲</div>
+      <div class="btn-body"><div class="btn-name">16分割マトリクス診断</div><div class="btn-desc">適職を2軸×16セルで発見（4象限版）</div></div>
+    </a>
+    <a class="btn teal" href="https://tanukin0423.github.io/shokugyo-matrix/" target="_blank">
+      <div class="btn-icon">🌳</div>
+      <div class="btn-body"><div class="btn-name">職業マトリクス16分割</div><div class="btn-desc">診断→職業探索→印刷まで一体型</div></div>
+    </a>
+    <a class="btn blue" href="https://tanukin0423.github.io/meta-assessment/jobtag-catalog-ver6.html" target="_blank">
+      <div class="btn-icon">📚</div>
+      <div class="btn-body"><div class="btn-name">jobtagカタログ</div><div class="btn-desc">職業情報・適職リンク集</div></div>
+    </a>
+    <a class="btn teal" href="https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#gyokai" target="_blank">
+      <div class="btn-icon">🏭</div>
+      <div class="btn-body"><div class="btn-name">業界研究</div><div class="btn-desc">19業界・業界地図を把握</div></div>
+    </a>
+    <a class="btn teal" href="https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#kigyo" target="_blank">
+      <div class="btn-icon">🏢</div>
+      <div class="btn-body"><div class="btn-name">企業研究</div><div class="btn-desc">企業分析・比較・選び方</div></div>
+    </a>
+    <a class="btn teal" href="https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#shokushu" target="_blank">
+      <div class="btn-icon">💼</div>
+      <div class="btn-body"><div class="btn-name">職種研究</div><div class="btn-desc">20職種・仕事内容を知る</div></div>
     </a>
     <a class="btn amber" href="https://tanukin0423.github.io/semi-setsumeishiryou-2026/" target="_blank">
       <div class="btn-icon">📊</div>
       <div class="btn-body"><div class="btn-name">ガントチャート</div><div class="btn-desc">28卒 就活タイムライン</div></div>
+    </a>
+  </div>
+
+  <div class="section-label">📝 筆記試験対策</div>
+  <div class="grid">
+    <a class="btn blue" href="https://tanukin0423.github.io/shukatsu-6-test/webtest-guide.html" target="_blank">
+      <div class="btn-icon">🔍</div>
+      <div class="btn-body"><div class="btn-name">Webテスト見分け方ガイド</div><div class="btn-desc">URL判別・業界別傾向・受検前チェック</div></div>
+    </a>
+    <a class="btn green" href="https://tanukin0423.github.io/shukatsu-6-test/" target="_blank">
+      <div class="btn-icon">📝</div>
+      <div class="btn-body"><div class="btn-name">筆記対策ドリル 完全版</div><div class="btn-desc">SPI3・TG-WEB・玉手箱など6種別</div></div>
+    </a>
+    <a class="btn teal" href="https://tanukin0423.github.io/shukatsu-test-drill/" target="_blank">
+      <div class="btn-icon">✏️</div>
+      <div class="btn-body"><div class="btn-name">筆記対策ドリル 旧版</div><div class="btn-desc">固定問題＋AI出題｜無料</div></div>
+    </a>
+  </div>
+
+  <!-- ★ 追加セクション -->
+  <div class="section-label">✍️ ES添削システム</div>
+  <div class="grid">
+    <a class="btn coral" href="https://tanukin0423.github.io/es-bunseki/" target="_blank">
+      <div class="btn-icon">🤖</div>
+      <div class="btn-body"><div class="btn-name">ES添削 キャリ爺版</div><div class="btn-desc">学生と対話形式で一緒に作成</div></div>
+    </a>
+    <a class="btn teal" href="https://tanukin0423.github.io/es-tensaku-all/" target="_blank">
+      <span class="badge-free">無料</span>
+      <div class="btn-icon">✨</div>
+      <div class="btn-body"><div class="btn-name">ES添削 Gemini版</div><div class="btn-desc">配布用・無料で使える</div></div>
+    </a>
+    <a class="btn purple" href="https://tanukin0423.github.io/es-tensaku/" target="_blank">
+      <div class="btn-icon">⚖️</div>
+      <div class="btn-body"><div class="btn-name">ES添削 比較版</div><div class="btn-desc">Claude＆Gemini 同時比較</div></div>
+    </a>
+  </div>
+
+  <!-- カウンセラー用 -->
+  <div class="section-label">🎓 カウンセラー用リソース</div>
+  <div class="grid">
+    <a class="btn purple" href="https://tanukin0423.github.io/semi-setsumeishiryou-2026/" target="_blank">
+      <div class="btn-icon">📊</div>
+      <div class="btn-body"><div class="btn-name">ゼミ説明資料</div><div class="btn-desc">28卒向け・セミナー用スライド</div></div>
+    </a>
+    <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/dsm5tr-career-guide.html" target="_blank">
+      <div class="btn-icon">🧠</div>
+      <div class="btn-body"><div class="btn-name">神経発達症ガイド</div><div class="btn-desc">7分類・DSM-5-TR準拠</div></div>
+    </a>
+    <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/career-support-manual-vol3.html" target="_blank">
+      <div class="btn-icon">📖</div>
+      <div class="btn-body"><div class="btn-name">支援マニュアル Vol.3</div><div class="btn-desc">接し方・応酬話法・適性職種</div></div>
+    </a>
+    <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/career-support-manual-vol3.pdf" target="_blank">
+      <div class="btn-icon">⬇️</div>
+      <div class="btn-body"><div class="btn-name">マニュアル Vol.3 PDF</div><div class="btn-desc">印刷用・保存用</div></div>
+    </a>
+    <a class="btn amber" href="https://tanukin0423.github.io/meta-assessment/mayoeru-kohitsuji-v2.html" target="_blank">
+      <div class="btn-icon">🐑</div>
+      <div class="btn-body"><div class="btn-name">迷える子羊 第2弾</div><div class="btn-desc">特性チェック＋悩み別対策</div></div>
+    </a>
+    <a class="btn blue" href="https://tanukin0423.github.io/meta-assessment/mayoeru-kohitsuji-manual.html" target="_blank">
+      <div class="btn-icon">📘</div>
+      <div class="btn-body"><div class="btn-name">子羊 使い方マニュアル</div><div class="btn-desc">自分用・引き継ぎ・研修用</div></div>
     </a>
   </div>
 

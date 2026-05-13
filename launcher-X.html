@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>就活の木　管理ランチャー｜多摩大学 キャリア支援課</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gp:#e8f5e3;--gbg:#f3faf0;
+  --bark:#6b4c2a;--border:#c8dfc2;--text:#2a2a2a;--tl:#888;
+  --blue:#185FA5;--blue-pale:#E6F1FB;
+  --amber:#BA7517;--amber-pale:#FAEEDA;
+  --teal:#0F6E56;--teal-pale:#E1F5EE;
+  --coral:#993C1D;--coral-pale:#FAECE7;
+  --purple:#6b3fa0;--purple-pale:#f0eafa;
+  --green-dark:#2C5F2D;--green-mid:#4A8C4B;--green-light:#97BC62;--green-pale:#E8F5E9;
+  --amber2:#F59E0B;--amber2-p:#FEF3C7;
+  --blue2:#1D4ED8;--blue2-p:#EFF6FF;
+  --purple2:#7C3AED;--purple2-p:#EDE9FE;
+  --coral2:#DC2626;--coral2-p:#FEE2E2;
+  --teal2:#0F6E56;--teal2-p:#E1F5EE;
+  --gray2:#6B7280;--gray2-p:#F3F4F6;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans JP',sans-serif;
+  background:var(--gbg);
+  min-height:100vh;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:20px;
+}
+
+/* ====== タブ構造 ====== */
+.card-wrap{
+  background:white;
+  border-radius:20px;
+  max-width:640px;
+  width:100%;
+  box-shadow:0 8px 40px rgba(45,90,39,0.13);
+  overflow:hidden;
+}
+
+/* ロゴ */
+.logo{text-align:center;padding:24px 24px 18px;}
+.logo-tree{font-size:2.4rem;line-height:1;}
+.logo-title{font-size:1.1rem;font-weight:700;color:var(--gd);margin-top:6px;}
+.logo-sub{font-size:0.73rem;color:var(--tl);margin-top:3px;}
+
+/* タブバー */
+.tab-bar{
+  display:flex;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.tab-btn{
+  flex:1;padding:11px 0;
+  font-size:0.82rem;font-weight:700;
+  color:var(--tl);background:var(--gbg);
+  border:none;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;
+  transition:all 0.2s;
+  border-bottom:3px solid transparent;
+}
+.tab-btn.active{
+  color:var(--gd);background:white;
+  border-bottom:3px solid var(--gd);
+}
+.tab-btn:hover:not(.active){background:#edf7e8;color:var(--gm);}
+
+/* ページコンテンツ */
+.page{display:none;padding:20px 24px;}
+.page.active{display:block;}
+
+/* ドットインジケーター */
+.dot-indicator{
+  display:flex;justify-content:center;gap:10px;
+  padding:14px 0 18px;
+  border-top:1px solid var(--border);
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--border);transition:background 0.2s;
+  cursor:pointer;
+}
+.dot.active{background:var(--gd);}
+
+/* ====== ページ1：ランチャー ====== */
+.section-label{
+  font-size:0.68rem;font-weight:700;color:var(--tl);
+  letter-spacing:0.08em;text-transform:uppercase;
+  margin:16px 0 8px;padding-left:2px;
+  display:flex;align-items:center;gap:6px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+@media(max-width:500px){
+  .grid{grid-template-columns:repeat(2,1fr);}
+  .page{padding:16px;}
+}
+.btn{
+  display:flex;align-items:center;gap:9px;
+  padding:10px 11px;background:white;
+  border:1.5px solid var(--border);border-radius:11px;
+  cursor:pointer;text-decoration:none;
+  transition:all 0.15s;position:relative;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(45,90,39,0.13);}
+.btn:active{transform:translateY(0);}
+.btn.green:hover{border-color:var(--gm);background:var(--gp);}
+.btn.blue:hover{border-color:var(--blue);background:var(--blue-pale);}
+.btn.amber:hover{border-color:var(--amber);background:var(--amber-pale);}
+.btn.teal:hover{border-color:var(--teal);background:var(--teal-pale);}
+.btn.coral:hover{border-color:var(--coral);background:var(--coral-pale);}
+.btn.purple:hover{border-color:var(--purple);background:var(--purple-pale);}
+.btn-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.green .btn-icon{background:var(--gp);color:var(--gd);}
+.blue  .btn-icon{background:var(--blue-pale);color:var(--blue);}
+.amber .btn-icon{background:var(--amber-pale);color:var(--amber);}
+.teal  .btn-icon{background:var(--teal-pale);color:var(--teal);}
+.coral .btn-icon{background:var(--coral-pale);color:var(--coral);}
+.purple .btn-icon{background:var(--purple-pale);color:var(--purple);}
+.btn-name{font-size:0.78rem;font-weight:700;color:var(--text);line-height:1.3;}
+.btn-desc{font-size:0.63rem;color:var(--tl);margin-top:2px;line-height:1.35;}
+.badge-free{
+  position:absolute;top:6px;right:7px;
+  font-size:0.56rem;font-weight:700;color:var(--teal);
+  background:var(--teal-pale);border:1px solid var(--teal);
+  border-radius:4px;padding:1px 4px;letter-spacing:0.04em;
+}
+.page1-footer{
+  text-align:center;margin-top:16px;
+  font-size:0.67rem;color:var(--tl);line-height:1.8;
+}
+.page1-footer span{color:var(--gd);font-weight:700;}
+
+/* ====== ページ2：相談フロー ====== */
+
+@media print {
+  body { background: white !important; padding: 0 !important; }
+  .header, .breadcrumb, #flowArea, .no-print { display: none !important; }
+  #printCard { display: block !important; }
+}
+#printCard { display: none; }
+.print-card-inner {
+  max-width: 560px; margin: 40px auto; padding: 40px;
+  border: 2px solid #2C5F2D; border-radius: 16px;
+  font-family: 'Noto Sans JP', sans-serif; text-align: center;
+}
+.print-badge {
+  display: inline-block; background: #2C5F2D; color: white;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  padding: 4px 14px; border-radius: 20px; margin-bottom: 20px;
+}
+.print-icon { font-size: 48px; margin-bottom: 12px; }
+.print-name { font-size: 22px; font-weight: 900; color: #1F2937; margin-bottom: 8px; }
+.print-desc { font-size: 14px; color: #6B7280; margin-bottom: 24px; line-height: 1.7; }
+.print-qr { display: flex; justify-content: center; margin-bottom: 12px; }
+.print-url { font-size: 11px; color: #9CA3AF; word-break: break-all; margin-bottom: 24px; }
+.print-footer { font-size: 12px; color: #4A8C4B; font-weight: 700; border-top: 1px solid #E5E7EB; padding-top: 16px; }
+
+/* ツールカード（画面表示） */
+.tool-card {
+  background: white; border-radius: 20px; box-shadow: var(--shadow);
+  padding: 28px 24px; margin-bottom: 16px;
+  animation: fadeIn 0.3s ease; text-align: center;
+}
+.tool-card-icon { font-size: 44px; margin-bottom: 10px; }
+.tool-card-name { font-size: 18px; font-weight: 900; color: var(--text); margin-bottom: 6px; }
+.tool-card-desc { font-size: 13px; color: var(--gray); margin-bottom: 20px; line-height: 1.6; }
+.tool-card-qr { display: flex; justify-content: center; margin: 0 auto 12px; }
+.tool-card-url { font-size: 11px; color: var(--gray); margin-bottom: 20px; word-break: break-all; }
+.tool-card-btns { display: flex; gap: 10px; }
+.tool-open-btn {
+  flex: 1; padding: 13px; background: var(--gd); color: white;
+  border: none; border-radius: 12px; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: 'Noto Sans JP', sans-serif; transition: background 0.15s;
+}
+.tool-open-btn:hover { background: var(--gm); }
+.tool-print-btn {
+  flex: 1; padding: 13px; background: white; color: var(--gray);
+  border: 1.5px solid #E5E7EB; border-radius: 12px; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s;
+}
+.tool-print-btn:hover { border-color: var(--gm); color: var(--gd); background: var(--gp); }
+
+
+:root {
+  --gd:#2C5F2D; --gm:#4A8C4B; --gl:#97BC62; --gp:#E8F5E9; --gbg:#f0fdf0;
+  --amber:#F59E0B; --amber-p:#FEF3C7;
+  --blue:#1D4ED8; --blue-p:#EFF6FF;
+  --purple:#7C3AED; --purple-p:#EDE9FE;
+  --coral:#DC2626; --coral-p:#FEE2E2;
+  --teal:#0F6E56; --teal-p:#E1F5EE;
+  --gray:#6B7280; --gray-p:#F3F4F6;
+  --text:#1F2937;
+  --shadow:0 4px 20px rgba(0,0,0,0.10);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.15);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans JP',sans-serif;
+  background:linear-gradient(135deg,#f0fdf0 0%,#fefce8 50%,#f0fdf4 100%);
+  min-height:100vh; padding:24px 16px; color:var(--text);
+}
+
+/* ヘッダー */
+.header{text-align:center;margin-bottom:28px;}
+.header .badge{
+  display:inline-block;background:var(--gd);color:white;
+  font-size:11px;font-weight:700;letter-spacing:0.1em;
+  padding:4px 14px;border-radius:20px;margin-bottom:10px;
+}
+.header h1{font-size:clamp(18px,4vw,24px);font-weight:900;color:var(--gd);line-height:1.3;}
+.header .sub{font-size:13px;color:var(--gray);margin-top:6px;}
+
+/* フローエリア */
+.flow-wrap{max-width:720px;margin:0 auto;}
+
+/* ステップカード */
+.step-card{
+  background:white;border-radius:20px;box-shadow:var(--shadow);
+  padding:24px;margin-bottom:16px;
+  animation:fadeIn 0.3s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+.step-num{
+  font-size:11px;font-weight:700;color:var(--gray);
+  letter-spacing:0.1em;margin-bottom:8px;
+}
+.step-question{
+  font-size:16px;font-weight:700;color:var(--text);
+  margin-bottom:16px;line-height:1.5;
+}
+.step-question .emoji{font-size:20px;margin-right:8px;}
+
+/* 選択ボタングリッド */
+.btn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.btn-grid.col3{grid-template-columns:repeat(3,1fr);}
+@media(max-width:480px){
+  .btn-grid,.btn-grid.col3{grid-template-columns:1fr;}
+}
+
+.choice-btn{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;
+  background:white;border:1.5px solid #E5E7EB;
+  border-radius:12px;cursor:pointer;text-align:left;
+  transition:all 0.15s;font-family:'Noto Sans JP',sans-serif;
+}
+.choice-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(45,90,39,0.13);}
+.choice-btn .c-icon{
+  width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;flex-shrink:0;
+}
+.choice-btn .c-body{}
+.choice-btn .c-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.3;}
+.choice-btn .c-desc{font-size:11px;color:var(--gray);margin-top:2px;line-height:1.3;}
+
+/* カラーバリエーション */
+.ch-green .c-icon{background:var(--gp);} .ch-green:hover{border-color:var(--gm);background:var(--gp);}
+.ch-blue  .c-icon{background:var(--blue-p);} .ch-blue:hover{border-color:var(--blue);background:var(--blue-p);}
+.ch-amber .c-icon{background:var(--amber-p);} .ch-amber:hover{border-color:var(--amber);background:var(--amber-p);}
+.ch-purple .c-icon{background:var(--purple-p);} .ch-purple:hover{border-color:var(--purple);background:var(--purple-p);}
+.ch-coral  .c-icon{background:var(--coral-p);} .ch-coral:hover{border-color:var(--coral);background:var(--coral-p);}
+.ch-teal   .c-icon{background:var(--teal-p);} .ch-teal:hover{border-color:var(--teal);background:var(--teal-p);}
+.ch-gray   .c-icon{background:var(--gray-p);} .ch-gray:hover{border-color:var(--gray);background:var(--gray-p);}
+
+/* パンくず */
+.breadcrumb{
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+  margin-bottom:16px;font-size:12px;color:var(--gray);
+}
+.breadcrumb .bc-item{
+  background:white;border:1px solid #E5E7EB;
+  border-radius:20px;padding:3px 10px;
+}
+.breadcrumb .bc-arrow{color:#C4C4C4;}
+
+/* アドバイスボックス */
+.advice-box{
+  background:linear-gradient(135deg,var(--gp),#f0fff0);
+  border:1.5px solid var(--gm);border-radius:16px;
+  padding:20px;margin-bottom:16px;
+}
+.advice-label{
+  font-size:11px;font-weight:700;color:var(--gm);
+  letter-spacing:0.08em;margin-bottom:8px;
+}
+.advice-text{font-size:14px;color:var(--text);line-height:1.8;}
+.advice-doshi{
+  margin-top:12px;background:linear-gradient(135deg,#FFF7ED,#FEF3C7);
+  border-left:4px solid var(--amber);border-radius:0 10px 10px 0;
+  padding:10px 14px;font-size:13px;color:#78350F;font-style:italic;line-height:1.7;
+}
+.advice-doshi-label{display:block;font-size:11px;font-weight:700;color:#92400E;margin-bottom:4px;}
+
+/* ツールリンク */
+.tool-links{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.tool-link{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  border-radius:12px;text-decoration:none;font-size:13px;font-weight:600;
+  transition:all 0.15s;border:1px solid transparent;
+}
+.tool-link:hover{transform:translateX(4px);}
+.tl-green{background:var(--gp);border-color:#C8E6C9;color:var(--gd);}
+.tl-green:hover{background:#C8E6C9;}
+.tl-blue{background:var(--blue-p);border-color:#BFDBFE;color:#1E40AF;}
+.tl-blue:hover{background:#BFDBFE;}
+.tl-amber{background:var(--amber-p);border-color:#FDE68A;color:#92400E;}
+.tl-amber:hover{background:#FDE68A;}
+.tl-purple{background:var(--purple-p);border-color:#C4B5FD;color:#5B21B6;}
+.tl-purple:hover{background:#C4B5FD;}
+.tl-teal{background:var(--teal-p);border-color:#99D6C4;color:var(--teal);}
+.tl-teal:hover{background:#99D6C4;}
+.tl-icon{font-size:18px;flex-shrink:0;}
+.tl-body .tl-name{font-size:13px;font-weight:700;}
+.tl-body .tl-desc{font-size:11px;color:var(--gray);margin-top:2px;}
+
+/* リセットボタン */
+.reset-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;padding:12px;background:var(--gray-p);
+  border:none;border-radius:12px;cursor:pointer;
+  font-size:13px;font-weight:600;color:var(--gray);
+  font-family:'Noto Sans JP',sans-serif;transition:background 0.15s;
+  margin-top:8px;
+}
+.reset-btn:hover{background:#E5E7EB;}
+
+/* 区切り線矢印 */
+.flow-arrow{
+  text-align:center;font-size:20px;color:var(--gl);
+  margin:4px 0;line-height:1;
+}
+
+
+/* フローページ用調整 */
+#page2 .header{text-align:center;margin-bottom:20px;}
+#page2 .header .badge{
+  display:inline-block;background:var(--green-dark);color:white;
+  font-size:11px;font-weight:700;letter-spacing:0.1em;
+  padding:4px 14px;border-radius:20px;margin-bottom:8px;
+}
+#page2 .header h1{font-size:clamp(16px,3vw,20px);font-weight:900;color:var(--green-dark);line-height:1.3;}
+#page2 .header .sub{font-size:12px;color:var(--gray2);margin-top:4px;}
+#page2 .flow-wrap{max-width:100%;margin:0;}
+#page2 .step-card{border-radius:14px;padding:18px;}
+#page2 .advice-box{border-radius:12px;}
+</style>
+</head>
+<body>
+
+<!-- 印刷用カード（画面では非表示） -->
+<div id="printCard">
+  <div class="print-card-inner">
+    <div class="print-badge">🌱 就活の木 | キャリア支援課</div>
+    <div class="print-icon" id="printIcon"></div>
+    <div class="print-name" id="printName"></div>
+    <div class="print-desc" id="printDesc"></div>
+    <div class="print-qr"><div id="printQr"></div></div>
+    <div class="print-url" id="printUrl"></div>
+    <div class="print-footer">🌳 就活の木｜多摩大学 キャリア支援課　北山 四郎</div>
+  </div>
+</div>
+
+<div class="card-wrap">
+  <!-- ロゴ -->
+  <div class="logo">
+    <div class="logo-tree">🌳</div>
+    <div class="logo-title">就活の木　管理ランチャー</div>
+    <div class="logo-sub">多摩大学 キャリア支援課　北山 四郎</div>
+  </div>
+
+  <!-- タブバー -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab1" onclick="switchTab(1)">🗂 ツール一覧</button>
+    <button class="tab-btn" id="tab2" onclick="switchTab(2)">🌱 今日の相談</button>
+  </div>
+
+  <!-- ページ1：ツール一覧 -->
+  <div class="page active" id="page1">
+    <div class="section-label">🗂 カウンセラー管理ツール</div>
+    <div class="grid">
+      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki-system/index.html" target="_blank">
+        <div class="btn-icon">📅</div>
+        <div class="btn-body"><div class="btn-name">予約フォーム</div><div class="btn-desc">学生用 面談予約</div></div>
+      </a>
+      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki-system/NO2NO3_merged_2026.html" target="_blank">
+        <div class="btn-icon">📝</div>
+        <div class="btn-body"><div class="btn-name">面談カルテ</div><div class="btn-desc">NO2NO3 メール管理</div></div>
+      </a>
+      <a class="btn teal" href="https://tanukin0423.github.io/shukatsu-no-ki-system/karte_v5.html" target="_blank">
+        <div class="btn-icon">☁️</div>
+        <div class="btn-body"><div class="btn-name">カルテ v5</div><div class="btn-desc">Firebase・判定バッジ付き</div></div>
+      </a>
+      <a class="btn amber" href="https://tanukin0423.github.io/shukatsu-no-ki-system/karte_v4.html" target="_blank">
+        <div class="btn-icon">📄</div>
+        <div class="btn-body"><div class="btn-name">カルテ v4</div><div class="btn-desc">基本版（バックアップ）</div></div>
+      </a>
+      <a class="btn coral" href="https://tanukin0423.github.io/shukatsu-no-ki-system/admin.html" target="_blank">
+        <div class="btn-icon">🔧</div>
+        <div class="btn-body"><div class="btn-name">管理画面</div><div class="btn-desc">カレンダー・相談員設定</div></div>
+      </a>
+      <a class="btn purple" href="https://tanukin0423.github.io/shukatsu-no-ki-system/student_master_import.html" target="_blank">
+        <div class="btn-icon">📊</div>
+        <div class="btn-body"><div class="btn-name">学生マスター登録</div><div class="btn-desc">ExcelをFirebaseに一括登録</div></div>
+      </a>
+      <a class="btn teal" href="https://tanukin0423.github.io/shukatsu-no-ki-system/karte_list.html" target="_blank">
+        <div class="btn-icon">📋</div>
+        <div class="btn-body"><div class="btn-name">学生カルテ一覧</div><div class="btn-desc">進捗確認・カード／一覧表示</div></div>
+      </a>
+      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki/kariji.html" target="_blank">
+        <div class="btn-icon">🌳</div>
+        <div class="btn-body"><div class="btn-name">キャリ爺パネル</div><div class="btn-desc">ビジュアル操作ランチャー</div></div>
+      </a>
+    </div>
+
+    <div class="section-label">🌱 学生向けツール</div>
+    <div class="grid">
+      <a class="btn blue" href="https://tanukin0423.github.io/gaku-pr-shibou-mentai/" target="_blank">
+        <div class="btn-icon">✏️</div>
+        <div class="btn-body"><div class="btn-name">ES作成&添削ツール</div><div class="btn-desc">自己PR・ガクチカ・志望動機</div></div>
+      </a>
+      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-es/" target="_blank">
+        <div class="btn-icon">🌱</div>
+        <div class="btn-body"><div class="btn-name">ES最強作成支援ツール</div><div class="btn-desc">STAR+WHY+F&C｜6ツール完備</div></div>
+      </a>
+      <a class="btn amber" href="https://tanukin0423.github.io/meta-assessment/" target="_blank">
+        <div class="btn-icon">🧠</div>
+        <div class="btn-body"><div class="btn-name">メタアセスメント</div><div class="btn-desc">自己分析・強み発見ツール</div></div>
+      </a>
+      <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/matrix-shindan-ver14.html" target="_blank">
+        <div class="btn-icon">🔲</div>
+        <div class="btn-body"><div class="btn-name">16分割マトリクス診断</div><div class="btn-desc">適職を2軸×16セルで発見</div></div>
+      </a>
+      <a class="btn green" href="https://tanukin0423.github.io/shokugyo-matrix/" target="_blank">
+        <div class="btn-icon">🌳</div>
+        <div class="btn-body"><div class="btn-name">職業マトリクス16分割 🆕</div><div class="btn-desc">112職種・職種検索・jobtag連携</div></div>
+      </a>
+      <a class="btn blue" href="https://tanukin0423.github.io/meta-assessment/jobtag-catalog-ver6.html" target="_blank">
+        <div class="btn-icon">📚</div>
+        <div class="btn-body"><div class="btn-name">jobtagカタログ</div><div class="btn-desc">職業情報・適職リンク集</div></div>
+      </a>
+      <a class="btn teal" href="https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#gyokai" target="_blank">
+        <div class="btn-icon">🏭</div>
+        <div class="btn-body"><div class="btn-name">業界研究</div><div class="btn-desc">19業界・業界地図を把握</div></div>
+      </a>
+      <a class="btn teal" href="https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#kigyo" target="_blank">
+        <div class="btn-icon">🏢</div>
+        <div class="btn-body"><div class="btn-name">企業研究</div><div class="btn-desc">企業分析・比較・選び方</div></div>
+      </a>
+      <a class="btn teal" href="https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#shokushu" target="_blank">
+        <div class="btn-icon">💼</div>
+        <div class="btn-body"><div class="btn-name">職種研究</div><div class="btn-desc">20職種・仕事内容を知る</div></div>
+      </a>
+      <a class="btn amber" href="https://tanukin0423.github.io/semi-setsumeishiryou-2026/" target="_blank">
+        <div class="btn-icon">📊</div>
+        <div class="btn-body"><div class="btn-name">ガントチャート</div><div class="btn-desc">28卒 就活タイムライン</div></div>
+      </a>
+      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-6-test/webtest-guide.html" target="_blank">
+        <div class="btn-icon">🔍</div>
+        <div class="btn-body"><div class="btn-name">Webテスト見分け方ガイド</div><div class="btn-desc">URL判別・業界別傾向・受検前チェック</div></div>
+      </a>
+      <a class="btn blue" href="https://tanukin0423.github.io/shukatsu-6-test/" target="_blank">
+        <div class="btn-icon">📝</div>
+        <div class="btn-body"><div class="btn-name">筆記対策ドリル 完全版</div><div class="btn-desc">SPI3・TG-WEB・玉手箱等 6種別</div></div>
+      </a>
+      <a class="btn teal" href="https://tanukin0423.github.io/shukatsu-test-drill/" target="_blank">
+        <div class="btn-icon">✏️</div>
+        <div class="btn-body"><div class="btn-name">筆記対策ドリル 旧版</div><div class="btn-desc">固定問題＋AI出題｜無料</div></div>
+      </a>
+    </div>
+
+    <div class="section-label">✍️ ES添削システム</div>
+    <div class="grid">
+      <a class="btn coral" href="https://tanukin0423.github.io/es-bunseki/" target="_blank">
+        <div class="btn-icon">🤖</div>
+        <div class="btn-body"><div class="btn-name">ES添削 キャリ爺版</div><div class="btn-desc">学生と対話形式で一緒に作成</div></div>
+      </a>
+      <a class="btn teal" href="https://tanukin0423.github.io/es-tensaku-all/" target="_blank">
+        <span class="badge-free">無料</span>
+        <div class="btn-icon">✨</div>
+        <div class="btn-body"><div class="btn-name">ES添削 Gemini版</div><div class="btn-desc">配布用・無料で使える</div></div>
+      </a>
+      <a class="btn purple" href="https://tanukin0423.github.io/es-tensaku/" target="_blank">
+        <div class="btn-icon">⚖️</div>
+        <div class="btn-body"><div class="btn-name">ES添削 比較版</div><div class="btn-desc">Claude＆Gemini 同時比較</div></div>
+      </a>
+    </div>
+
+    <div class="section-label">🎓 カウンセラー用リソース</div>
+    <div class="grid">
+      <a class="btn purple" href="https://tanukin0423.github.io/semi-setsumeishiryou-2026/" target="_blank">
+        <div class="btn-icon">📊</div>
+        <div class="btn-body"><div class="btn-name">ゼミ説明資料</div><div class="btn-desc">28卒向け・セミナー用スライド</div></div>
+      </a>
+      <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/dsm5tr-career-guide.html" target="_blank">
+        <div class="btn-icon">🧠</div>
+        <div class="btn-body"><div class="btn-name">神経発達症ガイド</div><div class="btn-desc">7分類・DSM-5-TR準拠</div></div>
+      </a>
+      <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/career-support-manual-vol3.html" target="_blank">
+        <div class="btn-icon">📖</div>
+        <div class="btn-body"><div class="btn-name">支援マニュアル Vol.3</div><div class="btn-desc">接し方・応酬話法・適性職種</div></div>
+      </a>
+      <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/career-support-manual-vol3.pdf" target="_blank">
+        <div class="btn-icon">⬇️</div>
+        <div class="btn-body"><div class="btn-name">マニュアル Vol.3 PDF</div><div class="btn-desc">印刷用・保存用</div></div>
+      </a>
+      <a class="btn amber" href="https://tanukin0423.github.io/meta-assessment/mayoeru-kohitsuji-v2.html" target="_blank">
+        <div class="btn-icon">🐑</div>
+        <div class="btn-body"><div class="btn-name">迷える子羊 第2弾</div><div class="btn-desc">特性チェック＋悩み別対策</div></div>
+      </a>
+      <a class="btn blue" href="https://tanukin0423.github.io/meta-assessment/mayoeru-kohitsuji-manual.html" target="_blank">
+        <div class="btn-icon">📘</div>
+        <div class="btn-body"><div class="btn-name">子羊 使い方マニュアル</div><div class="btn-desc">自分用・引き継ぎ・研修用</div></div>
+      </a>
+    </div>
+
+    <div class="page1-footer">
+      デスクトップに保存 → ダブルクリックで起動 🌳<br>
+      <span>残りの人生、誰かの木、誰かの芽を育てたい</span>
+    </div>
+  </div>
+
+  <!-- ページ2：今日の相談 -->
+  <div class="page" id="page2">
+<div class="header">
+  <div class="badge">🌱 就活の木 | キャリア支援課</div>
+  <h1>今日の相談、何から始める？</h1>
+  <div class="sub">キャリ爺と一緒に、今日やることを決めよう</div>
+</div>
+
+<!-- 印刷用カード（画面では非表示） -->
+<div id="printCard">
+  <div class="print-card-inner">
+    <div class="print-badge">🌱 就活の木 | キャリア支援課</div>
+    <div class="print-icon" id="printIcon"></div>
+    <div class="print-name" id="printName"></div>
+    <div class="print-desc" id="printDesc"></div>
+    <div class="print-qr"><div id="printQr"></div></div>
+    <div class="print-url" id="printUrl"></div>
+    <div class="print-footer">🌳 就活の木｜多摩大学 キャリア支援課　北山 四郎</div>
+  </div>
+</div>
+
+<div class="flow-wrap">
+  <!-- パンくず -->
+  <div class="breadcrumb" id="breadcrumb"></div>
+
+  <!-- ステップ表示エリア -->
+  <div id="flowArea"></div>
+</div>
+  </div>
+
+  <!-- ドットインジケーター -->
+  <div class="dot-indicator">
+    <div class="dot active" id="dot1" onclick="switchTab(1)"></div>
+    <div class="dot" id="dot2" onclick="switchTab(2)"></div>
+  </div>
+</div>
+
+<script>
+function switchTab(n) {
+  document.getElementById('page1').classList.toggle('active', n===1);
+  document.getElementById('page2').classList.toggle('active', n===2);
+  document.getElementById('tab1').classList.toggle('active', n===1);
+  document.getElementById('tab2').classList.toggle('active', n===2);
+  document.getElementById('dot1').classList.toggle('active', n===1);
+  document.getElementById('dot2').classList.toggle('active', n===2);
+  if (n===2 && !window._flowInited) {
+    window._flowInited = true;
+    render('start');
+  }
+}
+</script>
+
+<script>
+
+// ========================
+// フローデータ定義
+// ========================
+const flows = {
+
+  // ====== START ======
+  start: {
+    num: '',
+    question: '🌳 今日は、どんな相談をしたいですか？',
+    choices: [
+      { id:'wakaran',   icon:'😶', color:'ch-gray',   name:'何から始めればいいかわからない', desc:'まずここから話そう' },
+      { id:'zentai',    icon:'🗓', color:'ch-purple',  name:'就活全体の進め方を知りたい',    desc:'スケジュール・戦略' },
+      { id:'es',        icon:'📋', color:'ch-blue',    name:'ESを書きたい・直したい',        desc:'ガクチカ・自己PR・志望動機' },
+      { id:'mensetsu',  icon:'🎤', color:'ch-coral',   name:'面接の練習がしたい',            desc:'質問対策・模擬面接' },
+      { id:'jikobunseki', icon:'🌱', color:'ch-green', name:'自分のことをもっと知りたい',    desc:'自己分析・強み発見' },
+      { id:'kigyo',     icon:'🔍', color:'ch-teal',    name:'企業・業界を調べたい',          desc:'業界研究・企業選び' },
+      { id:'spi',       icon:'📝', color:'ch-amber',   name:'筆記・SPIの対策がしたい',       desc:'SPI・TG-WEB・玉手箱など' },
+      { id:'intern',    icon:'☀️', color:'ch-amber',   name:'インターンのことを知りたい',    desc:'探し方・準備・選考対策' },
+      { id:'mental',    icon:'😔', color:'ch-coral',   name:'しんどい・メンタルがつらい',    desc:'気持ちを整理したい' },
+      { id:'umaiku',    icon:'😥', color:'ch-gray',    name:'うまくいかない・行き詰まった',  desc:'ES落ち・面接落ち・迷い中' },
+    ]
+  },
+
+  // ====== ES ======
+  es: {
+    num: 'ES相談',
+    question: '📋 ESについて、今どんな状況ですか？',
+    choices: [
+      { id:'es_start',  icon:'✏️', color:'ch-blue',  name:'まだ何も書いていない',    desc:'何から始めればいい？' },
+      { id:'es_gakuchika', icon:'🎯', color:'ch-green', name:'ガクチカが書けない・弱い', desc:'エピソード選び・深掘り' },
+      { id:'es_jiko',   icon:'💪', color:'ch-green', name:'自己PRが書けない',        desc:'強みの言語化' },
+      { id:'es_shibo',  icon:'🧭', color:'ch-teal',  name:'志望動機が書けない・薄い', desc:'なぜこの会社？' },
+      { id:'es_tensaku',icon:'🔍', color:'ch-amber', name:'書いたESを添削してほしい',  desc:'一緒に磨こう' },
+    ]
+  },
+
+  es_start: {
+    num: 'ES → まだ書いていない',
+    question: '✏️ 自己分析は、ある程度できていますか？',
+    choices: [
+      { id:'es_start_jiko_yes', icon:'✅', color:'ch-green', name:'ある程度できている', desc:'強みや経験はわかっている' },
+      { id:'jikobunseki',       icon:'❓', color:'ch-amber', name:'あまりできていない', desc:'自分の強みがよくわからない' },
+    ]
+  },
+
+  es_start_jiko_yes: {
+    num: 'ES → まだ書いていない → 自己分析OK',
+    question: '📋 どのESから書き始めますか？',
+    advice: {
+      text:'自己分析ができているなら、まずは「ガクチカ」から書き始めましょう。ガクチカは自己PRや志望動機の土台になります。STARフレームワーク（状況→課題→行動→結果）で整理すると書きやすくなりますよ。',
+      doshi:'「ESは面接の設計図です。丁寧に書いたESは、面接でも自信になります。まず1本、仕上げることを目標に。」'
+    },
+    choices: [
+      { id:'tool_es_star',    icon:'🌱', color:'ch-green',  name:'ES最強作成支援ツール', desc:'STAR+WHY+F&C｜6ツール完備' },
+      { id:'tool_es_full',    icon:'🔰', color:'ch-blue',   name:'ESフルバージョン',     desc:'事例21例・STARメソッド' },
+      { id:'tool_es_ult',     icon:'💪', color:'ch-purple', name:'ES Ultimate Edition',  desc:'6段論法で深掘り' },
+    ]
+  },
+
+  es_gakuchika: {
+    num: 'ES → ガクチカ',
+    advice: {
+      text:'ガクチカで大切なのは「すごい経験」より「自分がどう考え、どう動いたか」です。アルバイト・サークル・勉強・日常のどんな経験でも、深掘りすればガクチカになります。WHY（なぜそれに取り組んだか）・HARDSHIP（困ったこと）・CHANGE（どう変わったか）の3軸で掘り下げてみましょう。',
+      doshi:'「答えはあなたの中にある。ガクチカは探すものではなく、掘り起こすものです。」'
+    },
+    choices: [
+      { id:'tool_es_star',  icon:'🌱', color:'ch-green',  name:'ES最強作成支援ツール', desc:'ガクチカ特化｜カード選択式' },
+      { id:'tool_es_ult',   icon:'💪', color:'ch-purple', name:'ES Ultimate Edition',  desc:'挫折・困難・巻き込みも対応' },
+      { id:'tool_es_video', icon:'▶️', color:'ch-coral',  name:'ガクチカ特訓動画',     desc:'YouTube解説動画で学ぶ' },
+    ]
+  },
+
+  es_jiko: {
+    num: 'ES → 自己PR',
+    advice: {
+      text:'自己PRは「強みを言うだけ」では弱いです。①強み→②その強みが発揮されたエピソード→③仕事でどう活かせるか、の3点セットで書くと説得力が増します。まず自己分析ツールで強みを言語化することから始めましょう。',
+      doshi:'「自己PRは自慢話ではありません。あなたが仕事で価値を発揮できる根拠を、具体的に伝えるものです。」'
+    },
+    choices: [
+      { id:'tool_meta',    icon:'🧠', color:'ch-green',  name:'メタアセスメント',      desc:'強み診断・5つの診断を収録' },
+      { id:'tool_es_star', icon:'🌱', color:'ch-green',  name:'ES最強作成支援ツール',  desc:'自己PR特化ツール' },
+      { id:'tool_es_video2',icon:'▶️', color:'ch-coral', name:'自己PR特訓動画',        desc:'YouTube解説動画で学ぶ' },
+    ]
+  },
+
+  es_shibo: {
+    num: 'ES → 志望動機',
+    question: '🧭 志望動機が書けない原因は？',
+    choices: [
+      { id:'es_shibo_naze',  icon:'❓', color:'ch-amber', name:'なぜこの会社なのかわからない', desc:'企業研究が足りないかも' },
+      { id:'es_shibo_jiku',  icon:'🧭', color:'ch-teal',  name:'就活の軸が決まっていない',     desc:'何を基準に選べばいい？' },
+      { id:'es_shibo_kake',  icon:'✏️', color:'ch-blue',  name:'書き方がわからない',            desc:'構成・フレームワークを知りたい' },
+    ]
+  },
+
+  es_shibo_naze: {
+    num: 'ES → 志望動機 → 企業研究不足',
+    advice: {
+      text:'志望動機には「なぜこの業界か」「なぜこの会社か」「入社してどうしたいか」の3層が必要です。まず企業・業界研究ツールで情報を集め、その会社の強み・特徴・課題を把握しましょう。',
+      doshi:'「なんとなく大手、では絶対に通らない時代です。その会社について、ライバルより1つ多く知ることが差になります。」'
+    },
+    choices: [
+      { id:'tool_kigyo_kigyo', icon:'🏢', color:'ch-teal',  name:'企業研究ツール',     desc:'企業分析・比較・選び方' },
+      { id:'tool_kigyo_gyokai',icon:'🏭', color:'ch-teal',  name:'業界研究ツール',     desc:'業界全体像を把握する' },
+      { id:'tool_es_star', icon:'🌱', color:'ch-green', name:'ES最強作成支援ツール',       desc:'志望動機ツール' },
+    ]
+  },
+
+  es_shibo_jiku: {
+    num: 'ES → 志望動機 → 軸が決まっていない',
+    advice: {
+      text:'就活の軸が決まらない場合は、自己分析から始めるのが近道です。「何を大切にして働きたいか」はキャリアアンカー診断、「どんな仕事が向いているか」はVPI診断が参考になります。',
+      doshi:'「軸のない就活は、地図のない旅です。まず自分を知ることが、企業選びの羅針盤になります。」'
+    },
+    choices: [
+      { id:'tool_meta',    icon:'🧠', color:'ch-green',  name:'メタアセスメント',      desc:'キャリアアンカー・VPI診断' },
+      { id:'tool_matrix',  icon:'🔲', color:'ch-purple', name:'16分割マトリクス診断',  desc:'2軸×16セルで適職発見' },
+      { id:'tool_jobtag',  icon:'📚', color:'ch-blue',   name:'jobtagカタログ',        desc:'職業情報・適職リンク集' },
+    ]
+  },
+
+  es_tensaku: {
+    num: 'ES → 添削',
+    advice: {
+      text:'書いたESをブラッシュアップしましょう。AIによる添削ツールを使いながら、最終的には「等身大の自分らしさ」が出ているか確認してください。AIが整えたものをそのまま使うのではなく、自分の言葉に戻すことが大切です。',
+      doshi:'「AIは磨く道具。書いたのはあなた、仕上げるのもあなたです。」'
+    },
+    choices: [
+      { id:'tool_tensaku_gemini', icon:'✨', color:'ch-teal',   name:'ES添削 Gemini版',  desc:'無料・配布用' },
+      { id:'tool_tensaku_claude', icon:'🤖', color:'ch-coral',  name:'ES添削 キャリ爺版', desc:'対話形式で一緒に作成' },
+      { id:'tool_tensaku_hikaku', icon:'⚖️', color:'ch-purple', name:'ES添削 比較版',    desc:'Claude＆Gemini 同時比較' },
+    ]
+  },
+
+  // ====== 面接 ======
+  mensetsu: {
+    num: '面接相談',
+    question: '🎤 面接で困っていることは？',
+    choices: [
+      { id:'men_nani',   icon:'❓', color:'ch-amber', name:'何を聞かれるかわからない',   desc:'頻出質問を把握したい' },
+      { id:'men_kotae',  icon:'💬', color:'ch-blue',  name:'答え方がわからない・詰まる', desc:'話し方・構成の練習' },
+      { id:'men_jiko',   icon:'🙋', color:'ch-green', name:'自己紹介・自己PRが苦手',     desc:'最初の1分が決め手' },
+      { id:'men_gyaku',  icon:'🙋', color:'ch-teal',  name:'逆質問が思いつかない',       desc:'何を聞けばいい？' },
+      { id:'men_mogi',   icon:'🎬', color:'ch-coral', name:'模擬面接をしてほしい',       desc:'キャリア支援課で練習' },
+    ]
+  },
+
+  men_nani: {
+    num: '面接 → 頻出質問',
+    advice: {
+      text:'面接で必ず聞かれる質問は「自己紹介」「ガクチカ」「自己PR」「志望動機」「強み・弱み」「将来のビジョン」「逆質問」の7つです。この7問を自分の言葉で答えられるようにしておけば、ほとんどの面接に対応できます。',
+      doshi:'「頭でわかると口で言えるは全く別物。まず声に出して練習することから始めてください。」'
+    },
+    choices: [
+      { id:'tool_mentai15',  icon:'📅', color:'ch-green', name:'15日間の面接練習サイト', desc:'1日1問・15問で完全攻略' },
+      { id:'tool_mentai_pdf',icon:'⬇️', color:'ch-purple',name:'面接質問15選攻略ノート', desc:'PDF・印刷して使える' },
+    ]
+  },
+
+  men_mogi: {
+    num: '面接 → 模擬面接',
+    advice: {
+      text:'模擬面接はキャリア支援課で随時受け付けています。事前にESと志望企業を教えていただければ、より実践的な練習ができます。まずは予約フォームから申し込んでください。',
+      doshi:'「練習した回数だけ自信になります。本番は1回きり。でも練習は何回でもできます。」'
+    },
+    choices: [
+      { id:'tool_yoyaku',   icon:'📅', color:'ch-green', name:'面談予約フォーム',        desc:'キャリア支援課に申し込む' },
+      { id:'tool_mentai15', icon:'📅', color:'ch-blue',  name:'15日間の面接練習サイト', desc:'自習用・事前練習に' },
+    ]
+  },
+
+  // ====== 自己分析 ======
+  jikobunseki: {
+    num: '自己分析',
+    question: '🌱 自己分析で知りたいことは？',
+    choices: [
+      { id:'jiko_tsuyomi',  icon:'💪', color:'ch-green',  name:'自分の強みを知りたい',      desc:'何が得意？何が好き？' },
+      { id:'jiko_kachi',    icon:'⚓', color:'ch-teal',   name:'仕事で大切にしたいことを知りたい', desc:'価値観・キャリアアンカー' },
+      { id:'jiko_tekishoku',icon:'🔲', color:'ch-purple', name:'向いている仕事を知りたい',  desc:'適職・職種探し' },
+      { id:'jiko_kako',     icon:'📖', color:'ch-amber',  name:'過去の経験を整理したい',    desc:'ガクチカの素材を掘り起こす' },
+    ]
+  },
+
+  jiko_tsuyomi: {
+    num: '自己分析 → 強み',
+    advice: {
+      text:'強みは「自分では当たり前と思っていること」の中に隠れていることが多いです。友人に「あなたのすごいところは？」と聞いてみるのも有効です。メタアセスメントの強み診断・VPI診断が参考になります。',
+      doshi:'「答えは、君の中にある。強みは与えられるものではなく、日常の中から掘り起こすものです。」'
+    },
+    choices: [
+      { id:'tool_meta',   icon:'🧠', color:'ch-green',  name:'メタアセスメント',    desc:'強み診断・VPI・MBTI' },
+      { id:'tool_matrix', icon:'🔲', color:'ch-purple', name:'16分割マトリクス診断', desc:'2軸×16セルで適職発見' },
+    ]
+  },
+
+  jiko_kachi: {
+    num: '自己分析 → 価値観',
+    advice: {
+      text:'仕事で「譲れないもの」を知ることが、企業選びの軸になります。シャインのキャリアアンカー理論では、人が仕事で最も大切にする価値観を8つのタイプに分類しています。自分のアンカーを知ることで、企業選びがぶれなくなります。',
+      doshi:'「軸のある就活は強い。自分が何を大切にしているかを言える人は、面接でも輝きます。」'
+    },
+    choices: [
+      { id:'tool_meta',  icon:'🧠', color:'ch-green', name:'メタアセスメント', desc:'キャリアアンカー診断収録' },
+    ]
+  },
+
+  jiko_tekishoku: {
+    num: '自己分析 → 適職',
+    advice: {
+      text:'「向いている仕事」は、興味・価値観・得意なことの3つが重なるところにあります。VPI職業興味診断で興味タイプを把握し、16分割マトリクスで仕事の方向性を絞り込み、jobtagで具体的な職種情報を調べると、適職が見えてきます。',
+      doshi:'「職業は選ぶものではなく、自分を知ることで自然に浮かび上がるものです。」'
+    },
+    choices: [
+      { id:'tool_meta',   icon:'🧠', color:'ch-green',  name:'メタアセスメント',    desc:'VPI職業興味診断収録' },
+      { id:'tool_matrix', icon:'🔲', color:'ch-purple', name:'16分割マトリクス診断', desc:'2軸×16セルで適職発見' },
+      { id:'tool_jobtag', icon:'📚', color:'ch-blue',   name:'jobtagカタログ',      desc:'職業情報・適職リンク集' },
+    ]
+  },
+
+  // ====== 企業・業界研究 ======
+  kigyo: {
+    num: '企業・業界研究',
+    question: '🔍 企業・業界について、今どんな状況ですか？',
+    choices: [
+      { id:'kigyo_nani',   icon:'❓', color:'ch-gray',   name:'どんな業界があるか知らない', desc:'業界の全体像をつかみたい' },
+      { id:'kigyo_erabu',  icon:'🏢', color:'ch-teal',   name:'企業の選び方がわからない',   desc:'軸・比較基準を決めたい' },
+      { id:'kigyo_shiru',  icon:'🔎', color:'ch-blue',   name:'特定の企業を深く調べたい',   desc:'企業分析・説明会準備' },
+      { id:'kigyo_shoku',  icon:'💼', color:'ch-green',  name:'職種について知りたい',       desc:'どんな仕事か具体的に知りたい' },
+    ]
+  },
+
+  kigyo_erabu: {
+    num: '企業選び',
+    question: '🏢 企業選びで迷っている理由は？',
+    choices: [
+      { id:'kigyo_erabu_jiku', icon:'🧭', color:'ch-amber',  name:'選ぶ軸・基準が決まっていない', desc:'何を大切にすればいい？' },
+      { id:'kigyo_erabu_oo',   icon:'😵', color:'ch-coral',  name:'企業が多すぎてしぼれない',    desc:'どこから受ければいい？' },
+      { id:'kigyo_erabu_fuan', icon:'😟', color:'ch-gray',   name:'この会社で良いか不安',        desc:'内定先・志望先への迷い' },
+    ]
+  },
+
+  kigyo_erabu_jiku: {
+    num: '企業選び → 軸が決まっていない',
+    advice: {
+      text:'企業選びの軸は「自己分析」から生まれます。「何を大切にして働きたいか」がわかれば、企業の何を見ればいいかも見えてきます。キャリアアンカー診断・16分割マトリクス・jobtagを組み合わせて使うのがキャリ爺のおすすめです。',
+      doshi:'「軸のない就活は、地図のない旅です。まず自分を知ることが、企業選びの羅針盤になります。」'
+    },
+    choices: [
+      { id:'tool_meta',   icon:'🧠', color:'ch-green',  name:'メタアセスメント',    desc:'キャリアアンカー・VPI診断' },
+      { id:'tool_matrix', icon:'🔲', color:'ch-purple', name:'16分割マトリクス診断', desc:'2軸×16セルで適職発見' },
+      { id:'tool_jobtag', icon:'📚', color:'ch-blue',   name:'jobtagカタログ',      desc:'職業情報・適職リンク集' },
+      { id:'tool_kigyo_shoku', icon:'💼', color:'ch-teal',   name:'職種研究ツール', desc:'20職種・仕事内容を知る' },
+    ]
+  },
+
+  // ====== 筆記SPI ======
+  spi: {
+    num: '筆記・SPI',
+    advice: {
+      text:'筆記試験は「貯金型」の対策です。今日1問解いた積み重ねが、半年後の本番で必ず返ってきます。まず自分が受ける企業の試験種別（SPI3・TG-WEB・玉手箱など）を確認して、そのドリルから始めてみてください。',
+      doshi:'「直前に焦っても取り返せないのがSPIです。今日始めた人が、半年後に笑います。」'
+    },
+    choices: [
+      { id:'tool_drill_new', icon:'📝', color:'ch-green', name:'筆記試験対策ドリル 完全ガイド', desc:'6種別・150問以上・AI出題対応' },
+      { id:'tool_drill_old', icon:'✏️', color:'ch-teal',  name:'筆記試験対策ドリル（旧版）',   desc:'固定問題＋AI自動出題' },
+    ]
+  },
+
+  // ====== インターン ======
+  intern: {
+    num: 'インターン',
+    question: '☀️ インターンについて、今どんな状況ですか？',
+    choices: [
+      { id:'intern_what',   icon:'❓', color:'ch-gray',  name:'インターンって何？',         desc:'基礎から知りたい' },
+      { id:'intern_sagasu', icon:'🔍', color:'ch-blue',  name:'どこに応募すればいいか',     desc:'探し方・サイト活用法' },
+      { id:'es_start',      icon:'📋', color:'ch-green', name:'インターン用ESを書きたい',   desc:'応募書類の準備' },
+      { id:'intern_soki',   icon:'🏆', color:'ch-coral', name:'早期選考につなげたい',       desc:'秋冬インターン戦略' },
+    ]
+  },
+
+  intern_what: {
+    num: 'インターン → インターンって何？',
+    advice: {
+      text:`インターンシップとは、企業が主催する就業体験プログラムです。1日〜数週間、実際の職場で仕事を体験します。\n\n【時期の目安】\n・夏（7〜9月）：最大のピーク。多くの企業が実施。\n・秋冬（10〜12月）：早期選考に直結する重要時期。\n・申込みは開催の1〜2ヶ月前から始まるため、今から情報収集と登録が必要です。\n\n【2027年卒から変わった新ルール】\nインターンが正式に「採用選考の評価基準」として活用できるようになりました。企業はインターン参加者の情報を採用選考に使うことが認められています。つまりインターンは「体験」ではなく、すでに「選考の入り口」です。参加しないことは、その企業への選考機会を自ら手放すことになりかねません。`,
+      doshi:'「インターンは体験ではなく投資です。夏の1社が、秋冬の早期内定につながる。今すぐ申し込まない理由はありません。」'
+    },
+    choices: [
+      { id:'tool_gantt_intern', icon:'🗓', color:'ch-green', name:'就活スケジュール全体図で確認する', desc:'インターンの時期・流れを把握' },
+    ]
+  },
+
+  intern_sagasu: {
+    num: 'インターン → どこに応募するか',
+    advice: {
+      text:`インターンを探すには、大手就活サイトへの登録が基本です。\n\n【主要サイトと特徴】\n・マイナビ・リクナビ：大手〜中堅企業が多い。まず登録必須。\n・OfferBox・キミスカ：企業からスカウトが届くタイプ。プロフィールを充実させると有利。\n・ワンキャリア：先輩のES・体験談が豊富。早期選考情報も多い。\n・Re就活キャンパス（学情）：中小優良企業に強い。\n\n【活用のコツ】\n① まず2〜3サイトに登録する\n② 興味ある業界を5つ以上設定する\n③ 説明会・インターンの情報が来たら、まず応募してみる\n④ 参加後は必ず振り返りメモを残す（ES・面接の素材になる）`,
+      doshi:'「迷ったら応募。参加してみないとわからないことが、就活には山ほどあります。」'
+    },
+    choices: [
+      { id:'tool_gantt_intern', icon:'🗓', color:'ch-green', name:'就活スケジュール全体図で確認する', desc:'インターンの申込み時期・流れを把握' },
+    ]
+  },
+
+  intern_soki: {
+    num: 'インターン → 早期選考',
+    advice: {
+      text:`秋冬インターン（10〜12月）に参加することで、企業の早期選考に呼ばれる可能性が高まります。\n\n【早期選考につなげる3ステップ】\n① スカウト型サービス（OfferBox・キミスカ）に登録してプロフィールを充実させる\n② 秋冬インターンに積極的に応募する（特に第一志望業界）\n③ インターン中は「仕事ぶり」を見せる意識で参加する\n\nインターン参加→早期選考招待→内定、という流れが今の就活の王道です。ESと自己分析の準備を今から進めましょう。`,
+      doshi:'「早期内定は運ではありません。今の準備が直接つながります。この秋冬、動いた人だけが手にできるドアがある。」'
+    },
+    choices: [
+      { id:'tool_gantt_intern', icon:'🗓', color:'ch-green',  name:'就活スケジュール全体図で確認する', desc:'早期選考の時期・流れを把握' },
+      { id:'tool_meta',         icon:'🧠', color:'ch-green',  name:'メタアセスメント',                 desc:'自己分析から始めよう' },
+      { id:'tool_es_star',      icon:'🌱', color:'ch-green',  name:'ES最強作成支援ツール',             desc:'インターン用ES作成' },
+    ]
+  },
+
+  // ====== わからない ======
+  wakaran: {
+    num: 'わからない',
+    question: '😶 今、どんな気持ちに近いですか？',
+    choices: [
+      { id:'wakaran_nani',  icon:'🌫', color:'ch-gray',  name:'何から始めればいいかわからない', desc:'就活を始めたばかり' },
+      { id:'wakaran_iya',   icon:'😔', color:'ch-coral', name:'就活がしんどい・やる気が出ない', desc:'少し立ち止まっている' },
+      { id:'wakaran_jiku',  icon:'🧭', color:'ch-amber', name:'やりたいことが見つからない',     desc:'職業・業界選びに迷っている' },
+      { id:'wakaran_oya',   icon:'🏠', color:'ch-blue',  name:'親に反対されている',             desc:'家族との意見の違い' },
+    ]
+  },
+
+  wakaran_nani: {
+    num: 'わからない → 何から始めるか',
+    advice: {
+      text:'就活を始めたばかりなら、まず「自己分析」から始めましょう。「自分はどんな人間か」「何を大切にしているか」を知ることが、企業選びや志望動機のすべての土台になります。焦らず、一歩ずつ。',
+      doshi:'「木を育てるように、就活も一歩ずつ丁寧に。最初の一歩は「自分を知ること」から始めましょう。」'
+    },
+    choices: [
+      { id:'tool_gantt',  icon:'🗓', color:'ch-green',  name:'就活スケジュール全体図', desc:'3年4月→内定の全体像を把握' },
+      { id:'tool_meta',   icon:'🧠', color:'ch-green',  name:'メタアセスメント',       desc:'まず自己分析から' },
+      { id:'tool_matrix', icon:'🔲', color:'ch-purple', name:'16分割マトリクス診断',   desc:'向いている仕事を探す' },
+    ]
+  },
+
+  wakaran_jiku: {
+    num: 'わからない → やりたいことが見つからない',
+    advice: {
+      text:'「やりたいことがない」は「まだ出会っていない」サインかもしれません。まず職業の世界を広く知ることから始めましょう。jobtagで様々な職業を眺めたり、16分割マトリクスで自分の方向性を探るのがおすすめです。',
+      doshi:'「したいことがない、は悪いことじゃない。まだ出会っていないだけかもしれない。一緒に探しましょう。」'
+    },
+    choices: [
+      { id:'tool_jobtag', icon:'📚', color:'ch-blue',   name:'jobtagカタログ',       desc:'職業情報を広く眺める' },
+      { id:'tool_matrix', icon:'🔲', color:'ch-purple', name:'16分割マトリクス診断', desc:'2軸×16セルで方向性発見' },
+      { id:'tool_meta',   icon:'🧠', color:'ch-green',  name:'メタアセスメント',     desc:'VPI職業興味診断収録' },
+    ]
+  },
+
+  // ====== 就活全体 ======
+  zentai: {
+    num: '就活全体',
+    advice: {
+      text:'就活は「自己分析→業界研究→ES作成→筆記対策→面接対策→選考」という流れで進みます。3年生の4月から動き始めた人が、翌年の春に余裕を持って内定を取れます。まず全体像をガントチャートで確認しましょう。',
+      doshi:'「どの層を目指すにも、スタートは今日。全体像を知るだけで、動き方が変わります。」'
+    },
+    choices: [
+      { id:'tool_gantt',   icon:'🗓',  color:'ch-green',  name:'就活スケジュール全体図', desc:'28卒ガントチャート' },
+      { id:'tool_meta',    icon:'🧠',  color:'ch-green',  name:'メタアセスメント',       desc:'まず自己分析から' },
+      { id:'tool_es_star', icon:'🌱',  color:'ch-green',  name:'ES最強作成支援ツール',   desc:'ES作成の第一歩' },
+    ]
+  },
+
+  // ====== メンタル不調 ======
+  mental: {
+    num: 'しんどい・メンタル',
+    question: '😔 今、どんな気持ちに近いですか？',
+    choices: [
+      { id:'mental_iya',    icon:'😮‍💨', color:'ch-coral',  name:'就活自体がもう嫌になってきた',   desc:'やる気が出ない・疲れた' },
+      { id:'mental_fuan',   icon:'😟',  color:'ch-amber',  name:'将来が不安でたまらない',           desc:'このままでいいのか心配' },
+      { id:'mental_hitori', icon:'😶',  color:'ch-gray',   name:'周りと比べて焦っている',           desc:'友人が内定・自分はまだ' },
+      { id:'mental_oya',    icon:'🏠',  color:'ch-blue',   name:'親や家族からプレッシャーがある',   desc:'期待・反対・口出し' },
+    ]
+  },
+
+  mental_iya: {
+    num: 'メンタル → やる気が出ない',
+    advice: {
+      text:'「就活やめたい」という気持ちの奥には「疲れた」「怖い」「自信がない」が隠れていることが多いです。今日は就活の話ではなく、あなた自身の話を聞かせてください。まず気持ちを整理することが大切です。\n\n無理に動こうとしなくて大丈夫。「一度立ち止まる」ことも大切な選択です。',
+      doshi:'「そっか、しんどくなってきたんだね。よく話してくれた。小さな一歩から、また始めましょう。」'
+    },
+    choices: [
+      { id:'mental_restart', icon:'🌱', color:'ch-green', name:'少し落ち着いたら、小さな一歩から', desc:'ES1本・自己分析1つから再起動' },
+      { id:'tool_yoyaku',    icon:'📅', color:'ch-blue',  name:'キャリア支援課に相談する',          desc:'一人で抱え込まないで' },
+    ]
+  },
+
+  mental_restart: {
+    num: 'メンタル → 再起動',
+    advice: {
+      text:'再スタートは「小さな成功体験」から始めるのが一番です。難しいことは後回しでOK。まず「自己分析を1つやってみる」「ES素材を1行メモする」——その小さな積み重ねが、また動き出す力になります。',
+      doshi:'「木は一日では育たない。でも、毎日水をやれば必ず育つ。今日の小さな一歩を大切に。」'
+    },
+    choices: [
+      { id:'tool_meta',    icon:'🧠', color:'ch-green', name:'メタアセスメント',      desc:'自己分析から小さく再スタート' },
+      { id:'tool_gantt',   icon:'🗓', color:'ch-purple', name:'就活スケジュール全体図', desc:'今どこにいるか確認する' },
+    ]
+  },
+
+  mental_fuan: {
+    num: 'メンタル → 将来が不安',
+    advice: {
+      text:'将来への不安は、「わからないから怖い」という気持ちから来ることが多いです。全体像を知ることで、少し楽になることがあります。就活のスケジュール全体図を見て「今やるべきこと」を一つに絞ると、前に進みやすくなります。',
+      doshi:'「不安は、まだ見えていないから感じるもの。一緒に地図を広げてみましょう。」'
+    },
+    choices: [
+      { id:'tool_gantt', icon:'🗓', color:'ch-green',  name:'就活スケジュール全体図', desc:'全体像を知ると気が楽になる' },
+      { id:'tool_meta',  icon:'🧠', color:'ch-green',  name:'メタアセスメント',       desc:'自分を知ると不安が減る' },
+      { id:'tool_yoyaku',icon:'📅', color:'ch-blue',   name:'キャリア支援課に相談',   desc:'一人で抱え込まないで' },
+    ]
+  },
+
+  mental_hitori: {
+    num: 'メンタル → 周りと比べて焦っている',
+    advice: {
+      text:'「友人が内定した」「周りが動いている」——そういう情報が入ると焦りますよね。でも就活は人と比べるものではありません。あなたのペースで、あなたに合った企業に出会うことが大切です。今できることを一つずつやりましょう。',
+      doshi:'「就活は競争ではなく、自分に合った場所を探す旅です。隣の人ではなく、未来の自分を見てください。」'
+    },
+    choices: [
+      { id:'tool_gantt',   icon:'🗓', color:'ch-green',  name:'就活スケジュール全体図', desc:'自分の今の位置を確認する' },
+      { id:'jikobunseki',  icon:'🌱', color:'ch-green',  name:'自己分析をする',          desc:'自分らしさを再確認' },
+      { id:'tool_yoyaku',  icon:'📅', color:'ch-blue',   name:'キャリア支援課に相談',    desc:'気持ちを整理しよう' },
+    ]
+  },
+
+  mental_oya: {
+    num: 'メンタル → 親からのプレッシャー',
+    advice: {
+      text:'親の言葉は「心配」の裏返しであることが多いです。親を説得できるだけの「自分の言葉」を持てるかどうかが鍵になります。志望動機・就活の軸を言語化して、「自分の言葉で親に話せる状態」を目指しましょう。',
+      doshi:'「お父さん・お母さんは何を心配しているのかな？その気持ち、一緒に解いていきましょう。」'
+    },
+    question: '🏠 もう少し聞かせてください。学生本人について気になることはありますか？',
+    choices: [
+      { id:'mental_oya_tokusei', icon:'🧠', color:'ch-purple', name:'コミュニケーションや行動に少し特性があるかも', desc:'発達・神経発達が気になる' },
+      { id:'mental_oya_futsu',   icon:'💬', color:'ch-green',  name:'特に気になることはない',                    desc:'就活の軸・志望動機を整理したい' },
+    ]
+  },
+
+  mental_oya_tokusei: {
+    num: 'メンタル → 親のプレッシャー → 特性が気になる',
+    advice: {
+      text:'神経発達特性のある学生は、就活の中で様々な困難に直面することがあります。本人の特性を正しく理解した上で支援することが、遠回りのようで実は一番の近道です。まず「迷える子羊ガイド」で特性別の接し方・対策を確認してみましょう。',
+      doshi:'「少し特別な子に寄り添うために——答えは、その子の中にある。まず知ることから始めましょう。」'
+    },
+    choices: [
+      { id:'tool_hitsuji',   icon:'🐑', color:'ch-amber',  name:'迷える子羊ガイド 第2弾',    desc:'特性チェック＋悩み別対策' },
+      { id:'tool_dsm',       icon:'🧠', color:'ch-purple', name:'神経発達症 7分類ガイド',     desc:'DSM-5-TR準拠・接し方・適性職種' },
+      { id:'tool_manual_v3', icon:'📖', color:'ch-purple', name:'支援マニュアル Vol.3',        desc:'応酬話法・適性職種・支援機関' },
+      { id:'tool_yoyaku',    icon:'📅', color:'ch-blue',   name:'キャリア支援課に相談',        desc:'一緒に考えましょう' },
+    ]
+  },
+
+  mental_oya_futsu: {
+    num: 'メンタル → 親のプレッシャー → 軸・志望動機',
+    advice: {
+      text:'親の反対を乗り越えるには「自分の言葉で語れる状態」を作ることが大切です。就活の軸・志望動機を言語化して、「なぜこの仕事・会社なのか」を自分自身が納得できるまで整理しましょう。',
+      doshi:'「自分の言葉で話せる学生は強い。親御さんを説得できるだけの根拠を、一緒に作りましょう。」'
+    },
+    choices: [
+      { id:'tool_es_star', icon:'🌱', color:'ch-green', name:'ES最強作成支援ツール', desc:'就活の軸・志望動機を言語化' },
+      { id:'tool_meta',    icon:'🧠', color:'ch-green', name:'メタアセスメント',     desc:'自分の強み・価値観を整理' },
+      { id:'tool_yoyaku',  icon:'📅', color:'ch-blue',  name:'キャリア支援課に相談', desc:'一緒に考えましょう' },
+    ]
+  },
+
+  // ====== うまくいかない ======
+  umaiku: {
+    num: 'うまくいかない',
+    question: '😥 どんな状況で行き詰まっていますか？',
+    choices: [
+      { id:'umaiku_es',      icon:'📋', color:'ch-blue',   name:'ESが通らない・書類落ちが続く', desc:'何が問題？' },
+      { id:'umaiku_men',     icon:'🎤', color:'ch-coral',  name:'面接で落ちてしまう',           desc:'何を直せばいい？' },
+      { id:'umaiku_kimara',  icon:'🧭', color:'ch-amber',  name:'受ける企業が決まらない',        desc:'どこを受ければいい？' },
+      { id:'umaiku_yaruki',  icon:'😮‍💨', color:'ch-gray',  name:'モチベーションが続かない',      desc:'頑張れない自分が嫌' },
+    ]
+  },
+
+  umaiku_es: {
+    num: 'うまくいかない → ES落ち',
+    question: '📋 ES落ちの原因として、心当たりはありますか？',
+    choices: [
+      { id:'umaiku_es_usui',   icon:'💧', color:'ch-blue',  name:'内容が薄い・具体性がない', desc:'エピソードが弱いかも' },
+      { id:'umaiku_es_awanai', icon:'🎯', color:'ch-amber', name:'企業に合っていないかも',   desc:'志望動機・軸のズレ' },
+      { id:'umaiku_es_wakar',  icon:'❓', color:'ch-gray',  name:'理由がよくわからない',     desc:'一緒に確認したい' },
+    ]
+  },
+
+  umaiku_es_usui: {
+    num: 'うまくいかない → ES落ち → 内容が薄い',
+    advice: {
+      text:'ESが薄い原因の多くは「自己分析の浅さ」です。WHY（なぜそれに取り組んだか）・HARDSHIP（困ったこと）・CHANGE（どう変わったか）の3軸で深掘りすると、エピソードに厚みが生まれます。まずAI添削ツールで現状を診断しましょう。',
+      doshi:'「書き直すのは恥ずかしくない。10回直したESが、内定ESになります。」'
+    },
+    choices: [
+      { id:'tool_tensaku_claude', icon:'🤖', color:'ch-coral',  name:'ES添削 キャリ爺版', desc:'対話形式で深掘り' },
+      { id:'tool_tensaku_gemini', icon:'✨', color:'ch-teal',   name:'ES添削 Gemini版',  desc:'無料・すぐ使える' },
+      { id:'tool_es_ult',         icon:'💪', color:'ch-purple', name:'ES Ultimate Edition', desc:'6段論法で深掘り' },
+    ]
+  },
+
+  umaiku_es_awanai: {
+    num: 'うまくいかない → ES落ち → 企業とのズレ',
+    advice: {
+      text:'企業とのズレは「企業研究不足」か「就活の軸のズレ」が原因であることが多いです。その企業が何を求めているか・自分の強みがどう活かせるかを、もう一度整理してみましょう。',
+      doshi:'「志望動機は「なぜこの会社か」の根拠です。企業研究を深めるほど、説得力が増します。」'
+    },
+    choices: [
+      { id:'tool_kigyo_kigyo',  icon:'🏢', color:'ch-teal',  name:'企業研究ツール', desc:'企業研究を深める' },
+      { id:'tool_es_star', icon:'🌱', color:'ch-green', name:'ES最強作成支援ツール',       desc:'志望動機を書き直す' },
+    ]
+  },
+
+  umaiku_men: {
+    num: 'うまくいかない → 面接落ち',
+    question: '🎤 面接でどんな場面が苦手ですか？',
+    choices: [
+      { id:'umaiku_men_kinchou', icon:'😰', color:'ch-coral',  name:'緊張しすぎて頭が真っ白になる', desc:'本番に弱い' },
+      { id:'umaiku_men_kotae',   icon:'💬', color:'ch-blue',   name:'質問に答えられない・詰まる',   desc:'想定外の質問に弱い' },
+      { id:'umaiku_men_印象',    icon:'👤', color:'ch-amber',  name:'印象が薄いと言われた',          desc:'もっと自分を出したい' },
+    ]
+  },
+
+  umaiku_men_kinchou: {
+    num: '面接 → 緊張',
+    advice: {
+      text:'緊張は「準備不足」から来ることが多いです。答えを100回声に出して練習すると、緊張しても体が動くようになります。また「緊張している」と面接官に正直に伝えることも、誠実さとして好印象を与えることがあります。',
+      doshi:'「緊張は準備で減らせる。練習した回数だけ、自信になります。」'
+    },
+    choices: [
+      { id:'tool_mentai15',  icon:'📅', color:'ch-green', name:'15日間の面接練習サイト', desc:'毎日声に出して練習' },
+      { id:'tool_yoyaku',    icon:'📅', color:'ch-blue',  name:'模擬面接を申し込む',     desc:'本番形式で練習しよう' },
+    ]
+  },
+
+  umaiku_kimara: {
+    num: 'うまくいかない → 受ける企業が決まらない',
+    advice: {
+      text:'受ける企業が決まらない場合は「就活の軸」が定まっていないことが多いです。「何を大切にして働きたいか」が明確になると、企業の絞り込みができるようになります。自己分析とアセスメントから始めましょう。',
+      doshi:'「企業は選ぶものではなく、自分を知った上で自然に見えてくるものです。」'
+    },
+    choices: [
+      { id:'tool_meta',   icon:'🧠', color:'ch-green',  name:'メタアセスメント',     desc:'キャリアアンカー・価値観を整理' },
+      { id:'tool_matrix', icon:'🔲', color:'ch-purple', name:'16分割マトリクス診断', desc:'方向性を2軸で絞り込む' },
+      { id:'tool_jobtag', icon:'📚', color:'ch-blue',   name:'jobtagカタログ',       desc:'職業の世界を広く眺める' },
+      { id:'tool_kigyo_gyokai', icon:'🏭', color:'ch-teal',   name:'業界研究ツール', desc:'19業界から探す' },
+    ]
+  },
+
+  umaiku_yaruki: {
+    num: 'うまくいかない → モチベーション',
+    advice: {
+      text:'頑張れない自分を責めないでください。うまくいかない時期が続くと、誰でもモチベーションは下がります。まず「なぜうまくいかないのか」を一緒に整理しましょう。原因がわかると、次の一手が見えてきます。',
+      doshi:'「木は嵐の日も根を張り続ける。うまくいかない日も、あなたは確実に成長しています。」'
+    },
+    choices: [
+      { id:'umaiku',      icon:'😥', color:'ch-gray',  name:'うまくいかない原因を整理する', desc:'ES・面接・企業選びを確認' },
+      { id:'tool_yoyaku', icon:'📅', color:'ch-blue',  name:'キャリア支援課に相談する',     desc:'一緒に考えましょう' },
+    ]
+  },
+
+  // ====== ツール終端ノード ======
+  tool_es_star:    { isToolLink: true, url:'https://tanukin0423.github.io/shukatsu-es/', name:'ES最強作成支援ツール', icon:'🌱', desc:'カード選択式でプロンプト自動生成。Claude.aiに貼るだけでES完成へ。STAR+WHY+F&C対応。' },
+  tool_es_full:    { isToolLink: true, url:'https://tanukin0423.github.io/gaku-pr-shibou-mentai/', name:'ESフルバージョン（STARメソッド）', icon:'🔰', desc:'ガクチカ21例・自己PR20例・志望動機24例を収録。STARメソッドで書き方を学ぼう。' },
+  tool_es_ult:     { isToolLink: true, url:'https://kitayama-tama.github.io/4daishitsumon/', name:'ES Ultimate Edition', icon:'💪', desc:'6段論法（T+STAR+F&C）で深掘り。挫折・困難・巻き込み経験にも対応。' },
+  tool_es_video:   { isToolLink: true, url:'https://youtu.be/c-sjlvpcfy4', name:'ガクチカ特訓動画（YouTube）', icon:'▶️', desc:'ガクチカの書き方をキャリ爺が動画で解説。YouTube公開中。' },
+  tool_es_video2:  { isToolLink: true, url:'https://youtu.be/Qoc7rv7AZc4', name:'自己PR特訓動画（YouTube）', icon:'▶️', desc:'自己PRの書き方をキャリ爺が動画で解説。YouTube公開中。' },
+  tool_meta:       { isToolLink: true, url:'https://tanukin0423.github.io/meta-assessment/', name:'メタアセスメント', icon:'🧠', desc:'VPI・MBTI・キャリアアンカー・強み診断・ナラティブの5診断を収録。' },
+  tool_matrix:     { isToolLink: true, url:'https://tanukin0423.github.io/meta-assessment/matrix-shindan-ver14.html', name:'16分割マトリクス診断', icon:'🔲', desc:'2軸×16セルで自分に合う仕事の方向性を発見。適職探しの入り口に。' },
+  tool_shokugyo:   { isToolLink: true, url:'https://tanukin0423.github.io/shokugyo-matrix/', name:'職業マトリクス16分割', icon:'🌳', desc:'112職種を2軸×16セルに分類。30問診断→職種検索→jobtag連携。重複整理済みの最新版。' },
+  tool_jobtag:     { isToolLink: true, url:'https://tanukin0423.github.io/meta-assessment/jobtag-catalog-ver6.html', name:'jobtagカタログ', icon:'📚', desc:'厚生労働省の職業情報サイトへのリンク集。様々な職業を広く知ろう。' },
+  tool_kigyo_gyokai: { isToolLink: true, url:'https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#gyokai', name:'業界研究ツール', icon:'🏭', desc:'19業界の業界地図・特徴・動向を把握できる研究ツール。業界選びの入り口に。' },
+  tool_kigyo_kigyo:  { isToolLink: true, url:'https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#kigyo',   name:'企業研究ツール', icon:'🏢', desc:'企業分析・比較・選び方を深掘り。志望動機・面接準備に直結するAIプロンプト生成。' },
+  tool_kigyo_shoku:  { isToolLink: true, url:'https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#shokushu', name:'職種研究ツール', icon:'💼', desc:'20職種の仕事内容・求められるスキル・キャリアパスを詳しく調べよう。' },
+  tool_tensaku_gemini: { isToolLink: true, url:'https://tanukin0423.github.io/es-tensaku-all/', name:'ES添削 Gemini版', icon:'✨', desc:'Gemini APIを使ったES添削ツール。無料で使えるので学生に配布可能。' },
+  tool_tensaku_claude: { isToolLink: true, url:'https://tanukin0423.github.io/es-bunseki/', name:'ES添削 キャリ爺版', icon:'🤖', desc:'キャリ爺監修のES添削ツール。学生と対話形式で一緒にESを作成。' },
+  tool_tensaku_hikaku: { isToolLink: true, url:'https://tanukin0423.github.io/es-tensaku/', name:'ES添削 比較版', icon:'⚖️', desc:'Claude＆Geminiを同時比較できる添削ツール。2つのAIの視点を活用。' },
+  tool_mentai15:   { isToolLink: true, url:'https://tanukin0423.github.io/mentai15days/', name:'15日間の面接練習サイト', icon:'📅', desc:'1日1問・15日間で面接の頻出質問を完全攻略。毎日声に出して練習しよう。' },
+  tool_mentai_pdf: { isToolLink: true, url:'https://tanukin0423.github.io/claude-2603/mentai15sheet.pdf', name:'面接質問15選攻略ノート（PDF）', icon:'⬇️', desc:'面接頻出15問の攻略ノート。印刷して手元に置いて使おう。' },
+  tool_webtest_guide: { isToolLink: true, url:'https://tanukin0423.github.io/shukatsu-6-test/webtest-guide.html', name:'Webテスト見分け方ガイド', icon:'🔍', desc:'URLでテスト種別を即判定。業界別傾向・受検前チェックリスト付き。' },
+  tool_drill_new:  { isToolLink: true, url:'https://tanukin0423.github.io/shukatsu-6-test/', name:'筆記試験対策ドリル 完全ガイド', icon:'📝', desc:'SPI3・TG-WEB・玉手箱など6種別対応。固定問題＋AI自動出題（普通・難関）。' },
+  tool_drill_old:  { isToolLink: true, url:'https://tanukin0423.github.io/shukatsu-test-drill/', name:'筆記試験対策ドリル（旧版）', icon:'✏️', desc:'固定問題＋AI自動出題の筆記対策ドリル。APIキーのみで無料利用可能。' },
+  tool_gantt:      { isToolLink: true, url:'https://tanukin0423.github.io/semi-setsumeishiryou-2026/', name:'就活スケジュール全体図', icon:'🗓', desc:'3年4月→内定までの就活スケジュール全体図。今どこにいるか確認しよう。' },
+  tool_yoyaku:     { isToolLink: true, url:'https://tanukin0423.github.io/shukatsu-no-ki-system/index.html', name:'面談予約フォーム', icon:'📅', desc:'多摩大学キャリア支援課の面談予約フォーム。まず予約して相談しよう。' },
+  tool_gantt_intern: { isToolLink: true, url:'https://tanukin0423.github.io/semi-setsumeishiryou-2026/#row-intern', name:'就活スケジュール全体図（インターン）', icon:'🗓', desc:'インターンの時期・申込み・早期選考への流れを確認しよう。' },
+  tool_hitsuji:    { isToolLink: true, url:'https://tanukin0423.github.io/meta-assessment/mayoeru-kohitsuji-v2.html', name:'迷える子羊ガイド 第2弾', icon:'🐑', desc:'特性チェック＋悩み別対策。少し特別な学生への寄り添い方をまとめたカウンセラー専用ガイド。' },
+  tool_dsm:        { isToolLink: true, url:'https://tanukin0423.github.io/meta-assessment/dsm5tr-career-guide.html', name:'神経発達症 7分類ガイド', icon:'🧠', desc:'DSM-5-TR準拠。7分類の接し方・応酬話法・適性職種・支援機関をまとめたガイド。' },
+  tool_manual_v3:  { isToolLink: true, url:'https://tanukin0423.github.io/meta-assessment/career-support-manual-vol3.html', name:'支援マニュアル Vol.3', icon:'📖', desc:'接し方・応酬話法・適性職種の拡充マニュアル。HTML版。' },
+};
+
+// ========================
+// 状態管理
+// ========================
+let history = [];
+
+function getNode(id) { return flows[id]; }
+
+function render(id) {
+  const node = getNode(id);
+  if (!node) return;
+
+  // ツールリンクの場合はカード表示
+  if (node.isToolLink) {
+    showToolCard(node);
+    return;
+  }
+
+  history.push(id);
+  const area = document.getElementById('flowArea');
+  area.innerHTML = '';
+
+  // パンくず更新
+  renderBreadcrumb();
+
+  // アドバイスボックス
+  if (node.advice) {
+    const advBox = document.createElement('div');
+    advBox.className = 'advice-box';
+    advBox.innerHTML = `
+      <div class="advice-label">💬 キャリ爺より</div>
+      <div class="advice-text">${node.advice.text}</div>
+      ${node.advice.doshi ? `<div class="advice-doshi"><span class="advice-doshi-label">🔥 キャリ爺のド推しポイント</span>${node.advice.doshi}</div>` : ''}
+    `;
+    area.appendChild(advBox);
+
+    if (node.advice && node.choices) {
+      const arrow = document.createElement('div');
+      arrow.className = 'flow-arrow';
+      arrow.textContent = '↓';
+      area.appendChild(arrow);
+    }
+  }
+
+  // 質問＋選択肢カード
+  if (node.choices) {
+    const card = document.createElement('div');
+    card.className = 'step-card';
+    card.innerHTML = `
+      <div class="step-num">${node.num ? '▶ ' + node.num : ''}</div>
+      <div class="step-question">${node.question || '次はどうしますか？'}</div>
+    `;
+
+    const grid = document.createElement('div');
+    grid.className = 'btn-grid' + (node.choices.length >= 5 ? '' : '');
+
+    node.choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = `choice-btn ${c.color}`;
+      btn.innerHTML = `
+        <div class="c-icon">${c.icon}</div>
+        <div class="c-body">
+          <div class="c-name">${c.name}</div>
+          ${c.desc ? `<div class="c-desc">${c.desc}</div>` : ''}
+        </div>
+      `;
+      btn.addEventListener('click', () => render(c.id));
+      grid.appendChild(btn);
+    });
+
+    card.appendChild(grid);
+    area.appendChild(card);
+  }
+
+  // リセットボタン
+  if (history.length > 1) {
+    const resetWrap = document.createElement('div');
+    resetWrap.style.display = 'flex';
+    resetWrap.style.gap = '8px';
+
+    const backBtn = document.createElement('button');
+    backBtn.className = 'reset-btn';
+    backBtn.innerHTML = '← 一つ前に戻る';
+    backBtn.style.width = '50%';
+    backBtn.addEventListener('click', () => {
+      history.pop();
+      history.pop();
+      const prev = history.length > 0 ? history[history.length - 1] : 'start';
+      history = history.slice(0, -1);
+      render(prev);
+    });
+
+    const topBtn = document.createElement('button');
+    topBtn.className = 'reset-btn';
+    topBtn.innerHTML = '🌳 最初からやり直す';
+    topBtn.style.width = '50%';
+    topBtn.addEventListener('click', () => { history = []; render('start'); });
+
+    resetWrap.appendChild(backBtn);
+    resetWrap.appendChild(topBtn);
+    area.appendChild(resetWrap);
+  }
+}
+
+function renderBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  bc.innerHTML = '';
+  history.forEach((id, i) => {
+    const node = getNode(id);
+    if (!node || node.isToolLink) return;
+    if (i > 0) {
+      const arrow = document.createElement('span');
+      arrow.className = 'bc-arrow';
+      arrow.textContent = '›';
+      bc.appendChild(arrow);
+    }
+    const item = document.createElement('span');
+    item.className = 'bc-item';
+    item.textContent = id === 'start' ? '🌳 トップ' : (node.num || id);
+    bc.appendChild(item);
+  });
+}
+
+// ========================
+// ツールカード表示
+// ========================
+function showToolCard(node) {
+  history.push('__tool__');
+  const area = document.getElementById('flowArea');
+  area.innerHTML = '';
+  renderBreadcrumb();
+
+  // ツールカード
+  const card = document.createElement('div');
+  card.className = 'tool-card';
+
+  const qrId = 'qr_' + Date.now();
+  card.innerHTML = `
+    <div class="tool-card-icon">${node.icon}</div>
+    <div class="tool-card-name">${node.name}</div>
+    <div class="tool-card-desc">${node.desc || 'このツールを使って就活を進めよう！'}</div>
+    <div class="tool-card-qr"><div id="${qrId}" style="width:160px;height:160px;"></div></div>
+    <div class="tool-card-url">${node.url}</div>
+    <div class="tool-card-btns">
+      <button class="tool-open-btn" onclick="window.open('${node.url}','_blank')">🔗 ツールを開く</button>
+      <button class="tool-print-btn" onclick="printToolCard('${node.icon}','${node.name}','${node.desc || ''}','${node.url}')">🖨️ このカードを印刷</button>
+    </div>
+  `;
+  area.appendChild(card);
+
+  // QRコード生成
+  setTimeout(() => {
+    try {
+      new QRCode(document.getElementById(qrId), {
+        text: node.url,
+        width: 160, height: 160,
+        colorDark: '#2C5F2D', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } catch(e) { console.error('QR生成エラー:', e); }
+  }, 100);
+
+  // ナビボタン
+  const resetWrap = document.createElement('div');
+  resetWrap.className = 'no-print';
+  resetWrap.style.cssText = 'display:flex;gap:8px;margin-top:8px;';
+
+  const backBtn = document.createElement('button');
+  backBtn.className = 'reset-btn';
+  backBtn.innerHTML = '← 一つ前に戻る';
+  backBtn.style.width = '50%';
+  backBtn.addEventListener('click', () => {
+    history.pop(); history.pop();
+    const prev = history.length > 0 ? history[history.length-1] : 'start';
+    history = history.slice(0,-1);
+    render(prev);
+  });
+
+  const topBtn = document.createElement('button');
+  topBtn.className = 'reset-btn';
+  topBtn.innerHTML = '🌳 最初からやり直す';
+  topBtn.style.width = '50%';
+  topBtn.addEventListener('click', () => { history = []; render('start'); });
+
+  resetWrap.appendChild(backBtn);
+  resetWrap.appendChild(topBtn);
+  area.appendChild(resetWrap);
+}
+
+function printToolCard(icon, name, desc, url) {
+  // 印刷カードにデータをセット
+  document.getElementById('printIcon').textContent = icon;
+  document.getElementById('printName').textContent = name;
+  document.getElementById('printDesc').textContent = desc || 'このツールを使って就活を進めよう！';
+  document.getElementById('printUrl').textContent = url;
+
+  // 印刷用QRコード生成
+  const printQrEl = document.getElementById('printQr');
+  printQrEl.innerHTML = '';
+  new QRCode(printQrEl, {
+    text: url, width: 200, height: 200,
+    colorDark: '#2C5F2D', colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  setTimeout(() => { window.print(); }, 300);
+}
+
+// 初期表示
+render('start');
+
+</script>
+</body>
+</html>
