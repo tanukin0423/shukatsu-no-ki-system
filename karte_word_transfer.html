@@ -437,6 +437,50 @@
           </label>
         </div>
       </div>
+
+      <!-- ブラッシュアップセクション -->
+      <div id="brushupSection" style="display:none;">
+        <div class="divider"></div>
+        <div class="alert alert-info" style="margin-bottom:8px;">✨ AIが既存データと新データを比較して、同じテーマならブラッシュアップ版を生成します。</div>
+        <button class="btn-primary" id="btnBrushup" onclick="doBrushup()" style="background:var(--mid);font-size:.85rem;">
+          🤖 AIブラッシュアップを実行する
+        </button>
+        <div id="brushupResult" style="display:none;margin-top:14px;">
+          <div style="font-size:.78rem;font-weight:700;color:var(--gold);margin-bottom:8px;">✨ ブラッシュアップ結果</div>
+
+          <div id="bu_gaku1_wrap" style="display:none;">
+            <div class="field-label">📚 ガクチカ①（gaku1）ブラッシュアップ版</div>
+            <div id="bu_gaku1_judge" style="font-size:.7rem;color:var(--sub);margin-bottom:4px;"></div>
+            <textarea id="bu_ta_gaku1" rows="6" oninput="updateCount('bu_ta_gaku1','bu_cc1')" style="width:100%;background:#1a2a1e;border:1px solid var(--mint);border-radius:8px;color:var(--text);font-size:.82rem;padding:10px 12px;resize:vertical;font-family:inherit;line-height:1.6;"></textarea>
+            <div class="char-count" id="bu_cc1">0 字</div>
+          </div>
+
+          <div id="bu_gaku2_wrap" style="display:none;margin-top:10px;">
+            <div class="field-label">☕ ガクチカ②（gaku2）ブラッシュアップ版</div>
+            <div id="bu_gaku2_judge" style="font-size:.7rem;color:var(--sub);margin-bottom:4px;"></div>
+            <textarea id="bu_ta_gaku2" rows="6" oninput="updateCount('bu_ta_gaku2','bu_cc2')" style="width:100%;background:#1a2a1e;border:1px solid var(--mint);border-radius:8px;color:var(--text);font-size:.82rem;padding:10px 12px;resize:vertical;font-family:inherit;line-height:1.6;"></textarea>
+            <div class="char-count" id="bu_cc2">0 字</div>
+          </div>
+
+          <div id="bu_selfpr_wrap" style="display:none;margin-top:10px;">
+            <div class="field-label">🌟 自己PR（selfpr）ブラッシュアップ版</div>
+            <div id="bu_selfpr_judge" style="font-size:.7rem;color:var(--sub);margin-bottom:4px;"></div>
+            <textarea id="bu_ta_selfpr" rows="5" oninput="updateCount('bu_ta_selfpr','bu_cc3')" style="width:100%;background:#1a2a1e;border:1px solid var(--mint);border-radius:8px;color:var(--text);font-size:.82rem;padding:10px 12px;resize:vertical;font-family:inherit;line-height:1.6;"></textarea>
+            <div class="char-count" id="bu_cc3">0 字</div>
+          </div>
+
+          <div id="alert_brushup" style="margin-top:10px;"></div>
+          <div class="btn-row" style="margin-top:12px;">
+            <button class="btn-secondary" onclick="cancelBrushup()">← 通常モードに戻る</button>
+            <button class="btn-primary" onclick="writeBrushup()" style="font-size:.85rem;">✅ ブラッシュアップ版を書き込む</button>
+          </div>
+        </div>
+        <div id="brushupLoading" style="display:none;text-align:center;padding:20px;">
+          <div class="spinner" style="width:28px;height:28px;margin:0 auto 10px;"></div>
+          <div style="font-size:.8rem;color:var(--mint);">AIが分析・ブラッシュアップ中…</div>
+          <div style="font-size:.7rem;color:var(--sub);margin-top:4px;">既存データと新データを比較しています</div>
+        </div>
+      </div>
     </div>
 
     <div id="alert4"></div>
@@ -649,9 +693,11 @@ async function fetchExisting(){
 
       if(_hasExisting){
         document.getElementById('overwriteSection').style.display='block';
-        showAlert('alert4','既存データが見つかりました。上書き・追記・キャンセルを選択してください。','warn');
+        document.getElementById('brushupSection').style.display='block';
+        showAlert('alert4','既存データが見つかりました。上書き・追記・キャンセル、またはAIブラッシュアップを選択してください。','warn');
       } else {
         document.getElementById('overwriteSection').style.display='none';
+        document.getElementById('brushupSection').style.display='none';
         showAlert('alert4','既存データなし。このまま新規書き込みします。','info');
         _writeMode = 'overwrite';
       }
@@ -671,6 +717,144 @@ async function fetchExisting(){
   }
   document.getElementById('btnFetch').disabled = false;
   document.getElementById('btnFetch').innerHTML = '🔍 既存データを確認する';
+}
+
+// ===== ブラッシュアップ =====
+async function doBrushup(){
+  const newG1 = document.getElementById('ta_gaku1').value.trim();
+  const newG2 = document.getElementById('ta_gaku2').value.trim();
+  const newSP = document.getElementById('ta_selfpr').value.trim();
+
+  if(!newG1 && !newG2 && !newSP){
+    showAlert('alert4','書き込む内容がありません。先にSTEP3でデータを確認してください。','err');
+    return;
+  }
+
+  document.getElementById('btnBrushup').disabled = true;
+  document.getElementById('brushupResult').style.display = 'none';
+  document.getElementById('brushupLoading').style.display = 'block';
+  clearAlert('alert_brushup');
+
+  const prompt = `あなたはキャリアコンサルタントのアシスタントです。
+学生のガクチカ（学生時代に力を入れたこと）・自己PRについて、「既存データ」と「新データ」を比較してブラッシュアップしてください。
+
+【処理ルール】
+- 既存データと新データが「同じテーマ・同じエピソード」の場合：両方の良い部分を組み合わせてブラッシュアップ版を生成する
+- 既存データと新データが「異なるテーマ・異なるエピソード」の場合：ブラッシュアップはせず、新データをそのまま返す
+- データが空の場合：空文字列を返す
+- ブラッシュアップ版は400字程度を目安にする
+- カウンセラーの添削コメントや注釈は含めない（本文のみ）
+
+【入力データ】
+
+■ガクチカ①（gaku1）
+既存: ${_existing.gaku1 || '（なし）'}
+新規: ${newG1 || '（なし）'}
+
+■ガクチカ②（gaku2）
+既存: ${_existing.gaku2 || '（なし）'}
+新規: ${newG2 || '（なし）'}
+
+■自己PR（selfpr）
+既存: ${_existing.selfpr || '（なし）'}
+新規: ${newSP || '（なし）'}
+
+【出力形式】JSONのみ、説明文なし：
+{
+  "gaku1": { "same_theme": true/false, "reason": "判定理由（1行）", "result": "ブラッシュアップ後の本文" },
+  "gaku2": { "same_theme": true/false, "reason": "判定理由（1行）", "result": "ブラッシュアップ後の本文" },
+  "selfpr": { "same_theme": true/false, "reason": "判定理由（1行）", "result": "ブラッシュアップ後の本文" }
+}`;
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1500,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data = await res.json();
+    const rawText = data.content.map(b=>b.text||'').join('');
+    const clean = rawText.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+
+    // 結果を画面に反映
+    ['gaku1','gaku2','selfpr'].forEach(key => {
+      const item = parsed[key];
+      const labelMap = {gaku1:'ガクチカ①',gaku2:'ガクチカ②',selfpr:'自己PR'};
+      const ccMap = {gaku1:'bu_cc1',gaku2:'bu_cc2',selfpr:'bu_cc3'};
+      const wrap = document.getElementById(`bu_${key}_wrap`);
+      const judge = document.getElementById(`bu_${key}_judge`);
+      const ta = document.getElementById(`bu_ta_${key}`);
+
+      if(item && item.result){
+        wrap.style.display = 'block';
+        const sameIcon = item.same_theme ? '🔗 同じテーマ → ブラッシュアップ済み' : '🆕 別テーマ → 新データをそのまま使用';
+        judge.innerHTML = `<span style="color:${item.same_theme?'var(--mint)':'var(--gold)'}">${sameIcon}</span><br><span style="color:#888;">${item.reason||''}</span>`;
+        ta.value = item.result;
+        updateCount(`bu_ta_${key}`, ccMap[key]);
+      } else {
+        wrap.style.display = 'none';
+      }
+    });
+
+    document.getElementById('brushupLoading').style.display = 'none';
+    document.getElementById('brushupResult').style.display = 'block';
+
+  }catch(err){
+    document.getElementById('brushupLoading').style.display = 'none';
+    showAlert('alert4','❌ ブラッシュアップに失敗しました：'+err.message,'err');
+    document.getElementById('btnBrushup').disabled = false;
+  }
+}
+
+function cancelBrushup(){
+  document.getElementById('brushupResult').style.display = 'none';
+  document.getElementById('btnBrushup').disabled = false;
+}
+
+async function writeBrushup(){
+  const gakuseki = document.getElementById('gakusekiInput').value.trim();
+  if(!gakuseki){showAlert('alert_brushup','学籍番号を入力してください。','err');return;}
+
+  const g1 = document.getElementById('bu_ta_gaku1')?.value.trim() || '';
+  const g2 = document.getElementById('bu_ta_gaku2')?.value.trim() || '';
+  const sp = document.getElementById('bu_ta_selfpr')?.value.trim() || '';
+
+  if(!g1 && !g2 && !sp){
+    showAlert('alert_brushup','書き込む内容がありません。','warn');
+    return;
+  }
+
+  const btn = document.querySelector('#brushupResult .btn-row .btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 書き込み中…';
+
+  const updateFields = {};
+  if(g1){ updateFields['fields.gaku1'] = g1; updateFields['gaku1'] = g1; }
+  if(g2){ updateFields['fields.gaku2'] = g2; updateFields['gaku2'] = g2; }
+  if(sp){ updateFields['fields.selfpr'] = sp; updateFields['selfpr'] = sp; }
+
+  try{
+    await window._setDoc(window._doc(window._db,'karte',gakuseki), updateFields, {merge:true});
+    const items = [];
+    if(g1) items.push('ガクチカ①');
+    if(g2) items.push('ガクチカ②');
+    if(sp) items.push('自己PR');
+    document.getElementById('doneMsg').textContent = gakuseki + ' の転写が完了しました！';
+    document.getElementById('doneDetail').innerHTML =
+      '✨ 書込モード：AIブラッシュアップ<br>' +
+      '✅ 書込フィールド：' + items.join('・') + '<br>' +
+      '<span style="color:#888;font-size:.68rem;">カルテリストのチェック✅も自動反映されます</span>';
+    goStep(5);
+  }catch(err){
+    showAlert('alert_brushup','❌ 書き込みエラー：'+err.message,'err');
+    btn.disabled = false;
+    btn.innerHTML = '✅ ブラッシュアップ版を書き込む';
+  }
 }
 
 // ===== 書込モード選択 =====
@@ -758,9 +942,15 @@ function resetAll(){
   document.getElementById('fileStatus').textContent='';
   document.getElementById('gakusekiInput').value='';
   document.getElementById('existingSection').style.display='none';
+  document.getElementById('brushupSection').style.display='none';
+  document.getElementById('brushupResult').style.display='none';
+  document.getElementById('brushupLoading').style.display='none';
+  document.getElementById('btnBrushup').disabled=false;
+  ['bu_gaku1_wrap','bu_gaku2_wrap','bu_selfpr_wrap'].forEach(id=>document.getElementById(id).style.display='none');
+  ['bu_ta_gaku1','bu_ta_gaku2','bu_ta_selfpr'].forEach(id=>document.getElementById(id).value='');
   ['ta_gaku1','ta_gaku2','ta_selfpr'].forEach(id=>document.getElementById(id).value='');
-  ['cc1','cc2','cc3'].forEach(id=>document.getElementById(id).textContent='0 字');
-  clearAlert('alert1');clearAlert('alert3');clearAlert('alert4');
+  ['cc1','cc2','cc3','bu_cc1','bu_cc2','bu_cc3'].forEach(id=>document.getElementById(id).textContent='0 字');
+  clearAlert('alert1');clearAlert('alert3');clearAlert('alert4');clearAlert('alert_brushup');
   goStep(1);
 }
 
