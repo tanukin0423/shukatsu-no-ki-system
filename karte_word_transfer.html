@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📄 Word転写ツール｜カルテv5</title>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyBTxRgOvPYOmacVfJkEjLLgI2K-ASnZbq4",
+    authDomain:        "career-board-4a3f8.firebaseapp.com",
+    projectId:         "career-board-4a3f8",
+    storageBucket:     "career-board-4a3f8.firebasestorage.app",
+    messagingSenderId: "235913147040",
+    appId:             "1:235913147040:web:39c20d95267e2777ef4fc5"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window._db = db;
+  window._doc = doc;
+  window._getDoc = getDoc;
+  window._setDoc = setDoc;
+</script>
+<style>
+  :root {
+    --bg:    #1a2a1e;
+    --card:  #243028;
+    --green: #2d6b4a;
+    --mid:   #4da070;
+    --gold:  #d4a843;
+    --mint:  #6de0b0;
+    --text:  #d0ede0;
+    --sub:   #8ab8a0;
+    --red:   #e05555;
+    --border:#3a5a45;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;
+    min-height:100vh;
+    padding:24px 16px 60px;
+  }
+  h1{
+    font-size:1.25rem;
+    font-weight:700;
+    color:var(--mint);
+    text-align:center;
+    margin-bottom:6px;
+    letter-spacing:.04em;
+  }
+  .subtitle{
+    text-align:center;
+    font-size:.78rem;
+    color:var(--sub);
+    margin-bottom:24px;
+  }
+
+  /* ステップバー */
+  .steps{
+    display:flex;
+    justify-content:center;
+    gap:0;
+    margin-bottom:28px;
+  }
+  .step{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    flex:1;
+    max-width:100px;
+    position:relative;
+  }
+  .step:not(:last-child)::after{
+    content:'';
+    position:absolute;
+    top:14px;
+    right:-50%;
+    width:100%;
+    height:2px;
+    background:var(--border);
+    z-index:0;
+  }
+  .step.done:not(:last-child)::after{ background:var(--mid); }
+  .step-num{
+    width:28px;height:28px;
+    border-radius:50%;
+    background:var(--border);
+    color:var(--sub);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.75rem;font-weight:700;
+    position:relative;z-index:1;
+    transition:.3s;
+  }
+  .step.active .step-num{ background:var(--gold);color:#1a2a1e; }
+  .step.done .step-num{ background:var(--mid);color:#fff; }
+  .step-label{font-size:.6rem;color:var(--sub);text-align:center;}
+  .step.active .step-label{ color:var(--gold); }
+  .step.done .step-label{ color:var(--mint); }
+
+  /* カード */
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+    margin-bottom:16px;
+  }
+  .card-title{
+    font-size:.8rem;
+    font-weight:700;
+    color:var(--gold);
+    margin-bottom:12px;
+    display:flex;align-items:center;gap:6px;
+  }
+
+  /* ファイルドロップ */
+  .drop-zone{
+    border:2px dashed var(--border);
+    border-radius:10px;
+    padding:32px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .drop-zone:hover,.drop-zone.drag-over{
+    border-color:var(--mint);
+    background:rgba(109,224,176,.06);
+  }
+  .drop-icon{font-size:2rem;margin-bottom:8px;}
+  .drop-text{font-size:.82rem;color:var(--sub);}
+  .drop-text strong{color:var(--mint);}
+  #fileInput{display:none;}
+
+  /* テキストエリア */
+  textarea{
+    width:100%;
+    background:#1a2a1e;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--text);
+    font-size:.82rem;
+    padding:10px 12px;
+    resize:vertical;
+    font-family:inherit;
+    line-height:1.6;
+    transition:.2s;
+  }
+  textarea:focus{outline:none;border-color:var(--mint);}
+  textarea.empty{border-color:var(--border);color:var(--sub);}
+
+  /* ラベル */
+  .field-label{
+    font-size:.75rem;
+    color:var(--sub);
+    margin-bottom:6px;
+    display:flex;align-items:center;gap:4px;
+  }
+  .badge{
+    font-size:.65rem;
+    padding:2px 8px;
+    border-radius:99px;
+    font-weight:700;
+  }
+  .badge-gaku1{background:#1a3d2a;color:#6de0b0;}
+  .badge-gaku2{background:#3d2a1a;color:#d4a843;}
+  .badge-selfpr{background:#1a273d;color:#7ab8f5;}
+  .badge-none{background:#2a2a2a;color:#888;}
+
+  /* 既存データ表示 */
+  .existing-box{
+    background:#1a2a1e;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:.75rem;
+    color:var(--sub);
+    margin-top:6px;
+    line-height:1.5;
+    white-space:pre-wrap;
+    word-break:break-all;
+  }
+  .existing-label{
+    font-size:.68rem;
+    color:#888;
+    margin-bottom:4px;
+  }
+
+  /* 学籍番号 */
+  input[type=text]{
+    width:100%;
+    background:#1a2a1e;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--text);
+    font-size:.9rem;
+    padding:10px 14px;
+    font-family:inherit;
+    transition:.2s;
+  }
+  input[type=text]:focus{outline:none;border-color:var(--mint);}
+
+  /* ボタン */
+  button{
+    border:none;cursor:pointer;
+    font-family:inherit;
+    border-radius:8px;
+    font-weight:700;
+    transition:.2s;
+  }
+  .btn-primary{
+    background:var(--gold);
+    color:#1a2a1e;
+    padding:12px 24px;
+    font-size:.88rem;
+    width:100%;
+  }
+  .btn-primary:hover{background:#e6b84d;}
+  .btn-primary:disabled{background:#444;color:#888;cursor:not-allowed;}
+  .btn-secondary{
+    background:var(--green);
+    color:var(--text);
+    padding:10px 18px;
+    font-size:.82rem;
+  }
+  .btn-secondary:hover{background:#3a8060;}
+  .btn-danger{
+    background:#5a2020;
+    color:#ffaaaa;
+    padding:10px 18px;
+    font-size:.82rem;
+  }
+  .btn-danger:hover{background:#7a2a2a;}
+  .btn-row{display:flex;gap:10px;margin-top:12px;}
+  .btn-row button{flex:1;}
+
+  /* ラジオ（上書き/追記） */
+  .radio-group{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+  }
+  .radio-opt{
+    flex:1;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px 8px;
+    text-align:center;
+    cursor:pointer;
+    font-size:.78rem;
+    transition:.2s;
+  }
+  .radio-opt.selected{
+    border-color:var(--gold);
+    background:rgba(212,168,67,.1);
+    color:var(--gold);
+  }
+  .radio-opt input{display:none;}
+
+  /* アラート */
+  .alert{
+    border-radius:8px;
+    padding:10px 14px;
+    font-size:.78rem;
+    margin-bottom:12px;
+    display:flex;align-items:flex-start;gap:8px;
+  }
+  .alert-info{background:rgba(109,224,176,.08);border:1px solid rgba(109,224,176,.25);color:var(--mint);}
+  .alert-warn{background:rgba(212,168,67,.08);border:1px solid rgba(212,168,67,.25);color:var(--gold);}
+  .alert-err {background:rgba(224,85,85,.08);border:1px solid rgba(224,85,85,.25);color:var(--red);}
+  .alert-ok  {background:rgba(77,160,112,.12);border:1px solid rgba(77,160,112,.4);color:var(--mint);}
+
+  /* スピナー */
+  .spinner{
+    display:inline-block;
+    width:16px;height:16px;
+    border:2px solid rgba(109,224,176,.3);
+    border-top-color:var(--mint);
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+    vertical-align:middle;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* 文字数 */
+  .char-count{font-size:.68rem;color:#888;text-align:right;margin-top:3px;}
+  .char-count.warn{color:var(--gold);}
+
+  /* セクション表示/非表示 */
+  .section{display:none;}
+  .section.active{display:block;}
+
+  /* 完了画面 */
+  .done-icon{font-size:3rem;text-align:center;margin:16px 0 8px;}
+  .done-msg{text-align:center;font-size:.9rem;color:var(--mint);margin-bottom:20px;}
+
+  /* 区切り */
+  .divider{height:1px;background:var(--border);margin:16px 0;}
+
+  /* フッター */
+  .footer{
+    text-align:center;
+    font-size:.65rem;
+    color:#555;
+    margin-top:32px;
+  }
+</style>
+</head>
+<body>
+
+<h1>📄 Word転写ツール</h1>
+<p class="subtitle">カルテv5｜ガクチカ・自己PR 一括転写</p>
+
+<!-- ステップバー -->
+<div class="steps" id="stepBar">
+  <div class="step active" id="s1"><div class="step-num">1</div><div class="step-label">Word読込</div></div>
+  <div class="step" id="s2"><div class="step-num">2</div><div class="step-label">AI解析</div></div>
+  <div class="step" id="s3"><div class="step-num">3</div><div class="step-label">確認・編集</div></div>
+  <div class="step" id="s4"><div class="step-num">4</div><div class="step-label">学籍番号</div></div>
+  <div class="step" id="s5"><div class="step-num">5</div><div class="step-label">書込完了</div></div>
+</div>
+
+<!-- STEP1: ファイルアップロード -->
+<div class="section active" id="sec1">
+  <div class="card">
+    <div class="card-title">📂 Wordファイルをアップロード</div>
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      <div class="drop-icon">📄</div>
+      <div class="drop-text"><strong>クリックまたはドラッグ＆ドロップ</strong></div>
+      <div class="drop-text" style="margin-top:4px;">.docx ファイル（学生1人分）</div>
+    </div>
+    <input type="file" id="fileInput" accept=".docx">
+    <div id="fileStatus" style="margin-top:10px;font-size:.78rem;color:var(--sub);text-align:center;"></div>
+  </div>
+  <div id="alert1"></div>
+  <button class="btn-primary" id="btnAnalyze" disabled onclick="startAnalyze()">✨ AIで解析する</button>
+</div>
+
+<!-- STEP2: 解析中 -->
+<div class="section" id="sec2">
+  <div class="card" style="text-align:center;padding:40px 20px;">
+    <div class="spinner" style="width:32px;height:32px;margin:0 auto 16px;"></div>
+    <div style="font-size:.85rem;color:var(--mint);">AIがWordファイルを解析中…</div>
+    <div style="font-size:.72rem;color:var(--sub);margin-top:8px;">ガクチカ①②・自己PRを自動で判定しています</div>
+  </div>
+</div>
+
+<!-- STEP3: 確認・編集 -->
+<div class="section" id="sec3">
+  <div class="alert alert-warn">⚠️ AIの解析結果を確認してください。内容を修正してから次へ進んでください。</div>
+
+  <!-- ガクチカ① -->
+  <div class="card">
+    <div class="card-title">📚 ガクチカ①（学業系）→ gaku1</div>
+    <div class="field-label">
+      <span id="badge1" class="badge badge-gaku1">✅ 学業系と判定</span>
+    </div>
+    <textarea id="ta_gaku1" rows="6" placeholder="ガクチカ①（学業）がある場合ここに表示されます。なければ空欄のままでOK。" oninput="updateCount('ta_gaku1','cc1')"></textarea>
+    <div class="char-count" id="cc1">0 字</div>
+  </div>
+
+  <!-- ガクチカ② -->
+  <div class="card">
+    <div class="card-title">☕ ガクチカ②（学業以外）→ gaku2</div>
+    <div class="field-label">
+      <span id="badge2" class="badge badge-gaku2">✅ 学業以外と判定</span>
+    </div>
+    <textarea id="ta_gaku2" rows="6" placeholder="ガクチカ②（学業以外）がある場合ここに表示されます。なければ空欄のままでOK。" oninput="updateCount('ta_gaku2','cc2')"></textarea>
+    <div class="char-count" id="cc2">0 字</div>
+  </div>
+
+  <!-- 自己PR -->
+  <div class="card">
+    <div class="card-title">🌟 自己PR → selfpr</div>
+    <textarea id="ta_selfpr" rows="5" placeholder="自己PRがある場合ここに表示されます。なければ空欄のままでOK。" oninput="updateCount('ta_selfpr','cc3')"></textarea>
+    <div class="char-count" id="cc3">0 字</div>
+  </div>
+
+  <div id="alert3"></div>
+  <div class="btn-row">
+    <button class="btn-secondary" onclick="goStep(1)">← やり直す</button>
+    <button class="btn-primary" style="font-size:.85rem;" onclick="goStep(4)">この内容で進む →</button>
+  </div>
+</div>
+
+<!-- STEP4: 学籍番号入力 -->
+<div class="section" id="sec4">
+  <div class="card">
+    <div class="card-title">🆔 学籍番号を入力</div>
+    <input type="text" id="gakusekiInput" placeholder="例：2024001" maxlength="20"
+      oninput="document.getElementById('btnFetch').disabled=!this.value.trim()">
+    <div style="margin-top:12px;">
+      <button class="btn-primary" id="btnFetch" disabled onclick="fetchExisting()">🔍 既存データを確認する</button>
+    </div>
+  </div>
+
+  <!-- 既存データ確認結果 -->
+  <div id="existingSection" style="display:none;">
+    <div class="card">
+      <div class="card-title">📋 既存データの確認</div>
+
+      <div id="existing_gaku1_wrap">
+        <div class="existing-label">現在のガクチカ①（gaku1）</div>
+        <div class="existing-box" id="existing_gaku1">（未記入）</div>
+      </div>
+      <div class="divider"></div>
+      <div id="existing_gaku2_wrap">
+        <div class="existing-label">現在のガクチカ②（gaku2）</div>
+        <div class="existing-box" id="existing_gaku2">（未記入）</div>
+      </div>
+      <div class="divider"></div>
+      <div id="existing_selfpr_wrap">
+        <div class="existing-label">現在の自己PR（selfpr）</div>
+        <div class="existing-box" id="existing_selfpr">（未記入）</div>
+      </div>
+
+      <div id="overwriteSection" style="display:none;">
+        <div class="divider"></div>
+        <div class="alert alert-warn" style="margin-bottom:8px;">⚠️ 既存データがあります。上書きしますか？追記しますか？</div>
+        <div class="radio-group">
+          <label class="radio-opt selected" id="opt_overwrite" onclick="selectMode('overwrite')">
+            <input type="radio" name="writeMode" value="overwrite" checked>
+            🔄 上書き<br><span style="font-size:.65rem;color:#aaa;">既存を置き換え</span>
+          </label>
+          <label class="radio-opt" id="opt_append" onclick="selectMode('append')">
+            <input type="radio" name="writeMode" value="append">
+            ➕ 追記<br><span style="font-size:.65rem;color:#aaa;">末尾に追加</span>
+          </label>
+          <label class="radio-opt" id="opt_cancel" onclick="selectMode('cancel')">
+            <input type="radio" name="writeMode" value="cancel">
+            ❌ キャンセル<br><span style="font-size:.65rem;color:#aaa;">書き込まない</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert4"></div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goStep(3)">← 戻る</button>
+      <button class="btn-primary" id="btnWrite" style="font-size:.85rem;" onclick="doWrite()">✅ Firebaseに書き込む</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP5: 完了 -->
+<div class="section" id="sec5">
+  <div class="card">
+    <div class="done-icon">🌱</div>
+    <div class="done-msg" id="doneMsg">書き込みが完了しました！</div>
+    <div id="doneDetail" style="font-size:.75rem;color:var(--sub);text-align:center;line-height:1.8;margin-bottom:20px;"></div>
+    <button class="btn-primary" onclick="resetAll()">🔄 次の学生を転写する</button>
+  </div>
+</div>
+
+<div class="footer">就活の木｜カルテv5 Word転写ツール｜北山 四郎（キャリアカウンセラー）</div>
+
+<script>
+// ===== 状態管理 =====
+let _fileText = '';
+let _analyzed = {gaku1:'',gaku2:'',selfpr:''};
+let _existing = {gaku1:'',gaku2:'',selfpr:''};
+let _writeMode = 'overwrite';
+let _hasExisting = false;
+
+// ===== ステップ制御 =====
+function goStep(n){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec'+n).classList.add('active');
+  document.querySelectorAll('.step').forEach((s,i)=>{
+    s.classList.remove('active','done');
+    if(i+1 < n) s.classList.add('done');
+    if(i+1 === n) s.classList.add('active');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== ファイル読込 =====
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag-over');});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop',e=>{
+  e.preventDefault();dropZone.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if(f) handleFile(f);
+});
+fileInput.addEventListener('change',e=>{
+  if(e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+function handleFile(file){
+  if(!file.name.endsWith('.docx')){
+    showAlert('alert1','❌ .docxファイルを選択してください。','err');
+    return;
+  }
+  _fileText = '';
+  document.getElementById('fileStatus').textContent = '📄 ' + file.name + ' を読み込み中…';
+  document.getElementById('btnAnalyze').disabled = true;
+
+  // mammoth.jsでdocx→テキスト変換
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
+  script.onload = ()=>{
+    const reader = new FileReader();
+    reader.onload = async e=>{
+      try{
+        const result = await mammoth.extractRawText({arrayBuffer: e.target.result});
+        _fileText = result.value;
+        document.getElementById('fileStatus').innerHTML =
+          '✅ <strong style="color:var(--mint);">' + file.name + '</strong> 読み込み完了！';
+        document.getElementById('btnAnalyze').disabled = false;
+        showAlert('alert1','ファイルを読み込みました。「AIで解析する」ボタンを押してください。','info');
+      }catch(err){
+        showAlert('alert1','❌ ファイルの読み込みに失敗しました：'+err.message,'err');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+  if(!window.mammoth) document.head.appendChild(script);
+  else{
+    // すでにロード済みの場合
+    script.onload();
+  }
+}
+
+// ===== AI解析 =====
+async function startAnalyze(){
+  if(!_fileText){showAlert('alert1','ファイルを先に読み込んでください。','err');return;}
+  goStep(2);
+
+  const prompt = `あなたはキャリアカウンセラーのアシスタントです。
+以下はWordファイルから抽出した学生のES（エントリーシート）関連テキストです。
+このテキストから以下の3項目を抽出・分類してください。
+
+【抽出項目】
+1. gaku1: ガクチカ①（学業系）の本文。ゼミ・研究・授業・資格勉強などが対象。
+2. gaku2: ガクチカ②（学業以外）の本文。アルバイト・部活・サークル・ボランティアなどが対象。
+3. selfpr: 自己PRの本文。
+
+【ルール】
+- 本文のみを抽出（見出し・ラベル・注釈・カウンセラーコメントは含めない）
+- 400字のガクチカ本文のみを対象にする
+- 該当なければ空文字列 "" を返す
+- 判定根拠も簡潔に（reasoning_gaku1, reasoning_gaku2, reasoning_selfpr）
+
+【出力形式】JSONのみ、説明文なし：
+{
+  "gaku1": "...",
+  "gaku2": "...",
+  "selfpr": "...",
+  "reasoning_gaku1": "...",
+  "reasoning_gaku2": "...",
+  "reasoning_selfpr": "..."
+}
+
+【テキスト】
+${_fileText.substring(0, 3000)}`;
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data = await res.json();
+    const rawText = data.content.map(b=>b.text||'').join('');
+    const clean = rawText.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+
+    _analyzed = {
+      gaku1: parsed.gaku1||'',
+      gaku2: parsed.gaku2||'',
+      selfpr: parsed.selfpr||''
+    };
+
+    // テキストエリアに反映
+    document.getElementById('ta_gaku1').value = _analyzed.gaku1;
+    document.getElementById('ta_gaku2').value = _analyzed.gaku2;
+    document.getElementById('ta_selfpr').value = _analyzed.selfpr;
+    updateCount('ta_gaku1','cc1');
+    updateCount('ta_gaku2','cc2');
+    updateCount('ta_selfpr','cc3');
+
+    // バッジ更新
+    updateBadge('badge1', _analyzed.gaku1, parsed.reasoning_gaku1, 'badge-gaku1');
+    updateBadge('badge2', _analyzed.gaku2, parsed.reasoning_gaku2, 'badge-gaku2');
+
+    goStep(3);
+  }catch(err){
+    goStep(1);
+    showAlert('alert1','❌ AI解析に失敗しました。もう一度お試しください。\n'+err.message,'err');
+  }
+}
+
+function updateBadge(id, text, reason, cls){
+  const el = document.getElementById(id);
+  if(text){
+    el.className = 'badge '+cls;
+    el.textContent = '✅ ' + (reason||'検出あり');
+  } else {
+    el.className = 'badge badge-none';
+    el.textContent = '― 該当なし（空欄）';
+  }
+}
+
+// ===== 文字数カウント =====
+function updateCount(taId, ccId){
+  const len = document.getElementById(taId).value.length;
+  const el = document.getElementById(ccId);
+  el.textContent = len + ' 字';
+  el.className = 'char-count' + (len > 400 ? ' warn' : '');
+}
+
+// ===== 既存データ取得 =====
+async function fetchExisting(){
+  const gakuseki = document.getElementById('gakusekiInput').value.trim();
+  if(!gakuseki) return;
+
+  document.getElementById('btnFetch').disabled = true;
+  document.getElementById('btnFetch').innerHTML = '<span class="spinner"></span> 確認中…';
+  document.getElementById('existingSection').style.display='none';
+  clearAlert('alert4');
+
+  try{
+    const snap = await window._getDoc(window._doc(window._db,'karte',gakuseki));
+    if(snap.exists()){
+      const d = snap.data();
+      const fields = d.fields || {};
+      const g1 = fields.gaku1 || d.gaku1 || '';
+      const g2 = fields.gaku2 || d.gaku2 || '';
+      const sp = fields.selfpr || d.selfpr || '';
+
+      _existing = {gaku1:g1, gaku2:g2, selfpr:sp};
+      _hasExisting = !!(g1||g2||sp);
+
+      document.getElementById('existing_gaku1').textContent = g1 || '（未記入）';
+      document.getElementById('existing_gaku2').textContent = g2 || '（未記入）';
+      document.getElementById('existing_selfpr').textContent = sp || '（未記入）';
+
+      if(_hasExisting){
+        document.getElementById('overwriteSection').style.display='block';
+        showAlert('alert4','既存データが見つかりました。上書き・追記・キャンセルを選択してください。','warn');
+      } else {
+        document.getElementById('overwriteSection').style.display='none';
+        showAlert('alert4','既存データなし。このまま新規書き込みします。','info');
+        _writeMode = 'overwrite';
+      }
+    } else {
+      _existing = {gaku1:'',gaku2:'',selfpr:''};
+      _hasExisting = false;
+      document.getElementById('existing_gaku1').textContent = '（未記入）';
+      document.getElementById('existing_gaku2').textContent = '（未記入）';
+      document.getElementById('existing_selfpr').textContent = '（未記入）';
+      document.getElementById('overwriteSection').style.display='none';
+      showAlert('alert4','この学籍番号のカルテが見つかりません。新規書き込みになります。','info');
+      _writeMode = 'overwrite';
+    }
+    document.getElementById('existingSection').style.display='block';
+  }catch(err){
+    showAlert('alert4','❌ Firebase接続エラー：'+err.message,'err');
+  }
+  document.getElementById('btnFetch').disabled = false;
+  document.getElementById('btnFetch').innerHTML = '🔍 既存データを確認する';
+}
+
+// ===== 書込モード選択 =====
+function selectMode(mode){
+  _writeMode = mode;
+  ['overwrite','append','cancel'].forEach(m=>{
+    document.getElementById('opt_'+m).classList.toggle('selected', m===mode);
+  });
+}
+
+// ===== Firebase書き込み =====
+async function doWrite(){
+  if(_writeMode === 'cancel'){
+    showAlert('alert4','キャンセルしました。','info');
+    return;
+  }
+  const gakuseki = document.getElementById('gakusekiInput').value.trim();
+  if(!gakuseki){showAlert('alert4','学籍番号を入力してください。','err');return;}
+
+  const newG1 = document.getElementById('ta_gaku1').value.trim();
+  const newG2 = document.getElementById('ta_gaku2').value.trim();
+  const newSP = document.getElementById('ta_selfpr').value.trim();
+
+  if(!newG1 && !newG2 && !newSP){
+    showAlert('alert4','書き込む内容がありません。','warn');
+    return;
+  }
+
+  document.getElementById('btnWrite').disabled = true;
+  document.getElementById('btnWrite').innerHTML = '<span class="spinner"></span> 書き込み中…';
+
+  let writeG1 = newG1;
+  let writeG2 = newG2;
+  let writeSP = newSP;
+
+  if(_writeMode === 'append'){
+    if(newG1 && _existing.gaku1) writeG1 = _existing.gaku1 + '\n\n【追記】\n' + newG1;
+    if(newG2 && _existing.gaku2) writeG2 = _existing.gaku2 + '\n\n【追記】\n' + newG2;
+    if(newSP && _existing.selfpr) writeSP = _existing.selfpr + '\n\n【追記】\n' + newSP;
+  }
+
+  const updateFields = {};
+  if(newG1) updateFields['fields.gaku1'] = writeG1;
+  if(newG2) updateFields['fields.gaku2'] = writeG2;
+  if(newSP) updateFields['fields.selfpr'] = writeSP;
+  // トップレベルにも書く（旧形式互換）
+  if(newG1) updateFields['gaku1'] = writeG1;
+  if(newG2) updateFields['gaku2'] = writeG2;
+  if(newSP) updateFields['selfpr'] = writeSP;
+
+  try{
+    await window._setDoc(
+      window._doc(window._db,'karte',gakuseki),
+      updateFields,
+      {merge:true}
+    );
+
+    // 完了画面
+    const modeLabel = _writeMode === 'append' ? '追記' : '上書き';
+    const items = [];
+    if(newG1) items.push('ガクチカ①（gaku1）');
+    if(newG2) items.push('ガクチカ②（gaku2）');
+    if(newSP) items.push('自己PR（selfpr）');
+
+    document.getElementById('doneMsg').textContent =
+      gakuseki + ' の転写が完了しました！';
+    document.getElementById('doneDetail').innerHTML =
+      '📌 書込モード：' + modeLabel + '<br>' +
+      '✅ 書込フィールド：' + items.join('・') + '<br>' +
+      '<span style="color:#888;font-size:.68rem;">カルテリストのチェック✅も自動反映されます</span>';
+
+    goStep(5);
+  }catch(err){
+    showAlert('alert4','❌ 書き込みエラー：'+err.message,'err');
+    document.getElementById('btnWrite').disabled = false;
+    document.getElementById('btnWrite').innerHTML = '✅ Firebaseに書き込む';
+  }
+}
+
+// ===== リセット =====
+function resetAll(){
+  _fileText='';_analyzed={gaku1:'',gaku2:'',selfpr:''};
+  _existing={gaku1:'',gaku2:'',selfpr:''};_writeMode='overwrite';_hasExisting=false;
+  document.getElementById('fileInput').value='';
+  document.getElementById('fileStatus').textContent='';
+  document.getElementById('gakusekiInput').value='';
+  document.getElementById('existingSection').style.display='none';
+  ['ta_gaku1','ta_gaku2','ta_selfpr'].forEach(id=>document.getElementById(id).value='');
+  ['cc1','cc2','cc3'].forEach(id=>document.getElementById(id).textContent='0 字');
+  clearAlert('alert1');clearAlert('alert3');clearAlert('alert4');
+  goStep(1);
+}
+
+// ===== アラート =====
+function showAlert(containerId, msg, type){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+}
+function clearAlert(containerId){
+  const el = document.getElementById(containerId);
+  if(el) el.innerHTML='';
+}
+</script>
+</body>
+</html>
