@@ -327,6 +327,43 @@
 
 <!-- STEP1: ファイルアップロード -->
 <div class="section active" id="sec1">
+
+  <!-- APIキー設定 -->
+  <div class="card">
+    <div class="card-title">🔑 AI設定（APIキー）</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <label class="radio-opt selected" id="opt_groq" onclick="selectProvider('groq')" style="flex:1;">
+        <input type="radio" name="provider" value="groq" checked>
+        ⚡ Groq<br><span style="font-size:.65rem;color:#aaa;">爆速・無料枠あり（推奨）</span>
+      </label>
+      <label class="radio-opt" id="opt_claude" onclick="selectProvider('claude')" style="flex:1;">
+        <input type="radio" name="provider" value="claude">
+        🤖 Claude<br><span style="font-size:.65rem;color:#aaa;">高精度・有料</span>
+      </label>
+    </div>
+    <div id="groqKeyWrap">
+      <div class="field-label">Groq APIキー（gsk_...）</div>
+      <div style="display:flex;gap:8px;">
+        <input type="password" id="groqKeyInput" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx"
+          style="flex:1;background:#1a2a1e;border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.82rem;padding:8px 12px;font-family:inherit;"
+          oninput="saveApiKey()">
+        <button onclick="toggleKeyVisibility('groqKeyInput',this)"
+          style="background:var(--green);color:var(--text);border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:.8rem;">👁</button>
+      </div>
+    </div>
+    <div id="claudeKeyWrap" style="display:none;">
+      <div class="field-label">Claude APIキー（sk-ant-...）</div>
+      <div style="display:flex;gap:8px;">
+        <input type="password" id="claudeKeyInput" placeholder="sk-ant-xxxxxxxxxxxxxxxxxxxx"
+          style="flex:1;background:#1a2a1e;border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.82rem;padding:8px 12px;font-family:inherit;"
+          oninput="saveApiKey()">
+        <button onclick="toggleKeyVisibility('claudeKeyInput',this)"
+          style="background:var(--green);color:var(--text);border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:.8rem;">👁</button>
+      </div>
+    </div>
+    <div id="keyStatus" style="font-size:.72rem;margin-top:6px;color:var(--sub);"></div>
+  </div>
+
   <div class="card">
     <div class="card-title">📂 Wordファイルをアップロード</div>
     <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
@@ -381,16 +418,6 @@
     <div class="char-count" id="cc3">0 字</div>
   </div>
 
-  <!-- 志望動機 -->
-  <div class="card">
-    <div class="card-title">🎯 志望動機・就活の軸 → jiku</div>
-    <div class="field-label">
-      <span id="badge4" class="badge badge-selfpr">✅ 志望動機と判定</span>
-    </div>
-    <textarea id="ta_jiku" rows="5" placeholder="志望動機・就活の軸がある場合ここに表示されます。なければ空欄のままでOK。" oninput="updateCount('ta_jiku','cc4')"></textarea>
-    <div class="char-count" id="cc4">0 字</div>
-  </div>
-
   <div id="alert3"></div>
   <div class="btn-row">
     <button class="btn-secondary" onclick="goStep(1)">← やり直す</button>
@@ -428,11 +455,6 @@
         <div class="existing-label">現在の自己PR（selfpr）</div>
         <div class="existing-box" id="existing_selfpr">（未記入）</div>
       </div>
-      <div class="divider"></div>
-      <div id="existing_jiku_wrap">
-        <div class="existing-label">現在の志望動機・就活の軸（jiku）</div>
-        <div class="existing-box" id="existing_jiku">（未記入）</div>
-      </div>
 
       <div id="overwriteSection" style="display:none;">
         <div class="divider"></div>
@@ -450,49 +472,6 @@
             <input type="radio" name="writeMode" value="cancel">
             ❌ キャンセル<br><span style="font-size:.65rem;color:#aaa;">書き込まない</span>
           </label>
-        </div>
-      </div>
-
-      <!-- ブラッシュアップ -->
-      <div id="brushupSection" style="display:none;">
-        <div class="divider"></div>
-        <div class="alert alert-info" style="margin-bottom:8px;">✨ 既存データと新データを比較・同じネタならブラッシュアップ版を生成します。</div>
-        <button class="btn-primary" id="btnBrushup" onclick="doBrushup()" style="background:var(--mid);font-size:.85rem;">🤖 AIブラッシュアップを実行する</button>
-        <div id="brushupLoading" style="display:none;text-align:center;padding:20px;">
-          <div class="spinner" style="width:28px;height:28px;margin:0 auto 10px;"></div>
-          <div style="font-size:.8rem;color:var(--mint);">AIが分析・ブラッシュアップ中…</div>
-        </div>
-        <div id="brushupResult" style="display:none;margin-top:14px;">
-          <div style="font-size:.78rem;font-weight:700;color:var(--gold);margin-bottom:8px;">✨ ブラッシュアップ結果</div>
-          <div id="bu_gaku1_wrap" style="display:none;">
-            <div class="field-label">📚 ガクチカ①</div>
-            <div id="bu_gaku1_judge" style="font-size:.7rem;color:var(--sub);margin-bottom:4px;"></div>
-            <textarea id="bu_ta_gaku1" rows="5" oninput="updateCount('bu_ta_gaku1','bu_cc1')" style="width:100%;background:#1a2a1e;border:1px solid var(--mint);border-radius:8px;color:var(--text);font-size:.82rem;padding:10px 12px;resize:vertical;font-family:inherit;line-height:1.6;"></textarea>
-            <div class="char-count" id="bu_cc1">0 字</div>
-          </div>
-          <div id="bu_gaku2_wrap" style="display:none;margin-top:10px;">
-            <div class="field-label">☕ ガクチカ②</div>
-            <div id="bu_gaku2_judge" style="font-size:.7rem;color:var(--sub);margin-bottom:4px;"></div>
-            <textarea id="bu_ta_gaku2" rows="5" oninput="updateCount('bu_ta_gaku2','bu_cc2')" style="width:100%;background:#1a2a1e;border:1px solid var(--mint);border-radius:8px;color:var(--text);font-size:.82rem;padding:10px 12px;resize:vertical;font-family:inherit;line-height:1.6;"></textarea>
-            <div class="char-count" id="bu_cc2">0 字</div>
-          </div>
-          <div id="bu_selfpr_wrap" style="display:none;margin-top:10px;">
-            <div class="field-label">🌟 自己PR</div>
-            <div id="bu_selfpr_judge" style="font-size:.7rem;color:var(--sub);margin-bottom:4px;"></div>
-            <textarea id="bu_ta_selfpr" rows="5" oninput="updateCount('bu_ta_selfpr','bu_cc3')" style="width:100%;background:#1a2a1e;border:1px solid var(--mint);border-radius:8px;color:var(--text);font-size:.82rem;padding:10px 12px;resize:vertical;font-family:inherit;line-height:1.6;"></textarea>
-            <div class="char-count" id="bu_cc3">0 字</div>
-          </div>
-          <div id="bu_jiku_wrap" style="display:none;margin-top:10px;">
-            <div class="field-label">🎯 志望動機・就活の軸</div>
-            <div id="bu_jiku_judge" style="font-size:.7rem;color:var(--sub);margin-bottom:4px;"></div>
-            <textarea id="bu_ta_jiku" rows="5" oninput="updateCount('bu_ta_jiku','bu_cc4')" style="width:100%;background:#1a2a1e;border:1px solid var(--mint);border-radius:8px;color:var(--text);font-size:.82rem;padding:10px 12px;resize:vertical;font-family:inherit;line-height:1.6;"></textarea>
-            <div class="char-count" id="bu_cc4">0 字</div>
-          </div>
-          <div id="alert_brushup" style="margin-top:10px;"></div>
-          <div class="btn-row" style="margin-top:12px;">
-            <button class="btn-secondary" onclick="cancelBrushup()">← 通常モードに戻る</button>
-            <button class="btn-primary" onclick="writeBrushup()" style="font-size:.85rem;">✅ ブラッシュアップ版を書き込む</button>
-          </div>
         </div>
       </div>
     </div>
@@ -520,10 +499,109 @@
 <script>
 // ===== 状態管理 =====
 let _fileText = '';
-let _analyzed = {gaku1:'',gaku2:'',selfpr:'',jiku:''};
-let _existing = {gaku1:'',gaku2:'',selfpr:'',jiku:''};
+let _analyzed = {gaku1:'',gaku2:'',selfpr:''};
+let _existing = {gaku1:'',gaku2:'',selfpr:''};
 let _writeMode = 'overwrite';
 let _hasExisting = false;
+let _provider = 'groq'; // 'groq' or 'claude'
+
+// ===== APIキー管理 =====
+function selectProvider(p){
+  _provider = p;
+  ['groq','claude'].forEach(x=>{
+    document.getElementById('opt_'+x).classList.toggle('selected', x===p);
+  });
+  document.getElementById('groqKeyWrap').style.display   = p==='groq'   ? 'block' : 'none';
+  document.getElementById('claudeKeyWrap').style.display = p==='claude' ? 'block' : 'none';
+  updateKeyStatus();
+}
+
+function saveApiKey(){
+  const groqKey   = document.getElementById('groqKeyInput').value.trim();
+  const claudeKey = document.getElementById('claudeKeyInput').value.trim();
+  if(groqKey)   localStorage.setItem('word_transfer_groq_key', groqKey);
+  if(claudeKey) localStorage.setItem('word_transfer_claude_key', claudeKey);
+  updateKeyStatus();
+}
+
+function loadApiKeys(){
+  const groqKey   = localStorage.getItem('word_transfer_groq_key') || '';
+  const claudeKey = localStorage.getItem('word_transfer_claude_key') || '';
+  if(groqKey)   document.getElementById('groqKeyInput').value   = groqKey;
+  if(claudeKey) document.getElementById('claudeKeyInput').value = claudeKey;
+  // カルテv5のキーも参照
+  if(!groqKey){
+    const karteGroq = localStorage.getItem('groq_api_key') || '';
+    if(karteGroq) document.getElementById('groqKeyInput').value = karteGroq;
+  }
+  if(!claudeKey){
+    const karteAi = localStorage.getItem('ai_api_key') || '';
+    if(karteAi) document.getElementById('claudeKeyInput').value = karteAi;
+  }
+  updateKeyStatus();
+}
+
+function updateKeyStatus(){
+  const el = document.getElementById('keyStatus');
+  const key = _provider === 'groq'
+    ? document.getElementById('groqKeyInput').value.trim()
+    : document.getElementById('claudeKeyInput').value.trim();
+  if(key){
+    el.innerHTML = '<span style="color:var(--mint);">✅ APIキー設定済み</span>';
+  } else {
+    el.innerHTML = '<span style="color:var(--gold);">⚠️ APIキーを入力してください</span>';
+  }
+}
+
+function toggleKeyVisibility(inputId, btn){
+  const el = document.getElementById(inputId);
+  if(el.type === 'password'){
+    el.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    el.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+function getApiKey(){
+  return _provider === 'groq'
+    ? document.getElementById('groqKeyInput').value.trim()
+    : document.getElementById('claudeKeyInput').value.trim();
+}
+
+async function callAI(prompt){
+  const key = getApiKey();
+  if(!key) throw new Error('APIキーが設定されていません。STEP1でAPIキーを入力してください。');
+
+  if(_provider === 'groq'){
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({
+        model:'llama-3.3-70b-versatile',
+        max_tokens:1500,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    return data.choices[0].message.content;
+  } else {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1500,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    return data.content.map(b=>b.text||'').join('');
+  }
+}
 
 // ===== ステップ制御 =====
 function goStep(n){
@@ -536,6 +614,9 @@ function goStep(n){
   });
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
+// 起動時にキーを読み込む
+window.addEventListener('load', loadApiKeys);
 
 // ===== ファイル読込 =====
 const dropZone = document.getElementById('dropZone');
@@ -600,63 +681,54 @@ async function startAnalyze(){
 1. gaku1: ガクチカ①（学業系）の本文。ゼミ・研究・授業・資格勉強などが対象。
 2. gaku2: ガクチカ②（学業以外）の本文。アルバイト・部活・サークル・ボランティアなどが対象。
 3. selfpr: 自己PRの本文。
-4. jiku: 志望動機・就活の軸の本文。志望理由・企業選びの軸・将来のビジョンなどが対象。
 
 【ルール】
 - 本文のみを抽出（見出し・ラベル・注釈・カウンセラーコメントは含めない）
 - 400字のガクチカ本文のみを対象にする
 - 該当なければ空文字列 "" を返す
-- 判定根拠も簡潔に（reasoning_gaku1, reasoning_gaku2, reasoning_selfpr, reasoning_jiku）
+- 判定根拠も簡潔に（reasoning_gaku1, reasoning_gaku2, reasoning_selfpr）
 
 【出力形式】JSONのみ、説明文なし：
 {
   "gaku1": "...",
   "gaku2": "...",
   "selfpr": "...",
-  "jiku": "...",
   "reasoning_gaku1": "...",
   "reasoning_gaku2": "...",
-  "reasoning_selfpr": "...",
-  "reasoning_jiku": "..."
+  "reasoning_selfpr": "..."
 }
 
 【テキスト】
 ${_fileText.substring(0, 3000)}`;
 
   try{
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    const data = await res.json();
-    const rawText = data.content.map(b=>b.text||'').join('');
+    const key = getApiKey();
+    if(!key){
+      goStep(1);
+      showAlert('alert1','❌ APIキーが設定されていません。STEP1でAPIキーを入力してください。','err');
+      return;
+    }
+    const rawText = await callAI(prompt);
     const clean = rawText.replace(/```json|```/g,'').trim();
     const parsed = JSON.parse(clean);
 
     _analyzed = {
       gaku1: parsed.gaku1||'',
       gaku2: parsed.gaku2||'',
-      selfpr: parsed.selfpr||'',
-      jiku: parsed.jiku||''
+      selfpr: parsed.selfpr||''
     };
 
+    // テキストエリアに反映
     document.getElementById('ta_gaku1').value = _analyzed.gaku1;
     document.getElementById('ta_gaku2').value = _analyzed.gaku2;
     document.getElementById('ta_selfpr').value = _analyzed.selfpr;
-    document.getElementById('ta_jiku').value = _analyzed.jiku;
     updateCount('ta_gaku1','cc1');
     updateCount('ta_gaku2','cc2');
     updateCount('ta_selfpr','cc3');
-    updateCount('ta_jiku','cc4');
 
+    // バッジ更新
     updateBadge('badge1', _analyzed.gaku1, parsed.reasoning_gaku1, 'badge-gaku1');
     updateBadge('badge2', _analyzed.gaku2, parsed.reasoning_gaku2, 'badge-gaku2');
-    updateBadge('badge4', _analyzed.jiku, parsed.reasoning_jiku, 'badge-selfpr');
 
     goStep(3);
   }catch(err){
@@ -702,32 +774,28 @@ async function fetchExisting(){
       const g1 = fields.gaku1 || d.gaku1 || '';
       const g2 = fields.gaku2 || d.gaku2 || '';
       const sp = fields.selfpr || d.selfpr || '';
-      const jk = fields.jiku || d.jiku || '';
 
-      _existing = {gaku1:g1, gaku2:g2, selfpr:sp, jiku:jk};
-      _hasExisting = !!(g1||g2||sp||jk);
+      _existing = {gaku1:g1, gaku2:g2, selfpr:sp};
+      _hasExisting = !!(g1||g2||sp);
 
       document.getElementById('existing_gaku1').textContent = g1 || '（未記入）';
       document.getElementById('existing_gaku2').textContent = g2 || '（未記入）';
       document.getElementById('existing_selfpr').textContent = sp || '（未記入）';
-      document.getElementById('existing_jiku').textContent = jk || '（未記入）';
 
       if(_hasExisting){
         document.getElementById('overwriteSection').style.display='block';
-        document.getElementById('brushupSection').style.display='block';
-        showAlert('alert4','既存データが見つかりました。上書き・追記・キャンセル、またはAIブラッシュアップを選択してください。','warn');
+        showAlert('alert4','既存データが見つかりました。上書き・追記・キャンセルを選択してください。','warn');
       } else {
         document.getElementById('overwriteSection').style.display='none';
         showAlert('alert4','既存データなし。このまま新規書き込みします。','info');
         _writeMode = 'overwrite';
       }
     } else {
-      _existing = {gaku1:'',gaku2:'',selfpr:'',jiku:''};
+      _existing = {gaku1:'',gaku2:'',selfpr:''};
       _hasExisting = false;
       document.getElementById('existing_gaku1').textContent = '（未記入）';
       document.getElementById('existing_gaku2').textContent = '（未記入）';
       document.getElementById('existing_selfpr').textContent = '（未記入）';
-      document.getElementById('existing_jiku').textContent = '（未記入）';
       document.getElementById('overwriteSection').style.display='none';
       showAlert('alert4','この学籍番号のカルテが見つかりません。新規書き込みになります。','info');
       _writeMode = 'overwrite';
@@ -738,130 +806,6 @@ async function fetchExisting(){
   }
   document.getElementById('btnFetch').disabled = false;
   document.getElementById('btnFetch').innerHTML = '🔍 既存データを確認する';
-}
-
-// ===== 既存データ表示時にブラッシュアップボタンも表示 =====
-function showBrushupIfNeeded(){
-  if(_hasExisting){
-    document.getElementById('brushupSection').style.display='block';
-  }
-}
-
-// ===== ブラッシュアップ =====
-async function doBrushup(){
-  const newG1 = document.getElementById('ta_gaku1').value.trim();
-  const newG2 = document.getElementById('ta_gaku2').value.trim();
-  const newSP = document.getElementById('ta_selfpr').value.trim();
-  const newJK = document.getElementById('ta_jiku').value.trim();
-
-  document.getElementById('btnBrushup').disabled = true;
-  document.getElementById('brushupResult').style.display = 'none';
-  document.getElementById('brushupLoading').style.display = 'block';
-
-  const prompt = `あなたはキャリアコンサルタントのアシスタントです。
-学生のガクチカ・自己PR・志望動機について「既存データ」と「新データ」を比較してブラッシュアップしてください。
-
-【処理ルール】
-- 同じテーマ・同じエピソード → 両方の良い部分を組み合わせてブラッシュアップ版を生成
-- 異なるテーマ → 新データをそのまま返す
-- データが両方空 → 空文字列を返す
-- ブラッシュアップ版は400字程度を目安にする
-- カウンセラーコメント・注釈は含めない（本文のみ）
-
-【入力データ】
-■ガクチカ①（gaku1）
-既存: ${_existing.gaku1||'（なし）'}
-新規: ${newG1||'（なし）'}
-
-■ガクチカ②（gaku2）
-既存: ${_existing.gaku2||'（なし）'}
-新規: ${newG2||'（なし）'}
-
-■自己PR（selfpr）
-既存: ${_existing.selfpr||'（なし）'}
-新規: ${newSP||'（なし）'}
-
-■志望動機・就活の軸（jiku）
-既存: ${_existing.jiku||'（なし）'}
-新規: ${newJK||'（なし）'}
-
-【出力形式】JSONのみ、説明文なし：
-{
-  "gaku1": {"same_theme":true,"reason":"判定理由","result":"本文"},
-  "gaku2": {"same_theme":false,"reason":"判定理由","result":"本文"},
-  "selfpr": {"same_theme":true,"reason":"判定理由","result":"本文"},
-  "jiku": {"same_theme":false,"reason":"判定理由","result":"本文"}
-}`;
-
-  try{
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
-    });
-    const data = await res.json();
-    const clean = data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(clean);
-
-    const fieldMap = {gaku1:'📚 ガクチカ①',gaku2:'☕ ガクチカ②',selfpr:'🌟 自己PR',jiku:'🎯 志望動機・軸'};
-    const ccMap = {gaku1:'bu_cc1',gaku2:'bu_cc2',selfpr:'bu_cc3',jiku:'bu_cc4'};
-
-    ['gaku1','gaku2','selfpr','jiku'].forEach(key=>{
-      const item = parsed[key];
-      const wrap = document.getElementById(`bu_${key}_wrap`);
-      const judge = document.getElementById(`bu_${key}_judge`);
-      const ta = document.getElementById(`bu_ta_${key}`);
-      if(item && item.result){
-        wrap.style.display='block';
-        const icon = item.same_theme ? '🔗 同じテーマ→ブラッシュアップ済み' : '🆕 別テーマ→新データ使用';
-        judge.innerHTML = `<span style="color:${item.same_theme?'var(--mint)':'var(--gold)'}">${icon}</span><br><span style="color:#888;">${item.reason||''}</span>`;
-        ta.value = item.result;
-        updateCount(`bu_ta_${key}`, ccMap[key]);
-      } else {
-        wrap.style.display='none';
-      }
-    });
-
-    document.getElementById('brushupLoading').style.display='none';
-    document.getElementById('brushupResult').style.display='block';
-  }catch(err){
-    document.getElementById('brushupLoading').style.display='none';
-    showAlert('alert4','❌ ブラッシュアップ失敗：'+err.message,'err');
-    document.getElementById('btnBrushup').disabled=false;
-  }
-}
-
-function cancelBrushup(){
-  document.getElementById('brushupResult').style.display='none';
-  document.getElementById('btnBrushup').disabled=false;
-}
-
-async function writeBrushup(){
-  const gakuseki = document.getElementById('gakusekiInput').value.trim();
-  const g1 = document.getElementById('bu_ta_gaku1')?.value.trim()||'';
-  const g2 = document.getElementById('bu_ta_gaku2')?.value.trim()||'';
-  const sp = document.getElementById('bu_ta_selfpr')?.value.trim()||'';
-  const jk = document.getElementById('bu_ta_jiku')?.value.trim()||'';
-  if(!g1&&!g2&&!sp&&!jk){showAlert('alert_brushup','書き込む内容がありません。','warn');return;}
-  const btn = document.querySelector('#brushupResult .btn-row .btn-primary');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> 書き込み中…';
-  const uf={};
-  if(g1){uf['fields.gaku1']=g1;uf['gaku1']=g1;}
-  if(g2){uf['fields.gaku2']=g2;uf['gaku2']=g2;}
-  if(sp){uf['fields.selfpr']=sp;uf['selfpr']=sp;}
-  if(jk){uf['fields.jiku']=jk;uf['jiku']=jk;}
-  try{
-    await window._setDoc(window._doc(window._db,'karte',gakuseki),uf,{merge:true});
-    const items=[];
-    if(g1)items.push('ガクチカ①');if(g2)items.push('ガクチカ②');
-    if(sp)items.push('自己PR');if(jk)items.push('志望動機・軸');
-    document.getElementById('doneMsg').textContent=gakuseki+' の転写が完了しました！';
-    document.getElementById('doneDetail').innerHTML='✨ 書込モード：AIブラッシュアップ<br>✅ 書込フィールド：'+items.join('・')+'<br><span style="color:#888;font-size:.68rem;">カルテリストのチェック✅も自動反映されます</span>';
-    goStep(5);
-  }catch(err){
-    showAlert('alert_brushup','❌ 書き込みエラー：'+err.message,'err');
-    btn.disabled=false;btn.innerHTML='✅ ブラッシュアップ版を書き込む';
-  }
 }
 
 // ===== 書込モード選択 =====
@@ -884,9 +828,8 @@ async function doWrite(){
   const newG1 = document.getElementById('ta_gaku1').value.trim();
   const newG2 = document.getElementById('ta_gaku2').value.trim();
   const newSP = document.getElementById('ta_selfpr').value.trim();
-  const newJK = document.getElementById('ta_jiku').value.trim();
 
-  if(!newG1 && !newG2 && !newSP && !newJK){
+  if(!newG1 && !newG2 && !newSP){
     showAlert('alert4','書き込む内容がありません。','warn');
     return;
   }
@@ -897,26 +840,21 @@ async function doWrite(){
   let writeG1 = newG1;
   let writeG2 = newG2;
   let writeSP = newSP;
-  let writeJK = newJK;
 
   if(_writeMode === 'append'){
     if(newG1 && _existing.gaku1) writeG1 = _existing.gaku1 + '\n\n【追記】\n' + newG1;
     if(newG2 && _existing.gaku2) writeG2 = _existing.gaku2 + '\n\n【追記】\n' + newG2;
     if(newSP && _existing.selfpr) writeSP = _existing.selfpr + '\n\n【追記】\n' + newSP;
-    if(newJK && _existing.jiku)  writeJK = _existing.jiku  + '\n\n【追記】\n' + newJK;
   }
 
   const updateFields = {};
-  if(newG1){ updateFields['fields.gaku1'] = writeG1; updateFields['gaku1'] = writeG1; }
-  if(newG2){ updateFields['fields.gaku2'] = writeG2; updateFields['gaku2'] = writeG2; }
-  if(newSP){ updateFields['fields.selfpr'] = writeSP; updateFields['selfpr'] = writeSP; }
-  if(newJK){ updateFields['fields.jiku']   = writeJK; updateFields['jiku']   = writeJK; }
-
-  const items = [];
-  if(newG1) items.push('ガクチカ①（gaku1）');
-  if(newG2) items.push('ガクチカ②（gaku2）');
-  if(newSP) items.push('自己PR（selfpr）');
-  if(newJK) items.push('志望動機・軸（jiku）');
+  if(newG1) updateFields['fields.gaku1'] = writeG1;
+  if(newG2) updateFields['fields.gaku2'] = writeG2;
+  if(newSP) updateFields['fields.selfpr'] = writeSP;
+  // トップレベルにも書く（旧形式互換）
+  if(newG1) updateFields['gaku1'] = writeG1;
+  if(newG2) updateFields['gaku2'] = writeG2;
+  if(newSP) updateFields['selfpr'] = writeSP;
 
   try{
     await window._setDoc(
@@ -927,6 +865,11 @@ async function doWrite(){
 
     // 完了画面
     const modeLabel = _writeMode === 'append' ? '追記' : '上書き';
+    const items = [];
+    if(newG1) items.push('ガクチカ①（gaku1）');
+    if(newG2) items.push('ガクチカ②（gaku2）');
+    if(newSP) items.push('自己PR（selfpr）');
+
     document.getElementById('doneMsg').textContent =
       gakuseki + ' の転写が完了しました！';
     document.getElementById('doneDetail').innerHTML =
@@ -944,21 +887,13 @@ async function doWrite(){
 
 // ===== リセット =====
 function resetAll(){
-  _fileText='';_analyzed={gaku1:'',gaku2:'',selfpr:'',jiku:''};
-  _existing={gaku1:'',gaku2:'',selfpr:'',jiku:''};_writeMode='overwrite';_hasExisting=false;
+  _fileText='';_analyzed={gaku1:'',gaku2:'',selfpr:''};
+  _existing={gaku1:'',gaku2:'',selfpr:''};_writeMode='overwrite';_hasExisting=false;
   document.getElementById('fileInput').value='';
   document.getElementById('fileStatus').textContent='';
   document.getElementById('gakusekiInput').value='';
   document.getElementById('existingSection').style.display='none';
-  document.getElementById('brushupSection').style.display='none';
-  document.getElementById('brushupResult').style.display='none';
-  document.getElementById('brushupLoading').style.display='none';
-  document.getElementById('btnBrushup').disabled=false;
-  ['bu_gaku1_wrap','bu_gaku2_wrap','bu_selfpr_wrap','bu_jiku_wrap'].forEach(id=>document.getElementById(id).style.display='none');
-  ['bu_ta_gaku1','bu_ta_gaku2','bu_ta_selfpr','bu_ta_jiku'].forEach(id=>document.getElementById(id).value='');
-  ['ta_gaku1','ta_gaku2','ta_selfpr','ta_jiku'].forEach(id=>document.getElementById(id).value='');
-  ['cc1','cc2','cc3','cc4','bu_cc1','bu_cc2','bu_cc3','bu_cc4'].forEach(id=>document.getElementById(id).textContent='0 字');
-  clearAlert('alert1');clearAlert('alert3');clearAlert('alert4');clearAlert('alert_brushup');
+  ['ta_gaku1','ta_gaku2','ta_selfpr'].forEach(id=>document.getElementById(id).value='');
   ['cc1','cc2','cc3'].forEach(id=>document.getElementById(id).textContent='0 字');
   clearAlert('alert1');clearAlert('alert3');clearAlert('alert4');
   goStep(1);
