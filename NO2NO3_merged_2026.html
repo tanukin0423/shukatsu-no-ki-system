@@ -71,7 +71,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);
 .cal-slot.blocked{background:#FCEBEB;color:#A32D2D;border-color:#f0c0c0;}
 .cal-slot.blocked:hover{background:#f5a0a0;}
 .cal-slot.past{background:#f5f5f5;color:#ccc;cursor:not-allowed;}
-.cal-slot.blue-capped{background:#E6F1FB;color:#185FA5;border-color:#b0cff0;cursor:default;}
 .cal-legend{display:flex;gap:12px;margin-top:8px;font-size:0.75rem;color:var(--tl);}
 .cal-legend span{display:flex;align-items:center;gap:4px;}
 .cal-legend .dot{width:12px;height:12px;border-radius:3px;}
@@ -227,9 +226,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);
     <button class="tab-btn" onclick="switchTab('tab3',this)">
       💾 CSV出力
     </button>
-    <button class="tab-btn" onclick="switchTab('tab4',this);loadSessionHistory()">
-      📁 履歴
-    </button>
   </div>
 </div>
 
@@ -297,7 +293,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);
       <div class="cal-legend">
         <span><div class="dot dot-open"></div>○ 予約可能</span>
         <span><div class="dot dot-blocked"></div>× 塞がっている</span>
-        <span style="display:inline-flex;align-items:center;gap:4px;"><div style="width:14px;height:14px;border-radius:3px;background:#E6F1FB;border:1px solid #b0cff0;display:inline-block;"></div><span style="color:#185FA5;">×</span> 上限制御（実際は空き）</span>
       </div>
     </div>
   </div>
@@ -390,36 +385,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:#f3faf0;color:var(--text);
 </div>
 
 <div class="footer">多摩大学 キャリア支援課 ／ 面談管理ツール（NO2+NO3統合版）／ 2026年度</div>
-
-<!-- ===== TAB4: 履歴 ===== -->
-<div id="tab4" class="tab-panel">
-  <div class="section" id="resumeSection" style="border:2px solid var(--amber);display:none;">
-    <div class="section-title" style="color:var(--amber);">⏸ 前回の振り分けが途中です</div>
-    <div id="resumeInfo" style="font-size:0.85rem;color:var(--tl);margin-bottom:12px;"></div>
-    <div class="btn-row">
-      <button class="btn btn-orange" onclick="resumeSession()">▶ 続きからやる</button>
-      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('resumeSection').style.display='none'">閉じる</button>
-    </div>
-  </div>
-  <div class="section">
-    <div class="section-title">📁 振り分け履歴（最新20件）
-      <button class="btn btn-secondary btn-sm" style="margin-left:auto;" onclick="loadSessionHistory()">🔄 更新</button>
-    </div>
-    <div id="sessionHistoryList">
-      <div class="empty-state"><div class="ico">📂</div><p>履歴を読み込んでいます…</p></div>
-    </div>
-  </div>
-  <div id="sessionDetailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;overflow-y:auto;padding:20px;">
-    <div style="background:white;border-radius:14px;max-width:780px;margin:0 auto;overflow:hidden;">
-      <div style="background:var(--gd);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
-        <strong id="sessionDetailTitle">振り分け詳細</strong>
-        <button onclick="document.getElementById('sessionDetailModal').style.display='none'"
-          style="background:rgba(255,255,255,0.2);border:none;color:white;border-radius:6px;padding:4px 12px;cursor:pointer;">閉じる</button>
-      </div>
-      <div id="sessionDetailBody" style="padding:16px;overflow-x:auto;"></div>
-    </div>
-  </div>
-</div>
 
 </div><!-- /mainWrap -->
 
@@ -544,16 +509,8 @@ function renderCalGrid() {
         slot.textContent = '—';
       } else {
         const open = isSlotOpen(ds, time);
-        const _sk = ds + ' ' + time;
-        const _isBlue = !open && window._blueBlockedSlots && window._blueBlockedSlots[_sk];
-        if (_isBlue) {
-          slot.className = 'cal-slot blue-capped';
-          slot.textContent = '×';
-          slot.title = '上限制御（実際は空き）';
-        } else {
-          slot.className = 'cal-slot ' + (open ? 'open' : 'blocked');
-          slot.textContent = open ? '○' : '×';
-        }
+        slot.className = 'cal-slot ' + (open ? 'open' : 'blocked');
+        slot.textContent = open ? '○' : '×';
         slot.onclick = (function(dateStr, t) {
           return function() { toggleSlot(dateStr, t); };
         })(ds, time);
@@ -789,53 +746,9 @@ function startAssign() {
   });
 
   // グローバルのusedSlotsをリセット
-  usedSlots = {};
+  usedSlots = {}; // slotKey → 使用済み（グローバル変数をリセット）
 
-  // ── 1人ケース対応 ──────────────────────────────────────────
-  if (students.length === 1) {
-    var solo = students[0];
-    var soloWishes = [
-      { w: solo.w1, wn: 1 },
-      { w: solo.w2, wn: 2 },
-      { w: solo.w3, wn: 3 },
-    ];
-    var confirmed = false;
-    for (var wi = 0; wi < soloWishes.length; wi++) {
-      var sw = soloWishes[wi].w;
-      var swn = soloWishes[wi].wn;
-      if (!sw || !sw.trim()) continue;
-      var ssk = wishToSlotKey(sw.trim());
-      var calOk = ssk ? isSlotOpen(ssk.split(' ')[0], ssk.split(' ')[1]) : true;
-      if (calOk) {
-        if (ssk) usedSlots[ssk] = solo._uid;
-        solo._confirmed = sw.trim();
-        solo._colorStatus = (swn === 1) ? 'green' : 'blue';
-        solo._status = 'confirmed';
-        confirmed = true;
-        break;
-      }
-    }
-    if (!confirmed) {
-      solo._colorStatus = 'red';
-      solo._status = 'reapply';
-      solo._confirmed = '';
-    }
-    applyDailyCapAndBlueSlots();
-    assigned = true;
-    renderDupAlert(usedSlots);
-    renderSummary();
-    renderScheduleList();
-    updateBulkBtn();
-    updateCounts();
-    document.getElementById('summarySection').style.display = 'block';
-    document.getElementById('resultSection').style.display = 'block';
-    document.getElementById('rejudgeBtn').style.display = 'inline-flex';
-    saveStudentsToFirebase();
-    return;
-  }
-  // ────────────────────────────────────────────────────────────
-
-  // 第1希望→第2希望→第3希望の順に処理（2人以上）
+  // 第1希望→第2希望→第3希望の順に処理
   [1, 2, 3].forEach(function(wn) {
     // この希望番号の候補リスト
     let candidates = [];
@@ -861,10 +774,10 @@ function startAssign() {
       if (c.s._colorStatus === 'green' || c.s._colorStatus === 'blue') return;
       const sk = wishToSlotKey(c.w);
       // 判定カレンダーで空いているか確認
-      var calOpen = sk ? isSlotOpen(sk.split(' ')[0], sk.split(' ')[1]) : true;
-      var slotFree = sk ? !usedSlots[sk] : true;
-      if (calOpen && slotFree) {
-        if (sk) usedSlots[sk] = c.s._uid;
+      const calOpen = sk ? isSlotOpen(sk.split(' ')[0], sk.split(' ')[1]) : true;
+      if (calOpen && sk && !usedSlots[sk]) {
+        // 確定
+        usedSlots[sk] = c.s._uid;
         c.s._confirmed = c.w;
         c.s._colorStatus = (c.wn === 1) ? 'green' : 'blue';
         c.s._status = 'confirmed';
@@ -881,9 +794,6 @@ function startAssign() {
     }
   });
 
-  // ===== 午前・午後の上限チェックと青×制御 =====
-  applyDailyCapAndBlueSlots();
-
   assigned = true;
   renderDupAlert(usedSlots);
   renderSummary();
@@ -898,16 +808,6 @@ function startAssign() {
 
   // ===== Firebase に全学生データを自動保存 =====
   saveStudentsToFirebase();
-
-  // ===== セッションスナップショットを保存 =====
-  var _cid = document.getElementById('no2CounselorSel')
-    ? document.getElementById('no2CounselorSel').value : '';
-  if (!_cid && window.no2UserId) _cid = window.no2UserId;
-  if (_cid && window.fbSaveSession) {
-    window.fbSaveSession(_cid, students).then(function(sid) {
-      if (sid) showToast('📁 振り分け結果を保存しました（' + sid + '）');
-    });
-  }
 }
 
 // Firebase保存実行
@@ -1620,22 +1520,6 @@ function initNo2() {
   renderCalGrid();
   updateBulkBtn();
   loadCounselorsForNo2();
-  setTimeout(function() {
-    if (window.fbLoadLatestSession && no2UserId) {
-      window.fbLoadLatestSession(no2UserId).then(function(latest) {
-        if (latest && latest.studentCount > 0) {
-          const resumeEl = document.getElementById('resumeSection');
-          const resumeInfo = document.getElementById('resumeInfo');
-          if (resumeEl && resumeInfo) {
-            resumeInfo.innerHTML = '保存日時：<strong>' + (latest.savedAtJa||latest.savedAt) + '</strong>　学生数：<strong>' + latest.studentCount + '名</strong>';
-            resumeEl.style.display = 'block';
-            window._latestSession = latest;
-            showToast('⏸ 前回の途中データがあります。「履歴」タブから再開できます。');
-          }
-        }
-      });
-    }
-  }, 2000);
 }
 
 // ===== 初期化 =====
@@ -1709,32 +1593,12 @@ async function loadCalFromStorage() {
   }
   renderCalGrid();
 }
-
-// ===== 履歴機能ラッパー（moduleの非同期読み込み対応） =====
-function loadSessionHistory() {
-  if (window.loadSessionHistory && window.loadSessionHistory !== loadSessionHistory) {
-    window.loadSessionHistory();
-  } else {
-    setTimeout(function() {
-      if (window._fbLoadSessionHistory) window._fbLoadSessionHistory();
-      else showToast('⏳ Firebase読み込み中です。少し待ってからお試しください。');
-    }, 500);
-  }
-}
-function showSessionDetail(sid) {
-  if (window._fbShowSessionDetail) window._fbShowSessionDetail(sid);
-  else setTimeout(function(){ if(window._fbShowSessionDetail) window._fbShowSessionDetail(sid); }, 500);
-}
-function resumeSession() {
-  if (window._fbResumeSession) window._fbResumeSession();
-  else setTimeout(function(){ if(window._fbResumeSession) window._fbResumeSession(); }, 500);
-}
 </script>
 
 <!-- Firebase SDK（確定時にカレンダーを×に更新） -->
 <script type="module">
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 
 const FB = {
   apiKey:            "AIzaSyBTxRgOvPYOmacVfJkEjLLgI2K-ASnZbq4",
@@ -1780,25 +1644,22 @@ window.fbBlockSlot = async function(counselorId, slotKey) {
   }
 };
 
-// ===== カレンダーデータをFirebaseから読み込む（青×対応） =====
+// ===== カレンダーデータをFirebaseから読み込む =====
 window.fbLoadCalSlots = async function(counselorId) {
   if (!counselorId) return;
   try {
     const snap = await getDoc(doc(db, 'slots', counselorId));
     if (snap.exists()) {
       const blocked = snap.data().blocked || [];
-      const blueBlocked = snap.data().blueBlocked || [];
+      // グローバルのcalSlotsを更新
       if (typeof calSlots !== 'undefined') {
         blocked.forEach(function(k){ calSlots[k] = false; });
       }
-      window._blueBlockedSlots = window._blueBlockedSlots || {};
-      blueBlocked.forEach(function(k){ window._blueBlockedSlots[k] = true; });
+      // localStorageにも同期
       const localData = {};
       blocked.forEach(function(k){ localData[k] = false; });
-      blueBlocked.forEach(function(k){ localData[k + '__blue'] = true; });
       localStorage.setItem('slots_' + counselorId, JSON.stringify(localData));
-      console.log('✅ Firebaseからカレンダー読み込み完了:', counselorId,
-        '×:' + blocked.length + '件 青×:' + blueBlocked.length + '件');
+      console.log('✅ Firebaseからカレンダー読み込み完了:', counselorId, blocked.length + '件');
       return blocked.length;
     }
     return 0;
@@ -1877,286 +1738,6 @@ window.saveAllStudentsToFirebase = async function(students) {
     }
   }
   return { saved, failed };
-};
-
-// ===== 午前・午後 連動上限チェック（合計5人） → 超過枠を青×に =====
-function isAmSlot(time) { return ['10:00','10:45','11:30','12:15'].indexOf(time) >= 0; }
-function isPmSlot(time) { return ['13:00','13:45','14:30','15:15','16:00'].indexOf(time) >= 0; }
-
-var DAILY_CAP = 5; // 1日合計上限
-
-function applyDailyCapAndBlueSlots() {
-  var dayCounts = {};
-  Object.keys(usedSlots).forEach(function(sk) {
-    var parts = sk.split(' '), ds = parts[0], time = parts[1];
-    if (!dayCounts[ds]) dayCounts[ds] = { am: 0, pm: 0 };
-    if (isAmSlot(time)) dayCounts[ds].am++;
-    if (isPmSlot(time)) dayCounts[ds].pm++;
-  });
-  window._blueBlockedSlots = window._blueBlockedSlots || {};
-  var allTimes = getTimeSlots();
-  Object.keys(dayCounts).forEach(function(ds) {
-    var cnt = dayCounts[ds];
-    var total = cnt.am + cnt.pm;
-    // 午後の残り上限 = 合計上限 - 午前人数（例：午前2人なら午後は3人まで）
-    var pmCap = DAILY_CAP - cnt.am;
-    // 午前の残り上限 = 合計上限 - 午後人数
-    var amCap = DAILY_CAP - cnt.pm;
-    allTimes.forEach(function(time) {
-      var sk = ds + ' ' + time;
-      if (usedSlots[sk]) return;
-      if (calSlots[sk] === false) return;
-      var shouldBlue = false;
-      if (isAmSlot(time) && cnt.am >= amCap) shouldBlue = true;
-      if (isPmSlot(time) && cnt.pm >= pmCap) shouldBlue = true;
-      if (total >= DAILY_CAP) shouldBlue = true; // 合計が上限に達したら全枠ブロック
-      if (shouldBlue) {
-        window._blueBlockedSlots[sk] = true;
-        calSlots[sk] = false;
-      }
-    });
-  });
-  var counselorId = document.getElementById('no2CounselorSel')
-    ? document.getElementById('no2CounselorSel').value : '';
-  if (!counselorId && window.no2UserId && window.no2UserId !== 'admin') counselorId = window.no2UserId;
-  if (counselorId && Object.keys(window._blueBlockedSlots).length > 0) {
-    if (window.fbSaveBlueSlots) window.fbSaveBlueSlots(counselorId, window._blueBlockedSlots);
-  }
-  students.forEach(function(s) {
-    if (!s._confirmed || s._confirmed === '__reapply__') return;
-    var sk = wishToSlotKey(s._confirmed);
-    if (sk && window._blueBlockedSlots[sk]) {
-      if (usedSlots[sk] === s._uid) delete usedSlots[sk];
-      s._colorStatus = 'red'; s._status = 'reapply'; s._confirmed = '';
-    }
-  });
-}
-
-// ===== 履歴表示 =====
-window._fbLoadSessionHistory = async function() {
-  const cid = no2UserId || '';
-  if (!cid) return;
-  const listEl = document.getElementById('sessionHistoryList');
-  if (!listEl) return;
-  listEl.innerHTML = '<p style="color:var(--tl);font-size:0.85rem;padding:10px;">karteデータを読み込み中…</p>';
-
-  try {
-    // karteコレクションから全学生を取得
-    const snap = await getDocs(query(
-      collection(db, 'karte'),
-      where('counselorId', '==', cid)
-    ));
-
-    if (snap.empty) {
-      listEl.innerHTML = '<div class="empty-state"><div class="ico">📂</div><p>karteデータがありません。</p></div>';
-      return;
-    }
-
-    // _confirmedAtの日付部分（YYYY/MM/DD）でグループ化
-    const groups = {};
-    snap.forEach(function(d) {
-      const data = d.data();
-      if (!data._confirmedAt) return;
-      // 日付部分だけ抽出（例：2026/05/15 10:30 → 2026/05/15）
-      const dateKey = data._confirmedAt.split(' ')[0] || data._confirmedAt.slice(0, 10);
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(data);
-    });
-
-    // 日付降順でソート
-    const sortedDates = Object.keys(groups).sort(function(a, b) {
-      return b.localeCompare(a);
-    });
-
-    if (sortedDates.length === 0) {
-      listEl.innerHTML = '<div class="empty-state"><div class="ico">📂</div><p>振り分け履歴がありません。</p></div>';
-      return;
-    }
-
-    listEl.innerHTML = '';
-    sortedDates.forEach(function(dateKey) {
-      const students = groups[dateKey];
-      const greens = students.filter(function(s){ return s.colorStatus==='green'; }).length;
-      const blues  = students.filter(function(s){ return s.colorStatus==='blue'; }).length;
-      const reds   = students.filter(function(s){ return s.colorStatus==='red'; }).length;
-
-      const row = document.createElement('div');
-      row.style.cssText = 'border-bottom:1px solid #eee;padding:12px 4px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
-
-      const info = document.createElement('div');
-      info.style.cssText = 'flex:1;min-width:200px;';
-      info.innerHTML =
-        '<div style="font-weight:700;font-size:0.92rem;">📅 ' + escHtml(dateKey) + '</div>' +
-        '<div style="font-size:0.78rem;color:var(--tl);margin-top:4px;">' +
-          '学生数：<strong>' + students.length + '名</strong>　' +
-          '<span style="color:var(--gd);">✅確定 ' + greens + '</span>　' +
-          '<span style="color:var(--blue);">🔵調整 ' + blues + '</span>　' +
-          '<span style="color:var(--red);">🔴再調整 ' + reds + '</span>' +
-        '</div>';
-
-      const btn = document.createElement('button');
-      btn.textContent = '📋 詳細を見る';
-      btn.style.cssText = 'background:var(--gd);color:white;border:none;border-radius:8px;padding:7px 16px;cursor:pointer;font-size:0.82rem;font-weight:700;white-space:nowrap;';
-      btn.onclick = (function(ss){ return function(){ window._fbShowKarteDetail(ss); }; })(students);
-
-      row.appendChild(info);
-      row.appendChild(btn);
-      listEl.appendChild(row);
-    });
-
-  } catch(e) {
-    console.error('karte読み込み失敗:', e);
-    listEl.innerHTML = '<p style="color:var(--red);font-size:0.85rem;padding:10px;">読み込みに失敗しました：' + e.message + '</p>';
-  }
-};
-
-window._fbShowSessionDetail = async function(sessionId) {
-  if (!window.fbGetSession) return;
-  const sess = await window.fbGetSession(sessionId);
-  if (!sess) { alert('データを取得できませんでした。'); return; }
-  const colorMap = { green:'#e8f5e3', blue:'#E6F1FB', red:'#FCEBEB' };
-  const labelMap = { green:'✅確定', blue:'🔵調整完了', red:'🔴再調整' };
-  let html = '<div style="margin-bottom:12px;font-size:0.82rem;color:var(--tl);">保存日時：' + escHtml(sess.savedAtJa||sess.savedAt) + '　学生数：' + sess.studentCount + '名</div>';
-  html += '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;">';
-  html += '<tr style="background:var(--gp);"><th style="padding:8px;text-align:left;border:1px solid #ddd;">氏名</th><th style="padding:8px;text-align:left;border:1px solid #ddd;">学籍番号</th><th style="padding:8px;text-align:left;border:1px solid #ddd;">確定日時</th><th style="padding:8px;text-align:center;border:1px solid #ddd;">状態</th></tr>';
-  (sess.students||[]).forEach(function(s) {
-    const bg = colorMap[s._colorStatus]||'white';
-    const lb = labelMap[s._colorStatus]||'―';
-    html += '<tr style="background:' + bg + ';"><td style="padding:7px 8px;border:1px solid #ddd;">' + escHtml(s.name) + '</td><td style="padding:7px 8px;border:1px solid #ddd;">' + escHtml(s.gakuseki) + '</td><td style="padding:7px 8px;border:1px solid #ddd;">' + escHtml(s._confirmed||'―') + '</td><td style="padding:7px 8px;border:1px solid #ddd;text-align:center;">' + lb + '</td></tr>';
-  });
-  html += '</table>';
-  document.getElementById('sessionDetailTitle').textContent = '📋 振り分け詳細　' + (sess.savedAtJa||sess.savedAt);
-  document.getElementById('sessionDetailBody').innerHTML = html;
-  document.getElementById('sessionDetailModal').style.display = 'block';
-};
-
-window._fbResumeSession = function() {
-  const sess = window._latestSession;
-  if (!sess||!sess.students) { alert('復元データがありません。'); return; }
-  if (!confirm('前回の振り分けデータ（' + sess.studentCount + '名）を復元します。\n現在のデータは上書きされます。よろしいですか？')) return;
-  students = sess.students.map(function(s, i) { return Object.assign({}, s, { _uid: 'uid_resume_' + i, addedOrder: i }); });
-  assigned = true;
-  usedSlots = {};
-  students.forEach(function(s) {
-    if (s._confirmed && s._confirmed !== '__reapply__') {
-      var sk = wishToSlotKey(s._confirmed);
-      if (sk) usedSlots[sk] = s._uid;
-    }
-  });
-  updateCounts(); renderSummary(); renderScheduleList(); updateBulkBtn();
-  document.getElementById('summarySection').style.display = 'block';
-  document.getElementById('resultSection').style.display = 'block';
-  document.getElementById('rejudgeBtn').style.display = 'inline-flex';
-  document.getElementById('resumeSection').style.display = 'none';
-  switchTab('tab2', document.querySelectorAll('.tab-btn')[1]);
-  showToast('▶ 前回の振り分けデータを復元しました（' + students.length + '名）');
-};
-
-// ===== 青×スロットをFirebaseに保存 =====
-window.fbSaveBlueSlots = async function(counselorId, blueSlots) {
-  if (!counselorId) return false;
-  const keys = Object.keys(blueSlots);
-  if (keys.length === 0) return false;
-  try {
-    const snap = await getDoc(doc(db, 'slots', counselorId));
-    let blocked = [], blueBlocked = [];
-    if (snap.exists()) { blocked = snap.data().blocked||[]; blueBlocked = snap.data().blueBlocked||[]; }
-    keys.forEach(function(sk) {
-      if (!blocked.includes(sk)) blocked.push(sk);
-      if (!blueBlocked.includes(sk)) blueBlocked.push(sk);
-    });
-    await setDoc(doc(db, 'slots', counselorId), { counselorId, blocked, blueBlocked, updatedAt: new Date().toISOString() });
-    return true;
-  } catch(e) { console.error('青×保存失敗:', e); return false; }
-};
-
-// ===== セッション保存 =====
-window.fbSaveSession = async function(counselorId, studentsData) {
-  if (!counselorId || !studentsData || studentsData.length === 0) return false;
-  const now = new Date();
-  const pad = function(n){ return String(n).padStart(2,'0'); };
-  const sessionId = counselorId + '_' + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + '_' + pad(now.getHours()) + pad(now.getMinutes());
-  const sessionData = {
-    sessionId, counselorId,
-    savedAt: now.toISOString(),
-    savedAtJa: now.toLocaleString('ja-JP'),
-    studentCount: studentsData.length,
-    students: studentsData.map(function(s) {
-      return { name:s.name||'', gakuseki:s.gakuseki||'', zemi:s.zemi||'', grade:s.grade||'',
-        emailUniv:s.emailUniv||'', w1:s.w1||'', w2:s.w2||'', w3:s.w3||'',
-        _confirmed:s._confirmed||'', _colorStatus:s._colorStatus||'', _status:s._status||'',
-        isSecond:s.isSecond||false, themes:s.themes||'', jobStatus:s.jobStatus||'', consultType:s.consultType||'' };
-    })
-  };
-  try {
-    await setDoc(doc(db, 'sessions', sessionId), sessionData);
-    await setDoc(doc(db, 'sessions', 'latest_' + counselorId), sessionData);
-    console.log('✅ セッション保存:', sessionId);
-    return sessionId;
-  } catch(e) { console.error('セッション保存失敗:', e); return false; }
-};
-
-// ===== 最新セッション復元 =====
-window.fbLoadLatestSession = async function(counselorId) {
-  try {
-    const snap = await getDoc(doc(db, 'sessions', 'latest_' + counselorId));
-    if (!snap.exists()) return null;
-    return snap.data();
-  } catch(e) { return null; }
-};
-
-// ===== セッション履歴一覧 =====
-window.fbListSessions = async function(counselorId) {
-  try {
-    const snap = await getDocs(query(collection(db,'sessions'), where('counselorId','==',counselorId), limit(30)));
-    const list = [];
-    snap.forEach(function(d){ if (!d.id.startsWith('latest_')) list.push(d.data()); });
-    // JS側で日付降順ソート（Firestoreインデックス不要）
-    list.sort(function(a,b){ return (b.savedAt||'').localeCompare(a.savedAt||''); });
-    return list.slice(0, 20);
-  } catch(e) { console.error('セッション一覧取得失敗:', e); return []; }
-};
-
-// ===== 特定セッション取得 =====
-window.fbGetSession = async function(sessionId) {
-  try {
-    const snap = await getDoc(doc(db, 'sessions', sessionId));
-    if (!snap.exists()) return null;
-    return snap.data();
-  } catch(e) { return null; }
-};
-
-// ===== karteデータの詳細表示 =====
-window._fbShowKarteDetail = function(students) {
-  const colorMap = { green:'#e8f5e3', blue:'#E6F1FB', red:'#FCEBEB' };
-  const labelMap = { green:'✅確定', blue:'🔵調整完了', red:'🔴再調整' };
-  let html = '<div style="margin-bottom:12px;font-size:0.82rem;color:var(--tl);">学生数：' + students.length + '名</div>';
-  html += '<div style="overflow-x:auto;">';
-  html += '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:500px;">';
-  html += '<tr style="background:var(--gp);">' +
-    '<th style="padding:8px;text-align:left;border:1px solid #ddd;">氏名</th>' +
-    '<th style="padding:8px;text-align:left;border:1px solid #ddd;">学籍番号</th>' +
-    '<th style="padding:8px;text-align:left;border:1px solid #ddd;">ゼミ</th>' +
-    '<th style="padding:8px;text-align:left;border:1px solid #ddd;">確定日時</th>' +
-    '<th style="padding:8px;text-align:center;border:1px solid #ddd;">状態</th></tr>';
-  // 確定日時でソート
-  students.slice().sort(function(a,b){
-    return (a.confirmedDate||'').localeCompare(b.confirmedDate||'');
-  }).forEach(function(s) {
-    const bg = colorMap[s.colorStatus] || 'white';
-    const lb = labelMap[s.colorStatus] || '―';
-    html += '<tr style="background:' + bg + ';">' +
-      '<td style="padding:7px 8px;border:1px solid #ddd;">' + escHtml(s.name||'') + '</td>' +
-      '<td style="padding:7px 8px;border:1px solid #ddd;">' + escHtml(s.gakuseki||'') + '</td>' +
-      '<td style="padding:7px 8px;border:1px solid #ddd;">' + escHtml(s.zemi||'') + '</td>' +
-      '<td style="padding:7px 8px;border:1px solid #ddd;">' + escHtml(s.confirmedDate||'―') + '</td>' +
-      '<td style="padding:7px 8px;border:1px solid #ddd;text-align:center;">' + lb + '</td></tr>';
-  });
-  html += '</table></div>';
-  const dateKey = students[0]._confirmedAt ? students[0]._confirmedAt.split(' ')[0] : '';
-  document.getElementById('sessionDetailTitle').textContent = '📋 振り分け詳細　' + dateKey;
-  document.getElementById('sessionDetailBody').innerHTML = html;
-  document.getElementById('sessionDetailModal').style.display = 'block';
 };
 
 window.firebaseNo2Ready = true;
