@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>就活の木　管理ランチャー｜多摩大学 キャリア支援課</title>
+<!-- PWA対応 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1C3D1E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="キャリ爺">
+<link rel="apple-touch-icon" href="icon-192-counselor.png">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -1399,6 +1407,17 @@ function printToolCard(icon, name, desc, url) {
 // 初期表示
 render('start');
 
+</script>
+
+<!-- PWA Service Worker 登録 -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('SW登録OK:', reg.scope))
+      .catch(err => console.log('SW登録失敗:', err));
+  });
+}
 </script>
 </body>
 </html>
