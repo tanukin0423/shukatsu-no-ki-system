@@ -2,7 +2,7 @@
   "name": "就活の木 カウンセラー",
   "short_name": "キャリ爺",
   "description": "多摩大学キャリア支援課 カウンセラー専用ランチャー",
-  "start_url": "/shukatsu-no-ki-system/launcher-X-1.html",
+  "start_url": "/shukatsu-no-ki-system/launcher-X.html",
   "scope": "/shukatsu-no-ki-system/",
   "display": "standalone",
   "orientation": "portrait",
