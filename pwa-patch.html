@@ -1,0 +1,27 @@
+<!-- ========================================================
+  ★ PWA対応 追記コード
+  launcher-X-1.html の <head> 内、<title>タグの直後に貼り付けてください
+  ======================================================== -->
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1C3D1E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="キャリ爺">
+<link rel="apple-touch-icon" href="icon-192-counselor.png">
+
+<!-- ========================================================
+  ★ Service Worker 登録コード
+  launcher-X-1.html の </body> 直前に貼り付けてください
+  ======================================================== -->
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('SW登録OK:', reg.scope))
+      .catch(err => console.log('SW登録失敗:', err));
+  });
+}
+</script>
