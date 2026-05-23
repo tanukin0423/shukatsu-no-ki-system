@@ -247,18 +247,18 @@ window._loadKarteAll = async function(){
   return list;
 };
 
-// 認証状態の監視
+// 認証状態の監視（ログイン済みならinit()を呼ぶ）
 onAuthStateChanged(auth, (user) => {
   if (user && !user.isAnonymous) {
     document.getElementById('loginScreen').style.display = 'none';
-    if(window._waitingForFirebase) window._waitingForFirebase();
+    window._firebaseReady = true;
+    if(typeof init === 'function') init();
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
   }
 });
 
-window._firebaseReady = true;
-if(window._waitingForFirebase) window._waitingForFirebase();
+window._karteSignOut = () => signOut(auth);
 
 // ===== Firebase Authentication ログイン処理 =====
 const loginBtn   = document.getElementById('loginBtn');
@@ -288,8 +288,6 @@ async function tryLogin(){
 loginBtn.addEventListener('click', tryLogin);
 loginPw.addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
 loginEmail.addEventListener('keydown', e=>{ if(e.key==='Enter') loginPw.focus(); });
-
-window._karteSignOut = () => signOut(auth);
 </script>
 
 let _allData = [];
