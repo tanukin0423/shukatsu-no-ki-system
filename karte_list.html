@@ -247,13 +247,12 @@ window._loadKarteAll = async function(){
   return list;
 };
 
-// 認証状態の監視（ログイン済みならinit()を呼ぶ）
+// 認証状態の監視（ログイン済みなら直接loadAll）
 onAuthStateChanged(auth, (user) => {
   if (user && !user.isAnonymous) {
     document.getElementById('loginScreen').style.display = 'none';
     window._firebaseReady = true;
-    // 少し待ってからinit（DOM確実に準備完了後）
-    setTimeout(()=>{ if(typeof init === 'function') init(); }, 300);
+    setTimeout(()=>{ window.loadAll(); }, 300);
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
   }
