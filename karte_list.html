@@ -252,7 +252,8 @@ onAuthStateChanged(auth, (user) => {
   if (user && !user.isAnonymous) {
     document.getElementById('loginScreen').style.display = 'none';
     window._firebaseReady = true;
-    if(typeof init === 'function') init();
+    // 少し待ってからinit（DOM確実に準備完了後）
+    setTimeout(()=>{ if(typeof init === 'function') init(); }, 300);
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
   }
