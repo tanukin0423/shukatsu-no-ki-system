@@ -598,50 +598,12 @@ textarea.voice-recording{
     <div style="font-size:2rem;margin-bottom:8px;">🌳</div>
     <h2>面談カルテ v6</h2>
     <p>多摩大学 キャリア支援課</p>
-    <input type="password" id="loginPw" placeholder="パスワードを入力" autocomplete="off">
-    <span class="hint-toggle" id="hintToggle">💡 ヒントを見る</span>
-    <div class="hint-text" id="hintText">k○r○g○ + 年号（西暦4桁）</div>
+    <input type="email" id="loginEmail" placeholder="メールアドレス" autocomplete="email">
+    <input type="password" id="loginPw" placeholder="パスワード" autocomplete="current-password">
     <button class="login-btn" id="loginBtn">ログイン</button>
-    <div class="login-error" id="loginError">❌ パスワードが違います</div>
+    <div class="login-error" id="loginError">❌ メールアドレスまたはパスワードが違います</div>
   </div>
 </div>
-
-<script>
-(function(){
-  var PW = 'karigu2026';
-  var screen = document.getElementById('loginScreen');
-  var pwInput = document.getElementById('loginPw');
-  var loginBtn = document.getElementById('loginBtn');
-  var hintToggle = document.getElementById('hintToggle');
-  var hintText = document.getElementById('hintText');
-  var loginError = document.getElementById('loginError');
-
-  // セッション中はログイン維持
-  if(sessionStorage.getItem('karte_auth')==='ok'){
-    screen.style.display='none';
-  }
-
-  hintToggle.addEventListener('click',function(){
-    hintText.style.display = hintText.style.display==='block' ? 'none' : 'block';
-    hintToggle.textContent = hintText.style.display==='block' ? '💡 ヒントを隠す' : '💡 ヒントを見る';
-  });
-
-  function tryLogin(){
-    if(pwInput.value === PW){
-      sessionStorage.setItem('karte_auth','ok');
-      screen.style.display='none';
-      loginError.style.display='none';
-    } else {
-      loginError.style.display='block';
-      pwInput.value='';
-      pwInput.focus();
-    }
-  }
-
-  loginBtn.addEventListener('click', tryLogin);
-  pwInput.addEventListener('keydown', function(e){ if(e.key==='Enter') tryLogin(); });
-})();
-</script>
 
 <!-- 起動モーダル（URLパラメータがある場合はJS側で即hide） -->
 <div class="ov" id="startModal">
@@ -1003,6 +965,7 @@ textarea.voice-recording{
       style="font-size:0.7rem;padding:3px 10px;border-radius:20px;cursor:pointer;font-weight:700;background:#fdecea;color:#c0392b;border:1px solid #e57373;"
       title="クリックしてAPIキー設定へ">🔑 APIキー未設定</span>
     <button class="hb hb-r" id="reloadBtn">🔄 最初から</button>
+    <button class="hb" style="background:#b71c1c;color:white;font-size:0.7rem;" onclick="if(window._karteSignOut){window._karteSignOut();}">🔓 ログアウト</button>
     <div class="hb-tooltip-wrap">
       <button class="hb hb-n" id="csvModalBtn">📋 CSV追加読み込み</button>
       <div class="hb-tooltip">NO2で出力したCSVで学生情報を補完します</div>
@@ -5939,6 +5902,7 @@ function showToastQ(msg){
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, collection, query, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 const FB = {
   apiKey:            "AIzaSyBTxRgOvPYOmacVfJkEjLLgI2K-ASnZbq4",
@@ -5951,13 +5915,62 @@ const FB = {
 
 const app = initializeApp(FB);
 const db  = getFirestore(app);
-window._karteDb       = db;
-window._karteDoc      = doc;
-window._karteSetDoc   = setDoc;
-window._karteDocs     = getDocs;
+const auth = getAuth(app);
+
+window._karteDb         = db;
+window._karteDoc        = doc;
+window._karteSetDoc     = setDoc;
+window._karteDocs       = getDocs;
 window._karteCollection = collection;
-window._karteQuery    = query;
-window._karteLimit    = limit;
+window._karteQuery      = query;
+window._karteLimit      = limit;
+
+// ===== Firebase Authentication ログイン処理 =====
+const loginScreen = document.getElementById('loginScreen');
+const loginBtn    = document.getElementById('loginBtn');
+const loginEmail  = document.getElementById('loginEmail');
+const loginPw     = document.getElementById('loginPw');
+const loginError  = document.getElementById('loginError');
+
+// 認証状態の監視（匿名ユーザーは弾く）
+onAuthStateChanged(auth, (user) => {
+  if (user && !user.isAnonymous) {
+    loginScreen.style.display = 'none';
+    window._karteCurrentUser = user;
+  } else {
+    loginScreen.style.display = 'flex';
+  }
+});
+
+// ログインボタン処理
+async function tryLogin() {
+  const email = loginEmail.value.trim();
+  const pw    = loginPw.value;
+  if (!email || !pw) {
+    loginError.style.display = 'block';
+    return;
+  }
+  loginBtn.textContent = 'ログイン中...';
+  loginBtn.disabled = true;
+  try {
+    await signInWithEmailAndPassword(auth, email, pw);
+    loginError.style.display = 'none';
+  } catch(e) {
+    loginError.style.display = 'block';
+    loginPw.value = '';
+    loginPw.focus();
+  } finally {
+    loginBtn.textContent = 'ログイン';
+    loginBtn.disabled = false;
+  }
+}
+
+loginBtn.addEventListener('click', tryLogin);
+loginPw.addEventListener('keydown', (e) => { if(e.key==='Enter') tryLogin(); });
+loginEmail.addEventListener('keydown', (e) => { if(e.key==='Enter') loginPw.focus(); });
+
+// サインアウト関数をグローバルに公開
+window._karteSignOut = () => signOut(auth);
 
 // ===== 個別学生データエクスポート =====
 window.exportThisStudent = function(){
