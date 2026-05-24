@@ -247,12 +247,21 @@ window._loadKarteAll = async function(){
   return list;
 };
 
-// 認証状態の監視（ログイン済みなら直接loadAll）
+// 認証状態の監視
 onAuthStateChanged(auth, (user) => {
   if (user && !user.isAnonymous) {
     document.getElementById('loginScreen').style.display = 'none';
     window._firebaseReady = true;
-    setTimeout(()=>{ window.loadAll(); }, 300);
+    window._userLoggedIn = true;
+    // loadAllが定義されるまで待つ
+    const tryLoad = () => {
+      if(typeof window.loadAll === 'function'){
+        window.loadAll();
+      } else {
+        setTimeout(tryLoad, 100);
+      }
+    };
+    setTimeout(tryLoad, 100);
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
   }
