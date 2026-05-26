@@ -825,7 +825,7 @@ function startAssign() {
       solo._status = 'reapply';
       solo._confirmed = '';
     }
-    applyDailyCapAndBlueSlots();
+    if (window.applyDailyCapAndBlueSlots) window.applyDailyCapAndBlueSlots();
     assigned = true;
     renderDupAlert(usedSlots);
     renderSummary();
@@ -886,7 +886,7 @@ function startAssign() {
   });
 
   // ===== 午前・午後の上限チェックと青×制御 =====
-  applyDailyCapAndBlueSlots();
+  if (window.applyDailyCapAndBlueSlots) window.applyDailyCapAndBlueSlots();
 
   assigned = true;
   renderDupAlert(usedSlots);
@@ -1914,7 +1914,7 @@ var AM_CAP   = 2; // 午前最大2枠
 var PM_CAP   = 4; // 午後最大4枠
 var DAY_CAP  = 5; // 1日合計最大5枠
 
-function applyDailyCapAndBlueSlots() {
+window.applyDailyCapAndBlueSlots = function applyDailyCapAndBlueSlots() {
   // 確定済みスロットの午前・午後カウント（日付別）
   var dayCounts = {};
   Object.keys(usedSlots).forEach(function(sk) {
