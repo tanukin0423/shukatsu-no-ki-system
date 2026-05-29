@@ -1976,6 +1976,23 @@ textarea.voice-recording{
 
 var selOpt=0, csvRows=[], selCSVIdx=-1, jsonData=null, modalRows=[], selModalIdx=-1;
 
+// ============================================================
+// ★★★ ES補正の共通方針（就活の木の理念：答えは学生の中にある）★★★
+// 「盛らない・捏造しない」を守りつつ、ESとして通用するレベルまで表現を磨く。
+// 足りない情報はAIに勝手に埋めさせず、カウンセラーへの【要確認】として可視化する。
+// aiGenEs（✨AI生成）と aiBrushUp（🔄全記録ブラッシュアップ）が共通で参照。
+// ============================================================
+var ES_REFINE_POLICY =
+  '=== 補正の方針（重要・厳守）===\n' +
+  '・原文にない【事実・数字・固有名詞・エピソード】は創作しないでください。盛らない・捏造しないことを最優先します。\n' +
+  '・ただし、原文にすでにある内容については、より具体的で論理的な「表現」に磨き上げ、エントリーシートとして提出できるレベルの完成度に仕上げてください（事実を足すのではなく、表現の精度を上げる）。\n' +
+  '・抽象的な言葉（「積極的に」「一生懸命」「責任感がある」等）は、原文の具体的な行動・場面に言い換えてください。\n' +
+  '・情報が不足していて文章が弱くなる箇所は、想像で埋めずに、本文の最後に\n' +
+  '　【要確認】\n' +
+  '　というラベルを付けて、カウンセラーが学生に確認すべき質問を箇条書きで2〜4点挙げてください。\n' +
+  '　（例：「アルバイトで工夫した具体的な行動は？」「売上や来客数など数字で示せる成果は？」）\n' +
+  '・この【要確認】は本文の文字数制限には含めず、本文のあとに分けて出力してください。';
+
 function g(id){return document.getElementById(id);}
 
 function toast(msg){
@@ -2364,6 +2381,10 @@ function _updateCharCounts(){
 function restoreJSON(d){
   if(!d) return;
 
+  // ★★★ データ消失バグ対策：復元中は自動保存を抑止 ★★★
+  // クリア〜再描画の「空っぽの窓」を自動保存が捕まえて空で上書きするのを防ぐ
+  window._suspendAutoSave = true;
+
   // ★★★ バグ修正：学生切替時の確実なフルリセット ★★★
   // fillInfoより先にdata-save全フィールドをクリアして前の学生データの残留を防ぐ
   document.querySelectorAll('[data-save="true"]').forEach(function(el){
@@ -2464,6 +2485,10 @@ function restoreJSON(d){
   if(_headerState.createdAt){
     g('hDate').textContent='作成日：'+_headerState.createdAt;
   }
+
+  // ★★★ データ消失バグ対策：復元完了。自動保存を再開 ★★★
+  // 念のため少し遅らせて、非同期描画(addMemo等)が確実に終わってから解除
+  setTimeout(function(){ window._suspendAutoSave = false; }, 800);
 }
 
 // ============================================================
@@ -3118,7 +3143,7 @@ window.aiGenEs = async function(mainId, memoId, esType){
         (memo?'\n【補足メモ】\n'+memo+'\n':'')+
         '\n=== 作成方針 ===\n'+tm.prompt+
         '\n\n前置き・後書き不要。完成した本文のみを出力してください。\n'+
-        '原文にない情報は追加しないでください。'
+        ES_REFINE_POLICY
     }], 1200, null);
 
     // 既存テキストがある場合は確認
@@ -3266,7 +3291,7 @@ window.aiBrushUp = async function(mainId, esType) {
         '・最も説得力のあるエピソードを選び、現時点でのベスト版を作成する\n' +
         '・' + tm.limit + '厳守\n' +
         '・前置き・後書き不要。完成した本文のみを出力する\n' +
-        '・原文にない情報は追加しない'
+        ES_REFINE_POLICY
     }], 1200, null);
 
     showBrushUpModal(tm.label, result, mainId, false);
@@ -3351,14 +3376,22 @@ function showBrushUpModal(label, result, targetId, isLoading) {
       applyBtn.onclick = function() {
         var targetTa = document.getElementById(targetId);
         if (!targetTa) return;
-        if (targetTa.value.trim()) {
-          if (!confirm('現在のES素材帳の内容を上書きしますか？\n\n「OK」→ 上書き\n「キャンセル」→ キャンセル')) return;
+        var oldVal = targetTa.value.trim();
+        // ★★★ 改修：既存があれば「上書き／追記」を選べる（✨AI生成と同じ挙動）★★★
+        // 「キャンセル」を選ぶと前の版を消さずに末尾へ追記＝退避できる
+        if (oldVal) {
+          if (confirm('現在のES素材帳の内容を上書きしますか？\n\n「OK」→ 上書き（前の版は消えます）\n「キャンセル」→ 末尾に追記（前の版を残す）')) {
+            targetTa.value = ta.value;
+          } else {
+            targetTa.value = oldVal + '\n\n【🔄 全記録ブラッシュアップ 追記】\n' + ta.value;
+          }
+        } else {
+          targetTa.value = ta.value;
         }
-        targetTa.value = ta.value;
         // 文字数更新
         var countMap = { gaku1:'c1', gaku2:'c2', selfpr:'c3', jiku:'c4' };
         var cEl = document.getElementById(countMap[targetId]);
-        if (cEl) cEl.textContent = ta.value.length + '文字';
+        if (cEl) cEl.textContent = targetTa.value.length + '文字';
         targetTa.scrollIntoView({ behavior:'smooth', block:'center' });
         toast('✅ ES素材帳に反映しました！');
         ov.remove();
@@ -6488,6 +6521,8 @@ document.getElementById('fbLoadBtn').addEventListener('click', async function(){
 // ===== Cloud読み込みの本体関数 =====
 // ===== 学生切替時の完全クリア関数 =====
 function clearAllKarteFields(){
+  // ★★★ データ消失バグ対策：クリア中は自動保存を抑止 ★★★
+  window._suspendAutoSave = true;
   // 1. data-save 全フィールド（input/textarea/select/hidden）
   document.querySelectorAll('[data-save="true"]').forEach(function(el){
     if(el.type === 'checkbox') el.checked = false;
@@ -6677,6 +6712,11 @@ function clearAllKarteFields(){
   // 28. brushUpOverlay（ブラッシュアップ結果ポップアップ）を閉じる
   var buOverlay = document.getElementById('brushUpOverlay');
   if(buOverlay) buOverlay.remove();
+
+  // ★★★ データ消失バグ対策：クリア完了。自動保存を遅延再開 ★★★
+  // loadFromCloudから呼ばれた場合は直後のrestoreJSONが再び抑止フラグを立て直すため、
+  // この遅延解除より復元処理が優先される（単独クリア時のみ実際に解除される）
+  setTimeout(function(){ window._suspendAutoSave = false; }, 800);
 }
 
 async function loadFromCloud(gakuseki, skipModal){
@@ -7103,8 +7143,31 @@ window._autoCloudMerge = async function(gakuseki){
 var _autoSaveCount = 0;
 setInterval(async function(){
   if(!window._collectJSON) return;
+
+  // ★★★ データ消失バグ対策①：復元・クリア中は自動保存しない ★★★
+  if(window._suspendAutoSave) return;
+
   var data = window._collectJSON();
   if(!data || !data.gakuseki) return;
+
+  // ★★★ データ消失バグ対策②：空データガード ★★★
+  // 学籍番号はあるが中身が空っぽ＝「整っていない瞬間」を捕まえてしまった場合は保存しない。
+  // memos・主要ES素材・面談情報がすべて空なら、空で上書きする事故とみなしてスキップ。
+  var f = data.fields || {};
+  var hasMemo = data.memos && data.memos.some(function(m){
+    return (m.rawText && m.rawText.trim()) || (m.memo && m.memo.trim()) || (m.action && m.action.trim());
+  });
+  var hasContent = hasMemo ||
+    (f.gaku1 && f.gaku1.trim()) || (f.gaku2 && f.gaku2.trim()) ||
+    (f.selfpr && f.selfpr.trim()) || (f.jiku && f.jiku.trim()) ||
+    (f.counselorMemo && f.counselorMemo.trim()) ||
+    (data.themes && data.themes.trim()) || (data.career && data.career.trim()) ||
+    (f.confirmedDate && f.confirmedDate.trim());
+  if(!hasContent){
+    console.warn('⏸ 自動保存スキップ：中身が空のため上書きを回避（' + data.gakuseki + '）');
+    return;
+  }
+
   var now = new Date().toLocaleString('ja-JP');
 
   // ① ローカルバックアップ（毎回）
