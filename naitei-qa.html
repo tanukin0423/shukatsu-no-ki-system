@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>内定承諾書・誓約書Q&A｜就活の木 キャリア支援課</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gd:#1E5631;--gm:#2E7D32;--gp:#E8F5E9;--gbg:#F1F8F2;
+  --gold:#B8860B;--gold-p:#FFF8DC;
+  --orange:#E65100;--orange-p:#FFF3E0;
+  --blue:#1565C0;--blue-p:#E3F2FD;
+  --red:#C62828;--red-p:#FFEBEE;
+  --gray:#546E7A;--gray-p:#ECEFF1;
+  --text:#1a1a1a;--border:#C8E6C9;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans JP',sans-serif;
+  background:var(--gbg);
+  color:var(--text);
+  min-height:100vh;
+  padding:0 0 60px;
+}
+
+/* ── ヘッダー ── */
+.hero{
+  background:linear-gradient(135deg,var(--gd) 0%,#2E7D32 60%,#388E3C 100%);
+  padding:36px 24px 32px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'🌳';font-size:120px;opacity:0.07;
+  position:absolute;right:-10px;top:-20px;line-height:1;
+}
+.hero-badge{
+  display:inline-block;background:rgba(255,255,255,0.18);
+  color:#A5D6A7;font-size:0.7rem;font-weight:700;
+  letter-spacing:0.1em;padding:4px 14px;border-radius:20px;
+  border:1px solid rgba(255,255,255,0.25);margin-bottom:14px;
+}
+.hero h1{
+  font-size:clamp(1.2rem,4vw,1.65rem);font-weight:900;
+  color:#fff;line-height:1.35;margin-bottom:8px;
+}
+.hero-sub{font-size:0.82rem;color:#C8E6C9;line-height:1.7;}
+
+/* ── 結論ボックス ── */
+.conclusion{
+  max-width:700px;margin:28px auto 0;padding:0 16px;
+}
+.concl-box{
+  background:#fff;border-radius:16px;
+  border:2px solid var(--gm);
+  padding:22px 24px;
+  box-shadow:0 4px 20px rgba(30,86,49,0.10);
+}
+.concl-title{
+  font-size:0.72rem;font-weight:700;color:var(--gm);
+  letter-spacing:0.1em;margin-bottom:14px;
+  display:flex;align-items:center;gap:6px;
+}
+.concl-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.concl-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:9px 0;border-bottom:1px solid var(--border);
+  font-size:0.9rem;line-height:1.6;
+}
+.concl-item:last-child{border-bottom:none;padding-bottom:0;}
+.concl-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+
+/* ── メインコンテンツ ── */
+.main{max-width:700px;margin:0 auto;padding:0 16px;}
+
+/* セクション見出し */
+.sec-head{
+  display:flex;align-items:center;gap:10px;
+  margin:36px 0 16px;
+  padding-bottom:10px;
+  border-bottom:2.5px solid var(--gd);
+}
+.sec-head-icon{font-size:1.3rem;}
+.sec-head-text{font-size:1.05rem;font-weight:900;color:var(--gd);}
+
+/* QAカード */
+.qa-card{
+  background:#fff;border-radius:14px;
+  border:1.5px solid var(--border);
+  margin-bottom:16px;
+  overflow:hidden;
+  box-shadow:0 2px 12px rgba(30,86,49,0.07);
+}
+.qa-q{
+  background:var(--gp);
+  padding:16px 20px;
+  display:flex;align-items:flex-start;gap:12px;
+}
+.qa-q-label{
+  background:var(--gm);color:#fff;
+  font-size:0.78rem;font-weight:900;
+  padding:2px 9px;border-radius:6px;
+  flex-shrink:0;margin-top:1px;
+}
+.qa-q-text{font-size:0.93rem;font-weight:700;line-height:1.55;color:var(--gd);}
+.qa-a{
+  padding:18px 20px;
+  border-top:1px solid var(--border);
+}
+.qa-a-lead{
+  display:flex;align-items:flex-start;gap:10px;
+  margin-bottom:12px;
+}
+.qa-a-label{
+  background:var(--blue);color:#fff;
+  font-size:0.78rem;font-weight:900;
+  padding:2px 9px;border-radius:6px;
+  flex-shrink:0;margin-top:1px;
+}
+.qa-a-main{font-size:0.93rem;font-weight:700;color:var(--blue);line-height:1.55;}
+.qa-a-body{font-size:0.86rem;line-height:1.8;color:var(--text);}
+.qa-a-body+.qa-a-body{margin-top:8px;}
+
+/* 注意ボックス */
+.warn-box{
+  background:var(--orange-p);border:1.5px solid var(--orange);
+  border-radius:10px;padding:14px 16px;margin-top:14px;
+}
+.warn-title{font-size:0.75rem;font-weight:700;color:var(--orange);margin-bottom:8px;}
+.warn-item{font-size:0.83rem;line-height:1.7;color:#5D2906;
+  display:flex;align-items:flex-start;gap:6px;}
+
+/* 法的根拠テーブル */
+.law-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:0.82rem;}
+.law-table th{
+  background:var(--gd);color:#fff;
+  padding:8px 12px;text-align:left;font-weight:700;
+}
+.law-table th:first-child{width:36%;}
+.law-table td{
+  padding:9px 12px;
+  border-bottom:1px solid #E0E0E0;
+  vertical-align:top;line-height:1.65;
+}
+.law-table tr:nth-child(even) td{background:var(--gp);}
+.law-table tr:last-child td{border-bottom:none;}
+.law-key{font-weight:700;color:var(--gd);}
+
+/* ステップリスト */
+.step-list{margin-top:14px;}
+.step-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:11px 14px;background:#fff;
+  border-radius:10px;border:1.5px solid var(--border);
+  margin-bottom:8px;
+}
+.step-num{
+  background:var(--gd);color:#fff;
+  font-size:0.72rem;font-weight:900;
+  width:52px;text-align:center;
+  padding:3px 0;border-radius:6px;flex-shrink:0;margin-top:1px;
+}
+.step-text{font-size:0.85rem;line-height:1.65;}
+
+/* まとめ */
+.summary-box{
+  background:linear-gradient(135deg,var(--gp),#F0FFF4);
+  border:2px solid var(--gm);border-radius:14px;
+  padding:22px 22px;margin-top:14px;
+}
+.summary-title{
+  font-size:0.72rem;font-weight:700;color:var(--gm);
+  letter-spacing:0.08em;margin-bottom:14px;
+}
+.summary-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:7px 0;border-bottom:1px solid rgba(46,125,50,0.18);
+  font-size:0.87rem;line-height:1.65;
+}
+.summary-item:last-child{border-bottom:none;padding-bottom:0;}
+.s-icon{font-size:1rem;flex-shrink:0;margin-top:2px;}
+
+/* キャリ爺メッセージ */
+.message-box{
+  background:#fff;border-radius:14px;
+  border-left:5px solid var(--gold);
+  padding:20px 20px 20px 22px;
+  margin-top:14px;
+  box-shadow:0 2px 12px rgba(184,134,11,0.08);
+}
+.message-label{
+  font-size:0.7rem;font-weight:700;color:var(--gold);
+  letter-spacing:0.08em;margin-bottom:10px;
+}
+.message-text{font-size:0.87rem;line-height:1.85;color:var(--text);}
+.message-text+.message-text{margin-top:10px;}
+.message-cta{
+  margin-top:14px;font-size:0.87rem;font-weight:700;
+  color:var(--gd);
+}
+
+/* フッター注意書き */
+.footnote{
+  background:var(--gray-p);border-radius:12px;
+  padding:16px 18px;margin-top:28px;
+  font-size:0.75rem;color:var(--gray);line-height:1.8;
+}
+.footnote a{color:var(--blue);text-decoration:none;}
+
+/* 印刷ボタン */
+.print-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--gd);color:#fff;
+  border:none;border-radius:10px;
+  padding:11px 22px;font-size:0.85rem;font-weight:700;
+  cursor:pointer;font-family:'Noto Sans JP',sans-serif;
+  margin-top:24px;transition:background 0.15s;
+  text-decoration:none;
+}
+.print-btn:hover{background:var(--gm);}
+
+/* 戻るリンク */
+.back-link{
+  display:inline-flex;align-items:center;gap:6px;
+  color:var(--gm);font-size:0.8rem;font-weight:700;
+  text-decoration:none;margin-bottom:16px;
+  padding:8px 0;
+}
+.back-link:hover{text-decoration:underline;}
+
+@media print{
+  .print-btn,.back-link{display:none!important;}
+  body{background:#fff;padding:0;}
+  .hero{print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+  .law-table th{print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+}
+
+@media(max-width:500px){
+  .hero{padding:28px 16px 24px;}
+  .law-table th:first-child{width:42%;}
+}
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<div class="hero">
+  <div class="hero-badge">📚 就活の木 お役立ちシリーズ</div>
+  <h1>📋 内定承諾書・誓約書について<br>よくある質問と法的根拠</h1>
+  <div class="hero-sub">キャリア支援課　北山 四郎｜多摩大学</div>
+</div>
+
+<div class="main">
+
+  <!-- 戻るリンク -->
+  <div style="margin-top:20px;">
+    <a class="back-link" href="javascript:history.back()">← ランチャーに戻る</a>
+  </div>
+
+  <!-- 結論ボックス -->
+  <div class="concl-box">
+    <div class="concl-title">💡 結論を先に言います</div>
+    <div class="concl-item"><div class="concl-icon">✅</div><div>内定承諾書や誓約書を提出しても、<strong>就職活動を続けてかまいません。</strong></div></div>
+    <div class="concl-item"><div class="concl-icon">✅</div><div>内定を辞退することは、<strong>法律上あなたの権利として認められています。</strong></div></div>
+    <div class="concl-item"><div class="concl-icon">✅</div><div>適切な手続きをとれば、<strong>損害賠償を請求されることはほぼありません。</strong></div></div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="sec-head"><div class="sec-head-icon">❓</div><div class="sec-head-text">Q&A ① 内定承諾書を出してもいいですか？</div></div>
+
+  <div class="qa-card">
+    <div class="qa-q">
+      <div class="qa-q-label">Q 1</div>
+      <div class="qa-q-text">内定承諾書を書いて提出してもよいですか？後で断れなくなりますか？</div>
+    </div>
+    <div class="qa-a">
+      <div class="qa-a-lead">
+        <div class="qa-a-label">A</div>
+        <div class="qa-a-main">はい、提出してかまいません。そして、提出後も法律上は辞退できます。</div>
+      </div>
+      <div class="qa-a-body">内定承諾書とは、学生が「この会社に入社します」と意思表示する書類です。これは法的には「労働契約の申込みへの承諾」にあたり、内定の成立を明確にするものです。</div>
+      <div class="qa-a-body">しかし、たとえ提出後でも、学生には<strong>「辞退する権利」</strong>があります。民法627条によれば、期間の定めのない雇用契約は、いつでも解約の申入れができ、申入れから2週間で終了します（就職内定の場合は入社前でも同様に扱われます）。</div>
+      <table class="law-table">
+        <tr><th>法的根拠・条文</th><th>内容・ポイント</th></tr>
+        <tr><td><span class="law-key">民法627条（雇用の解約）</span></td><td>期間の定めのない雇用は、各当事者がいつでも解約の申入れができ、申入れ後2週間で終了する。内定段階の労働契約にも適用される。</td></tr>
+        <tr><td><span class="law-key">民法628条（やむを得ない事由）</span></td><td>やむを得ない事由があれば、即時解約も可能。</td></tr>
+        <tr><td><span class="law-key">最高裁判例（大日本印刷事件 1979年）</span></td><td>内定通知は労働契約の成立であり、正当な理由なき内定取消は不法行為。逆に言えば学生側の辞退は正当な権利行使。</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="sec-head"><div class="sec-head-icon">💸</div><div class="sec-head-text">Q&A ② 損害賠償を請求されませんか？</div></div>
+
+  <div class="qa-card">
+    <div class="qa-q">
+      <div class="qa-q-label">Q 2</div>
+      <div class="qa-q-text">内定を辞退したら、企業から損害賠償を請求されませんか？怖いです。</div>
+    </div>
+    <div class="qa-a">
+      <div class="qa-a-lead">
+        <div class="qa-a-label">A</div>
+        <div class="qa-a-main">適切な時期に誠実に辞退の意思を伝えれば、損害賠償請求はほぼ認められません。</div>
+      </div>
+      <div class="qa-a-body">損害賠償が認められるには「不法行為（民法709条）」または「契約違反（民法415条）」が必要です。就職内定の辞退は通常、これには当たりません。</div>
+      <div class="qa-a-body">過去の裁判例でも、内定辞退に対する企業の損害賠償請求はほとんど認められていないのが実態です。裁判所は<strong>「労働者の職業選択の自由（憲法22条）」</strong>を重視しており、就職内定の辞退はその権利行使と見なされます。</div>
+      <table class="law-table">
+        <tr><th>法的根拠・条文</th><th>内容・ポイント</th></tr>
+        <tr><td><span class="law-key">憲法22条（職業選択の自由）</span></td><td>何人も、公共の福祉に反しない限り、職業を選択する自由を有する。これは内定辞退の権利的根拠となる。</td></tr>
+        <tr><td><span class="law-key">民法709条（不法行為）</span></td><td>損害賠償は「故意または過失による権利侵害」が必要。内定辞退は原則これに当たらない。</td></tr>
+        <tr><td><span class="law-key">民法415条（債務不履行）</span></td><td>契約違反による損害賠償。内定辞退は2週間前告知があれば債務不履行にならない。</td></tr>
+        <tr><td><span class="law-key">労働基準法16条（賠償予定の禁止）</span></td><td>使用者は、労働契約の不履行について違約金を定め、または損害賠償額を予定する契約をしてはならない。→ 内定承諾書・誓約書に損害賠償の記載があっても<strong>法的に無効</strong>。</td></tr>
+        <tr><td><span class="law-key">裁判実務の傾向</span></td><td>内定辞退に対する損害賠償請求が認容された判例は極めてまれ。企業側が採用コストの賠償を求めても棄却されるケースが大半。</td></tr>
+      </table>
+
+      <div class="warn-box" style="margin-top:16px;">
+        <div class="warn-title">⚠️ 注意が必要なケース</div>
+        <div class="warn-item">①&nbsp; 入社直前（1〜2週間前）の辞退 ── 企業の準備が進んでいると実損が発生するリスクあり</div>
+        <div class="warn-item">②&nbsp; 虚偽の内容で採用された場合（詐欺的行為）</div>
+        <div class="warn-item">③&nbsp; 契約書に違約金条項がある場合（ただし、<strong>労働基準法16条により違約金条項は無効</strong>）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="sec-head"><div class="sec-head-icon">📝</div><div class="sec-head-text">Q&A ③ 誓約書にサインしても大丈夫ですか？</div></div>
+
+  <div class="qa-card">
+    <div class="qa-q">
+      <div class="qa-q-label">Q 3</div>
+      <div class="qa-q-text">誓約書にサインしましたが、首根っこを掴まれた感じがします…大丈夫ですか？</div>
+    </div>
+    <div class="qa-a">
+      <div class="qa-a-lead">
+        <div class="qa-a-label">A</div>
+        <div class="qa-a-main">大丈夫です。誓約書は入社の意思表示であり、辞退する権利を消すものではありません。</div>
+      </div>
+      <div class="qa-a-body">企業が求める誓約書の主な内容は「入社します」「他社の内定は辞退します」というものです。これは法的には「労働契約の成立確認」であり、学生の法的権利（辞退の自由）を剥奪するものではありません。</div>
+      <div class="qa-a-body">もし誓約書に「辞退した場合は損害賠償を支払う」という条項があったとしても、<strong>労働基準法16条により、その条項は無効</strong>です。企業はその条項を根拠に損害賠償を求めることはできません。</div>
+      <table class="law-table">
+        <tr><th>法的根拠・条文</th><th>内容・ポイント</th></tr>
+        <tr><td><span class="law-key">労働基準法16条（再掲）</span></td><td>違約金・損害賠償予定の定めは無効。誓約書の条項も例外ではない。</td></tr>
+        <tr><td><span class="law-key">民法90条（公序良俗違反）</span></td><td>公の秩序・善良の風俗に反する法律行為は無効。職業選択の自由を過度に制限する条項は公序良俗違反として無効になりうる。</td></tr>
+        <tr><td><span class="law-key">職業安定法</span></td><td>採用内定後の一方的な条件変更や強制は制限されており、学生の自由意思を尊重する義務がある。</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="sec-head"><div class="sec-head-icon">🎯</div><div class="sec-head-text">Q&A ④ 就活を続けてよいですか？</div></div>
+
+  <div class="qa-card">
+    <div class="qa-q">
+      <div class="qa-q-label">Q 4</div>
+      <div class="qa-q-text">承諾書・誓約書を出した後も、就職活動を続けてよいですか？</div>
+    </div>
+    <div class="qa-a">
+      <div class="qa-a-lead">
+        <div class="qa-a-label">A</div>
+        <div class="qa-a-main">はい、続けてかまいません。ただし、気持ちの整理と誠実な対応が大切です。</div>
+      </div>
+      <div class="qa-a-body">法律上は継続してかまいませんが、倫理的・実務的には以下の点を意識してください。</div>
+      <table class="law-table" style="margin-top:12px;">
+        <tr><th style="width:20%;">区分</th><th>内容</th></tr>
+        <tr><td><span style="color:#2E7D32;font-weight:700;">✅ OK</span></td><td>他社の選考を受ける、説明会に参加する、内定を比較検討する</td></tr>
+        <tr><td><span style="color:#2E7D32;font-weight:700;">✅ OK</span></td><td>内定承諾書提出後に内定辞退の意思を固め、誠実に連絡する</td></tr>
+        <tr><td><span style="color:#E65100;font-weight:700;">⚠️ 注意</span></td><td>企業側に「辞退するかもしれない」ことを極力早めに伝える（良心的な対応）</td></tr>
+        <tr><td><span style="color:#C62828;font-weight:700;">❌ 避ける</span></td><td>入社直前（特に1ヶ月以内）の辞退は企業に多大な迷惑をかける可能性がある</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 辞退の手順 -->
+  <div class="sec-head"><div class="sec-head-icon">📞</div><div class="sec-head-text">辞退をする場合の正しい手順</div></div>
+
+  <div class="step-list">
+    <div class="step-item"><div class="step-num">STEP 1</div><div class="step-text">決断したら、できるだけ早く（遅くとも入社<strong>2ヶ月以上前</strong>に）連絡する</div></div>
+    <div class="step-item"><div class="step-num">STEP 2</div><div class="step-text">まず<strong>電話</strong>で採用担当者に連絡し、辞退の意思を直接伝える</div></div>
+    <div class="step-item"><div class="step-num">STEP 3</div><div class="step-text">後日、お詫びと辞退の旨を記した<strong>メールまたはお礼状</strong>を送る</div></div>
+    <div class="step-item"><div class="step-num">STEP 4</div><div class="step-text">書類（内定通知書など）の返送を求められた場合は速やかに対応する</div></div>
+    <div class="step-item"><div class="step-num">STEP 5</div><div class="step-text">不誠実な態度は避ける。担当者も人間。<strong>誠実なお詫びが社会人の第一歩。</strong></div></div>
+  </div>
+
+  <!-- まとめ -->
+  <div class="sec-head"><div class="sec-head-icon">🌳</div><div class="sec-head-text">まとめ</div></div>
+
+  <div class="summary-box">
+    <div class="summary-title">✅ キャリ爺からの確認ポイント</div>
+    <div class="summary-item"><div class="s-icon">✅</div><div>承諾書・誓約書を出しても、<strong>あなたの権利は守られています。</strong></div></div>
+    <div class="summary-item"><div class="s-icon">✅</div><div>適切な告知期間（<strong>2週間以上</strong>）を守って辞退すれば、損害賠償はほぼ認められません。</div></div>
+    <div class="summary-item"><div class="s-icon">✅</div><div>誓約書の違約金条項は<strong>労働基準法16条により無効</strong>です。</div></div>
+    <div class="summary-item"><div class="s-icon">✅</div><div>職業選択の自由（<strong>憲法22条</strong>）はあなたに保障された基本的人権です。</div></div>
+  </div>
+
+  <!-- キャリ爺メッセージ -->
+  <div class="message-box">
+    <div class="message-label">💬 キャリ爺より</div>
+    <div class="message-text">ただし——</div>
+    <div class="message-text">法律上「できる」ことと、「人として誠実であること」は別の話です。内定をくれた会社の担当者も、あなたを信じて選んでくれた人間です。もし辞退するなら、できるだけ早く、誠実に、心を込めて伝えてください。</div>
+    <div class="message-text">就活は「ゴール」ではなく、長い社会人人生の「スタート」です。どの会社を選ぶにしても、誠実な行動が未来のあなたの財産になります。</div>
+    <div class="message-cta">迷ったとき、不安なとき——いつでもキャリア支援課に相談に来てください。🌱</div>
+  </div>
+
+  <!-- 印刷ボタン -->
+  <div style="text-align:center;">
+    <button class="print-btn" onclick="window.print()">🖨️ このページを印刷する</button>
+  </div>
+
+  <!-- フッター注意書き -->
+  <div class="footnote">
+    ※ この資料は法的アドバイスの代替ではありません。個別の状況によっては異なる判断が必要な場合があります。深刻な問題については弁護士や労働基準監督署にご相談ください。<br>
+    参考条文：民法627条・628条・415条・709条・90条 ／ 憲法22条 ／ 労働基準法16条 ／ 職業安定法<br>
+    発行：多摩大学 キャリア支援課　北山 四郎
+  </div>
+
+</div><!-- /main -->
+</body>
+</html>
