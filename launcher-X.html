@@ -617,7 +617,7 @@ body{
 // ファイル名を変更する場合はここを修正
 const WORD_FILES = {
   naitei: {
-    path: 'naitei-qa.docx',
+    path: 'https://github.com/tanukin0423/shukatsu-no-ki-system/raw/main/naitei-qa.docx',
     label: 'naitei-qa.docx'
   }
 };
@@ -625,12 +625,7 @@ const WORD_FILES = {
 function downloadWordNaitei(e) {
   e.preventDefault();
   const f = WORD_FILES.naitei;
-  const a = document.createElement('a');
-  a.href = f.path;
-  a.download = f.label;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  window.open(f.path, '_blank');
 }
 
 function switchTab(n) {
