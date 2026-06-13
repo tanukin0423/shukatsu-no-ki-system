@@ -898,15 +898,23 @@ async function startAnalyze(){
 - 具体的なエピソード・行動が記述されているか（数字・場面・自分の行動）
 - 抽象表現のみになっていないか（「積極的に」「一生懸命」等）
 
-【出力形式】JSONのみ、説明文・コードブロックなし：
+【出力形式】
+必ずJSONのみで出力すること。説明文・コードブロック（バッククォート）は一切不要。
+各フィールドの値は改行を含まない1行テキストにすること（改行は\\nに変換）。
 {"gaku1":"...","gaku2":"...","selfpr":"...","jiku":"...","reasoning_gaku1":"...","reasoning_gaku2":"...","reasoning_selfpr":"...","reasoning_jiku":"..."}
 
 【テキスト】
-${_fileText.substring(0, 3000)}`;
+${_fileText.substring(0, 2000)}`;
 
   try{
     const rawText = await callAI(prompt);
-    const clean = rawText.replace(/```json|```/g,'').trim();
+    // JSON抽出：コードブロック除去 → { } の範囲を抽出
+    let clean = rawText.replace(/```json|```/g,'').trim();
+    const jsonStart = clean.indexOf('{');
+    const jsonEnd   = clean.lastIndexOf('}');
+    if(jsonStart !== -1 && jsonEnd !== -1){
+      clean = clean.substring(jsonStart, jsonEnd + 1);
+    }
     const parsed = JSON.parse(clean);
 
     _analyzed = {
@@ -1082,12 +1090,10 @@ A（再現性）：志望業界・職種に紐付けた活かし方で締める
 既存: ${_existing.selfpr || '（なし）'}
 新規: ${newSP || '（なし）'}
 
-【出力形式】JSONのみ、説明文なし：
-{
-  "gaku1": { "same_theme": true/false, "reason": "判定理由（1行）", "result": "ブラッシュアップ後の本文" },
-  "gaku2": { "same_theme": true/false, "reason": "判定理由（1行）", "result": "ブラッシュアップ後の本文" },
-  "selfpr": { "same_theme": true/false, "reason": "判定理由（1行）", "result": "ブラッシュアップ後の本文" }
-}`;
+【出力形式】
+必ずJSONのみで出力すること。説明文・コードブロック（バッククォート）は一切不要。
+resultフィールドの本文中の改行は\\nに変換すること。
+{"gaku1":{"same_theme":true,"reason":"判定理由","result":"本文"},"gaku2":{"same_theme":true,"reason":"判定理由","result":"本文"},"selfpr":{"same_theme":true,"reason":"判定理由","result":"本文"}}`;
 
   try{
     const res = await fetch('https://api.anthropic.com/v1/messages',{
@@ -1100,8 +1106,14 @@ A（再現性）：志望業界・職種に紐付けた活かし方で締める
       })
     });
     const data = await res.json();
-    const rawText = data.content.map(b=>b.text||'').join('');
-    const clean = rawText.replace(/```json|```/g,'').trim();
+    let rawText = data.content.map(b=>b.text||'').join('');
+    // JSON抽出：コードブロック除去 → { } の範囲を抽出
+    rawText = rawText.replace(/```json|```/g,'').trim();
+    const jsonStart = rawText.indexOf('{');
+    const jsonEnd   = rawText.lastIndexOf('}');
+    const clean = (jsonStart !== -1 && jsonEnd !== -1)
+      ? rawText.substring(jsonStart, jsonEnd + 1)
+      : rawText;
     const parsed = JSON.parse(clean);
 
     // 結果を画面に反映
