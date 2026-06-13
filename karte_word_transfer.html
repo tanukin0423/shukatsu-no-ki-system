@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>📄 Word転写ツール v2｜カルテv5</title>
+<title>📄 Word転写ツール v4｜カルテv5</title>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -403,7 +403,7 @@
 <div id="mainContent" style="display:none;">
 
 <h1>📄 Word転写ツール</h1>
-<p class="subtitle">カルテv5｜ガクチカ・自己PR 一括転写 ／ 就活の木哲学搭載 v2</p>
+<p class="subtitle">カルテv5｜ガクチカ・自己PR 一括転写 ／ 就活の木哲学搭載 v4</p>
 
 <!-- ステップバー -->
 <div class="steps" id="stepBar">
@@ -1037,8 +1037,24 @@ async function doBrushup(){
   document.getElementById('brushupLoading').style.display = 'block';
   clearAlert('alert_brushup');
 
-  const prompt = `あなたは「就活の木」キャリア支援の専門アシスタントです。
-以下のフレームワークと哲学に基づいて、学生のガクチカ・自己PRをブラッシュアップしてください。
+  const prompt = `あなたは「就活の木」キャリア支援の専門カウンセラーアシスタントです。
+16年・18,000回のキャリア相談を積み重ねたカウンセラーの哲学と視点で、学生のES添削を行います。
+
+━━━━━━━━━━━━━━━━━━━━
+【第一段階：「診断」から入ること】
+添削の前に各ESを以下の順で必ず診断すること：
+
+STEP1: このエピソードは何か（素材の把握）
+STEP2: WHY（なぜそれに取り組んだか）は書けているか？
+STEP3: Actionが「具体動詞＋目的語」で書けているか、それとも抄象語か？
+       └ 抄象語の例：「積極的に」「頂張った」「まとめた」
+       └ 具体語の例：「ホワイトボードに論点を書き出した」「毎朝30分シャドーを続けた」
+STEP4: Resultに数字・目に見える変化・第三者の評価があるか？
+STEP5: Futureが志望職種・業界と具体的に接続されているか？
+
+この診断をもとに「行動の解像度を上げる」方向でブラッシュアップする。
+素材のエピソード自体は変えない。同じ素材のまま「どう考え・どう動いたか」の描写だけを深める。
+
 
 ━━━━━━━━━━━━━━━━━━━━━━
 【就活の木｜ES作成の哲学】
@@ -1067,7 +1083,8 @@ A（再現性）：志望業界・職種に紐付けた活かし方で締める
 
 【絶対禁止ワード】
 「積極的に」「一生懸命」「頑張りました」「コミュ力」「責任感があります」
-「チームワークを大切に」「主体的に」——これらは使用禁止。本人の行動ベースの言葉に置き換える
+「チームワークを大切に」→具体的に何の場面でどう動いたか
+「主体的に」「自ら」→実際に何をしたか
 
 ━━━━━━━━━━━━━━━━━━━━━━
 【処理ルール】
