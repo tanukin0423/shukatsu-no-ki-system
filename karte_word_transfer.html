@@ -736,7 +736,7 @@ async function callAI(prompt){
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
       body:JSON.stringify({
         model:'llama-3.3-70b-versatile',
-        max_tokens:1500,
+        max_tokens:2000,
         temperature:0.3,
         messages:[{role:'user',content:prompt}]
       })
@@ -755,7 +755,7 @@ async function callAI(prompt){
       },
       body:JSON.stringify({
         model:'claude-sonnet-4-6',
-        max_tokens:1500,
+        max_tokens:2000,
         messages:[{role:'user',content:prompt}]
       })
     });
@@ -1095,7 +1095,7 @@ A（再現性）：志望業界・職種に紐付けた活かし方で締める
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
-        max_tokens:1500,
+        max_tokens:3000,
         messages:[{role:'user',content:prompt}]
       })
     });
