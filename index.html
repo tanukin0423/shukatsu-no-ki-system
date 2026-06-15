@@ -854,7 +854,7 @@ async function onCounselorChange() {
   blockedSlots = new Set();
   if (id) {
     try {
-      // Firebaseから取得を試みる
+      // Firebase優先でスロット取得
       let loaded = false;
       if (window.fbLoadSlots) {
         const fbSlots = await window.fbLoadSlots(id);
@@ -862,23 +862,21 @@ async function onCounselorChange() {
           Object.keys(fbSlots).forEach(function(k){
             if(fbSlots[k]===false) blockedSlots.add(k);
           });
-          // localStorageも更新
+          // localStorageも最新で上書き
           localStorage.setItem('slots_'+id, JSON.stringify(fbSlots));
           loaded = true;
-          console.log('Slots loaded from Firebase for:', id);
+          console.log('Slots loaded from Firebase for:', id, '| blocked:', blockedSlots.size);
         }
       }
-      // Firebaseが使えない場合はlocalStorageから
+      // Firebase取得失敗時は×なしで描画（古いキャッシュで誤予約防止）
       if (!loaded) {
-        const saved = localStorage.getItem('slots_'+id);
-        if (saved) {
-          const slots = JSON.parse(saved);
-          Object.keys(slots).forEach(function(k){
-            if(slots[k]===false) blockedSlots.add(k);
-          });
-        }
+        console.warn('Firebase取得失敗。×なしで描画します（誤予約防止）');
+        blockedSlots = new Set();
       }
-    } catch(e) {}
+    } catch(e) {
+      console.error('スロット取得エラー:', e);
+      blockedSlots = new Set();
+    }
     renderWeekGrid(0,'grid0'); renderWeekGrid(1,'grid1');
     renderWeekGrid(2,'grid2'); renderCalGrid();
   }
