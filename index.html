@@ -185,7 +185,50 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--gbg);color:var(--tex
 .confirm-email-value{font-family:monospace;font-size:1.05rem;font-weight:700;color:#2d5a27;background:white;padding:8px 12px;border-radius:7px;border:1.5px solid var(--border);word-break:break-all;}
 .confirm-email-note{font-size:0.73rem;color:#856404;margin-top:6px;line-height:1.6;}
 </style>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
+const firebaseConfig = {
+  apiKey:            "AIzaSyBTxRgOvPYOmacVfJkEjLLgI2K-ASnZbq4",
+  authDomain:        "career-board-4a3f8.firebaseapp.com",
+  projectId:         "career-board-4a3f8",
+  storageBucket:     "career-board-4a3f8.firebasestorage.app",
+  messagingSenderId: "235913147040",
+  appId:             "1:235913147040:web:39c20d95267e2777ef4fc5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.fbLoadCounselors = async function() {
+  try {
+    const snap = await getDoc(doc(db, 'config', 'counselors'));
+    if (!snap.exists()) return null;
+    return snap.data().counselors || null;
+  } catch(e) {
+    console.error('Firebase loadCounselors error:', e);
+    return null;
+  }
+};
+
+window.fbLoadSlots = async function(counselorId) {
+  try {
+    const snap = await getDoc(doc(db, 'slots', counselorId));
+    if (!snap.exists()) return null;
+    const data = snap.data();
+    const result = {};
+    (data.blocked || []).forEach(k => { result[k] = false; });
+    return result;
+  } catch(e) {
+    console.error('Firebase loadSlots error:', e);
+    return null;
+  }
+};
+
+window.firebaseReady = true;
+</script>
 </head>
 <body>
 
@@ -717,7 +760,7 @@ function checkUrlParam() {
       if (sel.options[i].value === cId) {
         sel.value = cId;
         sel.disabled = true; // 変更できないようにロック
-        await onCounselorChange(); // ★ Firebase取得完了を待ってからカレンダーを描画
+        await onCounselorChange(); // ★Firebase取得完了を待ってからカレンダーを描画
         // ロック中の視覚表示
         sel.style.background = '#e8f5e3';
         sel.style.borderColor = '#2d5a27';
@@ -783,27 +826,6 @@ function renderCounselorSelect() {
     }).join('');
   document.getElementById('counselorLoading').style.display = 'none';
   sel.style.display = 'block';
-
-  // URLパラメータがない場合はkitayamaをデフォルト選択
-  // Firebase(type=module)の初期化完了を待ってから実行
-  const params = new URLSearchParams(window.location.search);
-  if (!params.get('c')) {
-    const defaultId = 'kitayama';
-    if (counselors.find(function(c){ return c.id === defaultId; })) {
-      sel.value = defaultId;
-      // Firebase準備完了を待ってからスロット取得
-      var waitAndLoad = async function() {
-        if (!window.firebaseReady) {
-          await new Promise(function(resolve) {
-            window._firebaseReadyResolve = resolve;
-            setTimeout(resolve, 5000);
-          });
-        }
-        await onCounselorChange();
-      };
-      waitAndLoad();
-    }
-  }
 }
 
 async function onCounselorChange() {
@@ -832,29 +854,31 @@ async function onCounselorChange() {
   blockedSlots = new Set();
   if (id) {
     try {
-      // Firebase準備完了まで待つ（type=moduleの遅延対策）
-      if (!window.firebaseReady) {
-        await new Promise(function(resolve) {
-          window._firebaseReadyResolve = resolve;
-          setTimeout(resolve, 5000); // 最大5秒
-        });
-      }
-      // Firebaseからスロット取得
+      // Firebaseから取得を試みる
+      let loaded = false;
       if (window.fbLoadSlots) {
         const fbSlots = await window.fbLoadSlots(id);
         if (fbSlots !== null) {
           Object.keys(fbSlots).forEach(function(k){
             if(fbSlots[k]===false) blockedSlots.add(k);
           });
+          // localStorageも更新
           localStorage.setItem('slots_'+id, JSON.stringify(fbSlots));
-          console.log('Slots loaded from Firebase | blocked:', blockedSlots.size);
-        } else {
-          console.warn('Firebaseにスロットデータなし');
+          loaded = true;
+          console.log('Slots loaded from Firebase for:', id);
         }
       }
-    } catch(e) {
-      console.error('スロット取得エラー:', e);
-    }
+      // Firebaseが使えない場合はlocalStorageから
+      if (!loaded) {
+        const saved = localStorage.getItem('slots_'+id);
+        if (saved) {
+          const slots = JSON.parse(saved);
+          Object.keys(slots).forEach(function(k){
+            if(slots[k]===false) blockedSlots.add(k);
+          });
+        }
+      }
+    } catch(e) {}
     renderWeekGrid(0,'grid0'); renderWeekGrid(1,'grid1');
     renderWeekGrid(2,'grid2'); renderCalGrid();
   }
@@ -1711,65 +1735,6 @@ function openMailDraft(){
 }
 
 function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-</script>
-
-<!-- Firebase SDK -->
-<script type="importmap">
-{
-  "imports": {
-    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
-    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
-  }
-}
-</script>
-<script type="module">
-import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
-
-const firebaseConfig = {
-  apiKey:            "AIzaSyBTxRgOvPYOmacVfJkEjLLgI2K-ASnZbq4",
-  authDomain:        "career-board-4a3f8.firebaseapp.com",
-  projectId:         "career-board-4a3f8",
-  storageBucket:     "career-board-4a3f8.firebasestorage.app",
-  messagingSenderId: "235913147040",
-  appId:             "1:235913147040:web:39c20d95267e2777ef4fc5"
-};
-
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-
-window.fbLoadCounselors = async function() {
-  try {
-    const snap = await getDoc(doc(db, 'config', 'counselors'));
-    if (!snap.exists()) return null;
-    return snap.data().counselors || null;
-  } catch(e) {
-    console.error('Firebase loadCounselors error:', e);
-    return null;
-  }
-};
-
-window.fbLoadSlots = async function(counselorId) {
-  try {
-    const snap = await getDoc(doc(db, 'slots', counselorId));
-    if (!snap.exists()) return null;
-    const data = snap.data();
-    const result = {};
-    (data.blocked || []).forEach(k => { result[k] = false; });
-    return result;
-  } catch(e) {
-    console.error('Firebase loadSlots error:', e);
-    return null;
-  }
-};
-
-window.firebaseReady = true;
-console.log('Firebase initialized');
-
-if (window._firebaseReadyResolve) {
-  window._firebaseReadyResolve();
-  window._firebaseReadyResolve = null;
-}
 </script>
 </body>
 </html>
