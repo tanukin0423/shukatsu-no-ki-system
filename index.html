@@ -1298,8 +1298,13 @@ function showTimePanel(d) {
     // すでに選択済みの時間はグレーアウト
     const alreadySelected=wishes.some(function(w){ return w&&w.iso===ymd(d)&&w.time===t; });
     btn.className='time-btn'+(blocked?' blocked-time':alreadySelected?' blocked-time':'');
-    btn.textContent=t+(alreadySelected?' ✓':'');
-    if(!blocked&&!alreadySelected){
+    btn.textContent=t+(blocked?' ×':alreadySelected?' ✓':'');
+    if(blocked){
+      // ×スロットはクリックしたら警告を出す
+      btn.onclick=function(){
+        alert('⚠️ この時間帯（'+t+'）はすでに予約が入っているか、受付を停止しています。\n別の時間帯を選んでください。');
+      };
+    } else if(!alreadySelected){
       btn.onclick=function(){ onTimeClick(t); };
     }
     grid.appendChild(btn);
