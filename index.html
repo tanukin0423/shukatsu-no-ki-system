@@ -752,7 +752,7 @@ function checkUrlParam() {
   const cId = params.get('c');
   if (!cId) return;
   // 少し待ってから相談員を自動選択（データ読み込み完了後）
-  setTimeout(function() {
+  setTimeout(async function() {
     const sel = document.getElementById('selCounselor');
     if (!sel) return;
     // プルダウンの選択肢からIDを探す
@@ -760,7 +760,7 @@ function checkUrlParam() {
       if (sel.options[i].value === cId) {
         sel.value = cId;
         sel.disabled = true; // 変更できないようにロック
-        onCounselorChange();
+        await onCounselorChange(); // ★ Firebase取得完了を待ってからカレンダーを描画
         // ロック中の視覚表示
         sel.style.background = '#e8f5e3';
         sel.style.borderColor = '#2d5a27';
