@@ -874,6 +874,88 @@ textarea.voice-recording{
   </div>
 </div>
 
+<!-- ===== 容量確認モーダル ===== -->
+<div class="ov hide" id="storageUsageModal">
+  <div class="mb" style="max-width:560px;max-height:85vh;display:flex;flex-direction:column;">
+    <div class="mh" style="background:linear-gradient(135deg,#5d4037,#795548);">
+      <div class="ico">📦</div>
+      <h2>ES資料添付　容量確認</h2>
+      <p id="storageUsageSubtitle">全学生の添付データを集計しています...</p>
+    </div>
+    <div style="padding:18px;overflow-y:auto;flex:1;">
+
+      <div id="storageUsage-loading" style="text-align:center;padding:30px;color:#888;font-size:0.9rem;">
+        🔄 集計中...
+      </div>
+
+      <div id="storageUsage-result" style="display:none;">
+
+        <!-- ===== Storage（添付ファイル本体） ===== -->
+        <div style="font-size:0.8rem;font-weight:700;color:#5d4037;margin-bottom:8px;">📦 Storage（添付ファイル本体）</div>
+        <div style="background:#efebe9;border-radius:10px;padding:18px;text-align:center;margin-bottom:14px;">
+          <div style="font-size:0.78rem;color:#6d4c41;margin-bottom:4px;">添付ファイル合計サイズ（目安）</div>
+          <div style="font-size:2rem;font-weight:700;color:#4e342e;" id="su-totalSize">-</div>
+          <div style="font-size:0.74rem;color:#8d6e63;margin-top:4px;" id="su-percentBar">-</div>
+          <div style="background:#d7ccc8;border-radius:6px;height:10px;margin-top:8px;overflow:hidden;">
+            <div id="su-bar" style="background:#795548;height:100%;width:0%;border-radius:6px;transition:width 0.4s;"></div>
+          </div>
+        </div>
+
+        <!-- 内訳 -->
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;">
+          <div style="background:#f5f5f5;border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:1.3rem;font-weight:700;color:#333;" id="su-fileCount">-</div>
+            <div style="font-size:0.7rem;color:#666;">添付ファイル総数</div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:1.3rem;font-weight:700;color:#333;" id="su-studentCount">-</div>
+            <div style="font-size:0.7rem;color:#666;">添付ありの学生数</div>
+          </div>
+        </div>
+
+        <!-- 学生別ランキング（Storage） -->
+        <div style="font-size:0.78rem;font-weight:700;color:#555;margin-bottom:6px;">📊 添付サイズが大きい学生（上位10名）</div>
+        <div id="su-ranking" style="max-height:220px;overflow-y:auto;border:1px solid #eee;border-radius:8px;margin-bottom:20px;"></div>
+
+        <!-- ===== Firestore（karteデータ本体） ===== -->
+        <div style="font-size:0.8rem;font-weight:700;color:#1565c0;margin-bottom:8px;border-top:1.5px dashed #ddd;padding-top:18px;">🗂️ Firestore（karteデータ本体：ガクチカ・面談記録等）</div>
+        <div style="background:#e3eefb;border-radius:10px;padding:18px;text-align:center;margin-bottom:14px;">
+          <div style="font-size:0.78rem;color:#1565c0;margin-bottom:4px;">全学生karte 合計サイズ（目安）</div>
+          <div style="font-size:2rem;font-weight:700;color:#0d47a1;" id="fs-totalSize">-</div>
+          <div style="font-size:0.74rem;color:#5a8fc7;margin-top:4px;" id="fs-avgSize">-</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;">
+          <div style="background:#f5f5f5;border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:1.3rem;font-weight:700;color:#333;" id="fs-docCount">-</div>
+            <div style="font-size:0.7rem;color:#666;">karteドキュメント数</div>
+          </div>
+          <div style="background:#f5f5f5;border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:1.3rem;font-weight:700;color:#333;" id="fs-warnCount">-</div>
+            <div style="font-size:0.7rem;color:#666;">1MB上限に近い学生</div>
+          </div>
+        </div>
+
+        <div id="fs-warnBox" style="display:none;background:#fff3cd;border:1px solid #f0c040;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:0.76rem;color:#856404;"></div>
+
+        <div style="font-size:0.78rem;font-weight:700;color:#555;margin-bottom:6px;">📊 karteデータが大きい学生（上位10名）</div>
+        <div id="fs-ranking" style="max-height:220px;overflow-y:auto;border:1px solid #eee;border-radius:8px;"></div>
+
+        <div style="font-size:0.7rem;color:#999;margin-top:14px;line-height:1.6;">
+          ※ これはkarte側が把握しているデータによる目安の集計です。正確な使用量・課金対象の数値は、Firebase Console（Storage／Firestore それぞれの使用状況）でご確認ください。<br>
+          ※ Storage無料枠の目安：保存5GBまで／日あたりダウンロード1GBまで<br>
+          ※ Firestoreは1ドキュメント（学生1人分）あたり1MBの上限があります（無料枠の容量とは別の制約です）。
+        </div>
+      </div>
+
+    </div>
+    <div style="padding:14px 16px;border-top:1px solid #eee;display:flex;gap:10px;justify-content:flex-end;">
+      <button class="mbtn-cancel" onclick="document.getElementById('storageUsageModal').classList.add('hide')">閉じる</button>
+      <button class="mbtn" style="background:#5d4037;" onclick="showStorageUsage()">🔄 再集計</button>
+    </div>
+  </div>
+</div>
+
 <div class="ov hide" id="printModal">
   <div class="mb" style="max-width:640px;">
     <div class="mh" style="background:linear-gradient(135deg,#1a3a6b,#2e5090);">
@@ -1000,6 +1082,7 @@ textarea.voice-recording{
     <button class="hb" style="background:#6a1b9a;color:white;font-weight:700;" onclick="exportAllKarte()" title="全学生データをJSONで一括ダウンロード">🗃 全件エクスポート</button>
     <button class="hb" style="background:#2e7d32;color:white;font-weight:700;" onclick="exportThisStudent()" title="現在開いている学生の全データをJSONでダウンロード">📄 この学生を書き出し</button>
     <button class="hb" style="background:#00695c;color:white;font-weight:700;" onclick="showCloudCompare()" id="bulkSaveBtn" title="ローカルとCloudのデータを比較して安全に同期">🔍 Cloud比較チェック</button>
+    <button class="hb" style="background:#5d4037;color:white;font-weight:700;" onclick="showStorageUsage()" title="ES資料添付の合計容量を確認します（目安）">📦 容量確認</button>
     <button class="hb" style="background:#c8860a;color:white;font-weight:700;" id="saveBtn">💾☁️ 保存</button>
     <button class="hb" style="background:#1565c0;color:white;" id="fbLoadBtn">☁️ Cloud読込</button>
     <button class="hb" style="background:#c0392b;color:white;font-weight:700;" id="closeBtn">✖ 閉じる</button>
@@ -6813,6 +6896,182 @@ window.exportAllKarte = async function(){
     console.error(e);
   }finally{
     if(btn){ btn.disabled = false; btn.textContent = '🗃 全件エクスポート'; }
+  }
+};
+
+// ===== 容量確認（ES資料添付の合計サイズを集計） =====
+// 注：karte側が把握しているデータからの目安集計。正確な数値はFirebase Console（Storage→使用状況）を参照。
+window.showStorageUsage = async function(){
+  var modal = document.getElementById('storageUsageModal');
+  var loadingEl = document.getElementById('storageUsage-loading');
+  var resultEl = document.getElementById('storageUsage-result');
+  var subtitleEl = document.getElementById('storageUsageSubtitle');
+
+  modal.classList.remove('hide');
+  loadingEl.style.display = 'block';
+  resultEl.style.display = 'none';
+  subtitleEl.textContent = '全学生の添付データを集計しています...';
+
+  try{
+    const snap = await getDocs(query(collection(db, 'karte'), limit(300)));
+
+    let totalBytes = 0;
+    let fileCount = 0;
+    let studentCount = 0;
+    const ranking = []; // { name, gakuseki, bytes, count }
+
+    // Firestore（karteデータ本体）集計用
+    let fsTotalBytes = 0;
+    let fsDocCount = 0;
+    const FS_DOC_LIMIT_BYTES = 1024 * 1024; // Firestore 1ドキュメント=1MB上限
+    const FS_WARN_RATIO = 0.7; // 上限の70%を超えたら要注意とする
+    const fsRanking = []; // { name, gakuseki, bytes }
+    const fsWarnList = []; // 上限に近い学生
+
+    snap.forEach(function(docSnap){
+      const d = docSnap.data();
+
+      // ----- Storage（添付ファイル本体）集計 -----
+      const atts = d.esAttachments || {};
+      let studentBytes = 0;
+      let studentFileCount = 0;
+
+      Object.keys(atts).forEach(function(catKey){
+        const list = atts[catKey] || [];
+        list.forEach(function(item){
+          const size = (item && typeof item.size === 'number') ? item.size : 0;
+          studentBytes += size;
+          studentFileCount += 1;
+        });
+      });
+
+      if(studentFileCount > 0){
+        totalBytes += studentBytes;
+        fileCount += studentFileCount;
+        studentCount += 1;
+        ranking.push({
+          name: d.name || docSnap.id,
+          gakuseki: d.gakuseki || docSnap.id,
+          bytes: studentBytes,
+          count: studentFileCount
+        });
+      }
+
+      // ----- Firestore（karteドキュメント本体）集計 -----
+      // ドキュメント全体をJSON文字列化してバイト数を概算（UTF-8相当でカウント）
+      let docBytes = 0;
+      try{
+        docBytes = new TextEncoder().encode(JSON.stringify(d)).length;
+      }catch(e){
+        docBytes = JSON.stringify(d).length; // フォールバック（概算）
+      }
+      fsTotalBytes += docBytes;
+      fsDocCount += 1;
+      fsRanking.push({
+        name: d.name || docSnap.id,
+        gakuseki: d.gakuseki || docSnap.id,
+        bytes: docBytes
+      });
+      if(docBytes >= FS_DOC_LIMIT_BYTES * FS_WARN_RATIO){
+        fsWarnList.push({
+          name: d.name || docSnap.id,
+          gakuseki: d.gakuseki || docSnap.id,
+          bytes: docBytes
+        });
+      }
+    });
+
+    ranking.sort(function(a,b){ return b.bytes - a.bytes; });
+    fsRanking.sort(function(a,b){ return b.bytes - a.bytes; });
+
+
+    // ===== 表示 =====
+    const FREE_LIMIT_BYTES = 5 * 1024 * 1024 * 1024; // 5GB
+    function fmtSize(bytes){
+      if(bytes < 1024) return bytes + 'B';
+      if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + 'KB';
+      if(bytes < 1024*1024*1024) return (bytes/1024/1024).toFixed(2) + 'MB';
+      return (bytes/1024/1024/1024).toFixed(2) + 'GB';
+    }
+
+    document.getElementById('su-totalSize').textContent = fmtSize(totalBytes);
+    document.getElementById('su-fileCount').textContent = fileCount + '件';
+    document.getElementById('su-studentCount').textContent = studentCount + '名';
+
+    const pct = Math.min(100, (totalBytes / FREE_LIMIT_BYTES) * 100);
+    document.getElementById('su-bar').style.width = pct.toFixed(2) + '%';
+    document.getElementById('su-percentBar').textContent =
+      '無料枠5GB中の ' + pct.toFixed(3) + '% を使用（目安）';
+
+    // ランキング描画（上位10名）
+    const rankEl = document.getElementById('su-ranking');
+    rankEl.innerHTML = '';
+    if(ranking.length === 0){
+      rankEl.innerHTML = '<div style="padding:14px;text-align:center;color:#999;font-size:0.8rem;">まだ添付ファイルがありません</div>';
+    } else {
+      ranking.slice(0, 10).forEach(function(s, idx){
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f0f0f0;font-size:0.78rem;';
+        row.innerHTML =
+          '<span style="display:flex;align-items:center;gap:8px;">' +
+            '<span style="color:#999;font-weight:700;width:18px;">' + (idx+1) + '</span>' +
+            '<span style="font-weight:600;">' + s.name + '</span>' +
+            '<span style="color:#999;font-size:0.7rem;">(' + s.gakuseki + ')</span>' +
+          '</span>' +
+          '<span style="text-align:right;white-space:nowrap;">' +
+            '<span style="font-weight:700;color:#4e342e;">' + fmtSize(s.bytes) + '</span>' +
+            '<span style="color:#999;font-size:0.7rem;"> / ' + s.count + '件</span>' +
+          '</span>';
+        rankEl.appendChild(row);
+      });
+    }
+
+    // ===== Firestore（karteデータ本体）の表示 =====
+    document.getElementById('fs-totalSize').textContent = fmtSize(fsTotalBytes);
+    document.getElementById('fs-docCount').textContent = fsDocCount + '件';
+    document.getElementById('fs-warnCount').textContent = fsWarnList.length + '名';
+    document.getElementById('fs-avgSize').textContent =
+      fsDocCount > 0 ? ('1人あたり平均 ' + fmtSize(fsTotalBytes / fsDocCount)) : '-';
+
+    const fsWarnBox = document.getElementById('fs-warnBox');
+    if(fsWarnList.length > 0){
+      fsWarnBox.style.display = 'block';
+      fsWarnBox.innerHTML = '⚠️ 以下の学生はFirestoreの1ドキュメント上限（1MB）の' + Math.round(FS_WARN_RATIO*100) + '%を超えています。面談記録やAI結果履歴が大量に蓄積されている可能性があります：<br>' +
+        fsWarnList.map(function(s){ return '・' + s.name + '（' + s.gakuseki + '）：' + fmtSize(s.bytes); }).join('<br>');
+    } else {
+      fsWarnBox.style.display = 'none';
+    }
+
+    const fsRankEl = document.getElementById('fs-ranking');
+    fsRankEl.innerHTML = '';
+    if(fsRanking.length === 0){
+      fsRankEl.innerHTML = '<div style="padding:14px;text-align:center;color:#999;font-size:0.8rem;">データがありません</div>';
+    } else {
+      fsRanking.slice(0, 10).forEach(function(s, idx){
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f0f0f0;font-size:0.78rem;';
+        const isWarn = s.bytes >= FS_DOC_LIMIT_BYTES * FS_WARN_RATIO;
+        row.innerHTML =
+          '<span style="display:flex;align-items:center;gap:8px;">' +
+            '<span style="color:#999;font-weight:700;width:18px;">' + (idx+1) + '</span>' +
+            '<span style="font-weight:600;">' + s.name + (isWarn ? ' ⚠️' : '') + '</span>' +
+            '<span style="color:#999;font-size:0.7rem;">(' + s.gakuseki + ')</span>' +
+          '</span>' +
+          '<span style="text-align:right;white-space:nowrap;">' +
+            '<span style="font-weight:700;color:' + (isWarn ? '#c0392b' : '#0d47a1') + ';">' + fmtSize(s.bytes) + '</span>' +
+          '</span>';
+        fsRankEl.appendChild(row);
+      });
+    }
+
+    subtitleEl.textContent = studentCount + '名の添付データ／' + fsDocCount + '名のkarteデータを集計しました';
+    loadingEl.style.display = 'none';
+    resultEl.style.display = 'block';
+
+  }catch(e){
+    console.error('容量集計エラー:', e);
+    subtitleEl.textContent = '集計に失敗しました';
+    loadingEl.innerHTML = '❌ 集計に失敗しました。<br>' + (e && e.message ? e.message : e);
   }
 };
 
