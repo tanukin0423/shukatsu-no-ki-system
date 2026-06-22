@@ -3,12 +3,13 @@
 // ※ shukatsu-no-ki-system の既存SWとは独立したキャッシュ名を使用
 // ====================================
 
-const CACHE_NAME = 'launcher-x-v1';  // ← 既存SWのキャッシュ名と衝突しない固有名
+const CACHE_NAME = 'launcher-x-v2';  // ← v1→v2 に更新（変更を反映させるため）
 
 const CACHE_FILES = [
   './launcher-X.html',
   './launcher-manifest.json',
   './icon-192-counselor.png',
+  './icon-512-counselor.png',
   'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 ];

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>就活の木　管理ランチャー｜多摩大学 キャリア支援課</title>
 <!-- PWA対応 -->
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="launcher-manifest.json">
 <meta name="theme-color" content="#1C3D1E">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -142,6 +142,50 @@ body{
   font-size:0.67rem;color:var(--tl);line-height:1.8;
 }
 .page1-footer span{color:var(--gd);font-weight:700;}
+
+/* ── PWAインストールバナー ── */
+#pwa-install-bar{
+  display:none;
+  align-items:center;justify-content:space-between;gap:10px;
+  background:linear-gradient(135deg,#1a3d28,#2d6b4a);
+  color:white;padding:10px 16px;
+  border-bottom:2px solid #6de0b0;
+}
+#pwa-install-bar .pwa-msg{
+  font-size:0.78rem;font-weight:700;line-height:1.4;
+  flex:1;
+}
+#pwa-install-bar .pwa-msg small{
+  display:block;font-size:0.65rem;font-weight:400;opacity:0.8;margin-top:2px;
+}
+#pwa-install-btn{
+  background:#d4a843;color:#1a3d28;border:none;border-radius:8px;
+  padding:8px 14px;font-size:0.78rem;font-weight:900;
+  font-family:'Noto Sans JP',sans-serif;cursor:pointer;white-space:nowrap;
+  flex-shrink:0;
+}
+#pwa-install-btn:hover{background:#e8c060;}
+#pwa-dismiss-btn{
+  background:none;border:none;color:rgba(255,255,255,0.6);
+  font-size:1rem;cursor:pointer;padding:4px;flex-shrink:0;
+}
+
+/* iOS用インストールガイド */
+#ios-guide{
+  display:none;
+  background:#1a3d28;color:white;
+  padding:12px 16px;font-size:0.75rem;line-height:1.7;
+  border-bottom:2px solid #6de0b0;
+  text-align:center;
+}
+#ios-guide strong{color:#d4a843;}
+#ios-guide-close{
+  display:inline-block;margin-top:6px;
+  background:rgba(255,255,255,0.15);border:none;
+  color:white;border-radius:6px;padding:4px 12px;
+  font-size:0.72rem;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;
+}
 
 /* ── お役立ちシリーズ専用 ── */
 .badge-new{
@@ -383,6 +427,24 @@ body{
   </div>
 </div>
 
+<!-- PWAインストールバナー（Android Chrome用） -->
+<div id="pwa-install-bar">
+  <div class="pwa-msg">
+    📲 ホーム画面に追加できます
+    <small>アプリとして使うと快適です</small>
+  </div>
+  <button id="pwa-install-btn">インストール</button>
+  <button id="pwa-dismiss-btn" title="閉じる">✕</button>
+</div>
+
+<!-- iOS Safari用ガイド -->
+<div id="ios-guide">
+  📱 iPhoneでホーム画面に追加する方法<br>
+  Safari下部の <strong>共有ボタン（□↑）</strong> をタップ →<br>
+  「<strong>ホーム画面に追加</strong>」を選択してください
+  <br><button id="ios-guide-close">閉じる</button>
+</div>
+
 <div class="card-wrap">
   <!-- ロゴ -->
   <div class="logo">
@@ -401,170 +463,212 @@ body{
   <div class="page active" id="page1">
     <div class="section-label">🗂 カウンセラー管理ツール</div>
     <div class="grid">
-      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki-system/index.html" target="_blank">
+      <button class="btn green" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-no-ki-system/index.html','予約フォーム','📅','学生用 面談予約')">
+        
         <div class="btn-icon">📅</div>
         <div class="btn-body"><div class="btn-name">予約フォーム</div><div class="btn-desc">学生用 面談予約</div></div>
-      </a>
-      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki-system/NO2NO3_merged_2026.html" target="_blank">
+      </button>
+      <button class="btn green" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-no-ki-system/NO2NO3_merged_2026.html','面談カルテ','📝','NO2NO3 メール管理')">
+        
         <div class="btn-icon">📝</div>
         <div class="btn-body"><div class="btn-name">面談カルテ</div><div class="btn-desc">NO2NO3 メール管理</div></div>
-      </a>
-      <a class="btn teal" href="https://tanukin0423.github.io/shukatsu-no-ki-system/karte_v5.html" target="_blank">
+      </button>
+      <button class="btn teal" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-no-ki-system/karte_v5.html','カルテ v5','☁️','Firebase・判定バッジ付き')">
+        
         <div class="btn-icon">☁️</div>
         <div class="btn-body"><div class="btn-name">カルテ v5</div><div class="btn-desc">Firebase・判定バッジ付き</div></div>
-      </a>
-      <a class="btn amber" href="https://tanukin0423.github.io/shukatsu-no-ki-system/karte_v4.html" target="_blank">
+      </button>
+      <button class="btn amber" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-no-ki-system/karte_v4.html','カルテ v4','📄','基本版（バックアップ）')">
+        
         <div class="btn-icon">📄</div>
         <div class="btn-body"><div class="btn-name">カルテ v4</div><div class="btn-desc">基本版（バックアップ）</div></div>
-      </a>
-      <a class="btn coral" href="https://tanukin0423.github.io/shukatsu-no-ki-system/admin.html" target="_blank">
+      </button>
+      <button class="btn coral" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-no-ki-system/admin.html','管理画面','🔧','カレンダー・相談員設定')">
+        
         <div class="btn-icon">🔧</div>
         <div class="btn-body"><div class="btn-name">管理画面</div><div class="btn-desc">カレンダー・相談員設定</div></div>
-      </a>
-      <a class="btn purple" href="https://tanukin0423.github.io/shukatsu-no-ki-system/student_master_import.html" target="_blank">
+      </button>
+      <button class="btn purple" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-no-ki-system/student_master_import.html','学生マスター登録','📊','ExcelをFirebaseに一括登録')">
+        
         <div class="btn-icon">📊</div>
         <div class="btn-body"><div class="btn-name">学生マスター登録</div><div class="btn-desc">ExcelをFirebaseに一括登録</div></div>
-      </a>
-      <a class="btn teal" href="https://tanukin0423.github.io/shukatsu-no-ki-system/karte_list.html" target="_blank">
+      </button>
+      <button class="btn teal" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-no-ki-system/karte_list.html','学生カルテ一覧','📋','進捗確認・カード／一覧表示')">
+        
         <div class="btn-icon">📋</div>
         <div class="btn-body"><div class="btn-name">学生カルテ一覧</div><div class="btn-desc">進捗確認・カード／一覧表示</div></div>
-      </a>
-      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki-system/kariji.html" target="_blank">
+      </button>
+      <button class="btn green" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-no-ki-system/kariji.html','キャリ爺パネル','🌳','ビジュアル操作ランチャー')">
+        
         <div class="btn-icon">🌳</div>
         <div class="btn-body"><div class="btn-name">キャリ爺パネル</div><div class="btn-desc">ビジュアル操作ランチャー</div></div>
-      </a>
-      <a class="btn teal" href="karte_word_transfer.html" target="_blank">
+      </button>
+      <button class="btn teal" onclick="showQrCard('karte_word_transfer.html','Word転写ツール','📄','ガクチカ・自己PRをカルテv5へ')">
+        
         <div class="btn-icon">📄</div>
         <div class="btn-body"><div class="btn-name">Word転写ツール</div><div class="btn-desc">ガクチカ・自己PRをカルテv5へ</div></div>
-      </a>
+      </button>
     </div>
 
     <div class="section-label">🌱 学生向けツール</div>
     <div class="grid">
-      <a class="btn blue" href="https://tanukin0423.github.io/gaku-pr-shibou-mentai/" target="_blank">
+      <button class="btn blue" onclick="showQrCard('https://tanukin0423.github.io/gaku-pr-shibou-mentai/','ES作成&添削ツール','✏️','自己PR・ガクチカ・志望動機')">
+        
         <div class="btn-icon">✏️</div>
         <div class="btn-body"><div class="btn-name">ES作成&添削ツール</div><div class="btn-desc">自己PR・ガクチカ・志望動機</div></div>
-      </a>
-      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-es/" target="_blank">
+      </button>
+      <button class="btn green" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-es/','ES最強作成支援ツール','🌱','STAR+WHY+F&C｜6ツール完備')">
+        
         <div class="btn-icon">🌱</div>
         <div class="btn-body"><div class="btn-name">ES最強作成支援ツール</div><div class="btn-desc">STAR+WHY+F&C｜6ツール完備</div></div>
-      </a>
-      <a class="btn amber" href="https://tanukin0423.github.io/meta-assessment/" target="_blank">
+      </button>
+      <button class="btn amber" onclick="showQrCard('https://tanukin0423.github.io/meta-assessment/','メタアセスメント','🧠','自己分析・強み発見ツール')">
+        
         <div class="btn-icon">🧠</div>
         <div class="btn-body"><div class="btn-name">メタアセスメント</div><div class="btn-desc">自己分析・強み発見ツール</div></div>
-      </a>
-      <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/matrix-shindan-ver14.html" target="_blank">
+      </button>
+      <button class="btn purple" onclick="showQrCard('https://tanukin0423.github.io/meta-assessment/matrix-shindan-ver14.html','16分割マトリクス診断','🔲','適職を2軸×16セルで発見')">
+        
         <div class="btn-icon">🔲</div>
         <div class="btn-body"><div class="btn-name">16分割マトリクス診断</div><div class="btn-desc">適職を2軸×16セルで発見</div></div>
-      </a>
-      <a class="btn green" href="https://tanukin0423.github.io/shokugyo-matrix/" target="_blank">
+      </button>
+      <button class="btn green" onclick="showQrCard('https://tanukin0423.github.io/shokugyo-matrix/','職業マトリクス16分割 🆕','🌳','112職種・職種検索・jobtag連携')">
+        
         <div class="btn-icon">🌳</div>
         <div class="btn-body"><div class="btn-name">職業マトリクス16分割 🆕</div><div class="btn-desc">112職種・職種検索・jobtag連携</div></div>
-      </a>
-      <a class="btn blue" href="https://tanukin0423.github.io/meta-assessment/jobtag-catalog-ver6.html" target="_blank">
+      </button>
+      <button class="btn blue" onclick="showQrCard('https://tanukin0423.github.io/meta-assessment/jobtag-catalog-ver6.html','jobtagカタログ','📚','職業情報・適職リンク集')">
+        
         <div class="btn-icon">📚</div>
         <div class="btn-body"><div class="btn-name">jobtagカタログ</div><div class="btn-desc">職業情報・適職リンク集</div></div>
-      </a>
-      <a class="btn teal" href="https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#gyokai" target="_blank">
+      </button>
+      <button class="btn teal" onclick="showQrCard('https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#gyokai','業界研究','🏭','19業界・業界地図を把握')">
+        
         <div class="btn-icon">🏭</div>
         <div class="btn-body"><div class="btn-name">業界研究</div><div class="btn-desc">19業界・業界地図を把握</div></div>
-      </a>
-      <a class="btn teal" href="https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#kigyo" target="_blank">
+      </button>
+      <button class="btn teal" onclick="showQrCard('https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#kigyo','企業研究','🏢','企業分析・比較・選び方')">
+        
         <div class="btn-icon">🏢</div>
         <div class="btn-body"><div class="btn-name">企業研究</div><div class="btn-desc">企業分析・比較・選び方</div></div>
-      </a>
-      <a class="btn teal" href="https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#shokushu" target="_blank">
+      </button>
+      <button class="btn teal" onclick="showQrCard('https://tanukin0423.github.io/gyo-kigyou-shoku/kenkyu-guide.html#shokushu','職種研究','💼','20職種・仕事内容を知る')">
+        
         <div class="btn-icon">💼</div>
         <div class="btn-body"><div class="btn-name">職種研究</div><div class="btn-desc">20職種・仕事内容を知る</div></div>
-      </a>
-      <a class="btn amber" href="https://tanukin0423.github.io/semi-setsumeishiryou-2026/" target="_blank">
+      </button>
+      <button class="btn amber" onclick="showQrCard('https://tanukin0423.github.io/semi-setsumeishiryou-2026/','ガントチャート','📊','28卒 就活タイムライン')">
+        
         <div class="btn-icon">📊</div>
         <div class="btn-body"><div class="btn-name">ガントチャート</div><div class="btn-desc">28卒 就活タイムライン</div></div>
-      </a>
-      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-6-test/webtest-guide.html" target="_blank">
+      </button>
+      <button class="btn green" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-6-test/webtest-guide.html','Webテスト見分け方ガイド','🔍','URL判別・業界別傾向・受検前チェック')">
+        
         <div class="btn-icon">🔍</div>
         <div class="btn-body"><div class="btn-name">Webテスト見分け方ガイド</div><div class="btn-desc">URL判別・業界別傾向・受検前チェック</div></div>
-      </a>
-      <a class="btn blue" href="https://tanukin0423.github.io/shukatsu-6-test/" target="_blank">
+      </button>
+      <button class="btn blue" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-6-test/','筆記対策ドリル 完全版','📝','SPI3・TG-WEB・玉手箱等 6種別')">
+        
         <div class="btn-icon">📝</div>
         <div class="btn-body"><div class="btn-name">筆記対策ドリル 完全版</div><div class="btn-desc">SPI3・TG-WEB・玉手箱等 6種別</div></div>
-      </a>
-      <a class="btn teal" href="https://tanukin0423.github.io/shukatsu-test-drill/" target="_blank">
+      </button>
+      <button class="btn teal" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-test-drill/','筆記対策ドリル 旧版','✏️','固定問題＋AI出題｜無料')">
+        
         <div class="btn-icon">✏️</div>
         <div class="btn-body"><div class="btn-name">筆記対策ドリル 旧版</div><div class="btn-desc">固定問題＋AI出題｜無料</div></div>
-      </a>
+      </button>
+    </div>
+
+    <div class="section-label">🌱 企業研究・インターン・ES対策 <span style="font-size:0.6rem;font-weight:700;color:var(--amber);background:var(--amber-pale);border:1px solid var(--amber);border-radius:4px;padding:1px 5px;margin-left:4px;letter-spacing:0.04em;">NEW</span></div>
+    <div class="grid">
+      <button class="btn green" onclick="showQrCard('https://tanukin0423.github.io/intern-es-generator/','企業研究＆ES対策プロンプトGEN','🌱','インターン・本選考・説明会・OB訪問対応')">
+        <span class="badge-new">NEW</span>
+        <div class="btn-icon">🌱</div>
+        <div class="btn-body"><div class="btn-name">企業研究＆ES対策プロンプトGEN</div><div class="btn-desc">インターン・本選考・説明会・OB訪問対応</div></div>
+      </button>
     </div>
 
     <div class="section-label">✍️ ES添削システム</div>
     <div class="grid">
-      <a class="btn coral" href="https://tanukin0423.github.io/es-bunseki/" target="_blank">
+      <button class="btn coral" onclick="showQrCard('https://tanukin0423.github.io/es-bunseki/','ES添削 キャリ爺版','🤖','学生と対話形式で一緒に作成')">
+        
         <div class="btn-icon">🤖</div>
         <div class="btn-body"><div class="btn-name">ES添削 キャリ爺版</div><div class="btn-desc">学生と対話形式で一緒に作成</div></div>
-      </a>
-      <a class="btn teal" href="https://tanukin0423.github.io/es-tensaku-all/" target="_blank">
+      </button>
+      <button class="btn teal" onclick="showQrCard('https://tanukin0423.github.io/es-tensaku-all/','ES添削 Gemini版','✨','配布用・無料で使える')">
         <span class="badge-free">無料</span>
         <div class="btn-icon">✨</div>
         <div class="btn-body"><div class="btn-name">ES添削 Gemini版</div><div class="btn-desc">配布用・無料で使える</div></div>
-      </a>
-      <a class="btn purple" href="https://tanukin0423.github.io/es-tensaku/" target="_blank">
+      </button>
+      <button class="btn purple" onclick="showQrCard('https://tanukin0423.github.io/es-tensaku/','ES添削 比較版','⚖️','Claude＆Gemini 同時比較')">
+        
         <div class="btn-icon">⚖️</div>
         <div class="btn-body"><div class="btn-name">ES添削 比較版</div><div class="btn-desc">Claude＆Gemini 同時比較</div></div>
-      </a>
+      </button>
     </div>
 
     <div class="section-label">🎓 カウンセラー用リソース</div>
     <div class="grid">
-      <a class="btn purple" href="https://tanukin0423.github.io/semi-setsumeishiryou-2026/" target="_blank">
+      <button class="btn purple" onclick="showQrCard('https://tanukin0423.github.io/semi-setsumeishiryou-2026/','ゼミ説明資料','📊','28卒向け・セミナー用スライド')">
+        
         <div class="btn-icon">📊</div>
         <div class="btn-body"><div class="btn-name">ゼミ説明資料</div><div class="btn-desc">28卒向け・セミナー用スライド</div></div>
-      </a>
-      <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/dsm5tr-career-guide.html" target="_blank">
+      </button>
+      <button class="btn purple" onclick="showQrCard('https://tanukin0423.github.io/meta-assessment/dsm5tr-career-guide.html','神経発達症ガイド','🧠','7分類・DSM-5-TR準拠')">
+        
         <div class="btn-icon">🧠</div>
         <div class="btn-body"><div class="btn-name">神経発達症ガイド</div><div class="btn-desc">7分類・DSM-5-TR準拠</div></div>
-      </a>
-      <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/career-support-manual-vol3.html" target="_blank">
+      </button>
+      <button class="btn purple" onclick="showQrCard('https://tanukin0423.github.io/meta-assessment/career-support-manual-vol3.html','支援マニュアル Vol.3','📖','接し方・応酬話法・適性職種')">
+        
         <div class="btn-icon">📖</div>
         <div class="btn-body"><div class="btn-name">支援マニュアル Vol.3</div><div class="btn-desc">接し方・応酬話法・適性職種</div></div>
-      </a>
-      <a class="btn purple" href="https://tanukin0423.github.io/meta-assessment/career-support-manual-vol3.pdf" target="_blank">
+      </button>
+      <button class="btn purple" onclick="showQrCard('https://tanukin0423.github.io/meta-assessment/career-support-manual-vol3.pdf','マニュアル Vol.3 PDF','⬇️','印刷用・保存用')">
+        
         <div class="btn-icon">⬇️</div>
         <div class="btn-body"><div class="btn-name">マニュアル Vol.3 PDF</div><div class="btn-desc">印刷用・保存用</div></div>
-      </a>
-      <a class="btn amber" href="https://tanukin0423.github.io/meta-assessment/mayoeru-kohitsuji-v2.html" target="_blank">
+      </button>
+      <button class="btn amber" onclick="showQrCard('https://tanukin0423.github.io/meta-assessment/mayoeru-kohitsuji-v2.html','迷える子羊 第2弾','🐑','特性チェック＋悩み別対策')">
+        
         <div class="btn-icon">🐑</div>
         <div class="btn-body"><div class="btn-name">迷える子羊 第2弾</div><div class="btn-desc">特性チェック＋悩み別対策</div></div>
-      </a>
-      <a class="btn blue" href="https://tanukin0423.github.io/meta-assessment/mayoeru-kohitsuji-manual.html" target="_blank">
+      </button>
+      <button class="btn blue" onclick="showQrCard('https://tanukin0423.github.io/meta-assessment/mayoeru-kohitsuji-manual.html','子羊 使い方マニュアル','📘','自分用・引き継ぎ・研修用')">
+        
         <div class="btn-icon">📘</div>
         <div class="btn-body"><div class="btn-name">子羊 使い方マニュアル</div><div class="btn-desc">自分用・引き継ぎ・研修用</div></div>
-      </a>
+      </button>
     </div>
 
     <div class="section-label">📊 API使用量確認</div>
     <div class="grid">
-      <a class="btn blue" href="https://claude.ai/settings/billing" target="_blank">
+      <button class="btn blue" onclick="showQrCard('https://claude.ai/settings/billing','Claude 使用量','🔵','claude.ai → Settings → Billing')">
+        
         <div class="btn-icon">🔵</div>
         <div class="btn-body"><div class="btn-name">Claude 使用量</div><div class="btn-desc">claude.ai → Settings → Billing</div></div>
-      </a>
-      <a class="btn amber" href="https://console.anthropic.com/settings/usage" target="_blank">
+      </button>
+      <button class="btn amber" onclick="showQrCard('https://console.anthropic.com/settings/usage','API 使用量','🟡','')">
+        
         <div class="btn-icon">🟡</div>
-        <div class="btn-body"><div class="btn-name">API 使用量</div><div class="btn-desc">console.anthropic.com → Usage<br>APIキー：shukatsu-no-ki</div></div>
-      </a>
+        <div class="btn-body"><div class="btn-name">API 使用量</div><div class="btn-desc"></div></div>
+      </button>
     </div>
 
     <div class="section-label">📚 お役立ちシリーズ <span style="font-size:0.6rem;font-weight:700;color:var(--amber);background:var(--amber-pale);border:1px solid var(--amber);border-radius:4px;padding:1px 5px;margin-left:4px;letter-spacing:0.04em;">NEW</span></div>
     <div class="grid" id="yakudachi-grid">
       <!-- HTMLツールリンク -->
-      <a class="btn green" href="https://tanukin0423.github.io/shukatsu-no-ki-system/naitei-qa.html" target="_blank">
+      <button class="btn green" onclick="showQrCard('https://tanukin0423.github.io/shukatsu-no-ki-system/naitei-qa.html','内定承諾書・誓約書Q&A','📋','法的根拠つき・学生向け解説')">
+        
         <div class="btn-icon">📋</div>
         <div class="btn-body"><div class="btn-name">内定承諾書・誓約書Q&A</div><div class="btn-desc">法的根拠つき・学生向け解説</div></div>
-      </a>
+      </button>
       <!-- Wordダウンロードボタン（JS制御） -->
-      <a class="btn amber" id="btn-word-naitei" href="#" onclick="downloadWordNaitei(event)">
+      <button class="btn amber" onclick="showQrCard('#','内定承諾書QA（Word）','⬇️','naitei-qa.docx ダウンロード')">
         <span class="badge-new">NEW</span>
         <div class="btn-icon">⬇️</div>
         <div class="btn-body"><div class="btn-name">内定承諾書QA（Word）</div><div class="btn-desc">naitei-qa.docx ダウンロード</div></div>
-      </a>
+      </button>
     </div>
     <!-- お役立ちシリーズ 追加用コメント（ここに btn を追加していく） -->
 
@@ -700,6 +804,7 @@ const flows = {
       { id:'tool_es_star',    icon:'🌱', color:'ch-green',  name:'ES最強作成支援ツール', desc:'STAR+WHY+F&C｜6ツール完備' },
       { id:'tool_es_full',    icon:'🔰', color:'ch-blue',   name:'ESフルバージョン',     desc:'事例21例・STARメソッド' },
       { id:'tool_es_ult',     icon:'💪', color:'ch-purple', name:'ES Ultimate Edition',  desc:'6段論法で深掘り' },
+      { id:'tool_intern_es_gen', icon:'🌱', color:'ch-green', name:'企業研究＆ES対策プロンプトGEN', desc:'インターン・本選考・説明会すべて対応' },
     ]
   },
 
@@ -746,6 +851,7 @@ const flows = {
       doshi:'「なんとなく大手、では絶対に通らない時代です。その会社について、ライバルより1つ多く知ることが差になります。」'
     },
     choices: [
+      { id:'tool_intern_es_gen', icon:'🌱', color:'ch-green', name:'企業研究＆ES対策プロンプトGEN', desc:'企業研究→ES作成まで一気通貫！' },
       { id:'tool_kigyo_kigyo', icon:'🏢', color:'ch-teal',  name:'企業研究ツール',     desc:'企業分析・比較・選び方' },
       { id:'tool_kigyo_gyokai',icon:'🏭', color:'ch-teal',  name:'業界研究ツール',     desc:'業界全体像を把握する' },
       { id:'tool_es_star', icon:'🌱', color:'ch-green', name:'ES最強作成支援ツール',       desc:'志望動機ツール' },
@@ -1235,6 +1341,9 @@ const flows = {
   tool_hitsuji:    { isToolLink: true, url:'https://tanukin0423.github.io/meta-assessment/mayoeru-kohitsuji-v2.html', name:'迷える子羊ガイド 第2弾', icon:'🐑', desc:'特性チェック＋悩み別対策。少し特別な学生への寄り添い方をまとめたカウンセラー専用ガイド。' },
   tool_dsm:        { isToolLink: true, url:'https://tanukin0423.github.io/meta-assessment/dsm5tr-career-guide.html', name:'神経発達症 7分類ガイド', icon:'🧠', desc:'DSM-5-TR準拠。7分類の接し方・応酬話法・適性職種・支援機関をまとめたガイド。' },
   tool_manual_v3:  { isToolLink: true, url:'https://tanukin0423.github.io/meta-assessment/career-support-manual-vol3.html', name:'支援マニュアル Vol.3', icon:'📖', desc:'接し方・応酬話法・適性職種の拡充マニュアル。HTML版。' },
+
+  // ★新ツール：企業研究＆ES対策プロンプトジェネレーター
+  tool_intern_es_gen: { isToolLink: true, url:'https://tanukin0423.github.io/intern-es-generator/', name:'企業研究＆ES対策プロンプトジェネレーター', icon:'🌱', desc:'インターン事前準備・本選考ES・説明会・OB訪問　すべてに対応。企業名とコース名を入力→AIへのプロンプトを自動生成→Claude.aiへ貼付けするだけ！6段論法・文例テンプレ付き。3年生・4年生どちらも使える万能ツール。' },
 };
 
 // ========================
@@ -1449,14 +1558,158 @@ render('start');
 
 </script>
 
+<!-- PWA インストールプロンプト制御 -->
+<script>
+(function(){
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInStandalone = window.navigator.standalone === true;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  // iOS Safari：スタンドアロンでなければガイドを表示
+  if (isIOS && isSafari && !isInStandalone) {
+    // 一度閉じたら24時間は出さない
+    const lastDismiss = localStorage.getItem('ios-guide-dismissed');
+    if (!lastDismiss || Date.now() - parseInt(lastDismiss) > 86400000) {
+      document.getElementById('ios-guide').style.display = 'block';
+    }
+    document.getElementById('ios-guide-close').addEventListener('click', function(){
+      document.getElementById('ios-guide').style.display = 'none';
+      localStorage.setItem('ios-guide-dismissed', Date.now());
+    });
+    return;
+  }
+
+  // Android Chrome：beforeinstallprompt をキャッチ
+  let deferredPrompt = null;
+  const bar = document.getElementById('pwa-install-bar');
+  const installBtn = document.getElementById('pwa-install-btn');
+  const dismissBtn = document.getElementById('pwa-dismiss-btn');
+
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    bar.style.display = 'flex';
+  });
+
+  installBtn.addEventListener('click', async function(){
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('[PWA] インストール結果:', outcome);
+    deferredPrompt = null;
+    bar.style.display = 'none';
+  });
+
+  dismissBtn.addEventListener('click', function(){
+    bar.style.display = 'none';
+    deferredPrompt = null;
+  });
+
+  // インストール完了後
+  window.addEventListener('appinstalled', function(){
+    bar.style.display = 'none';
+    console.log('[PWA] インストール完了');
+  });
+})();
+</script>
+
 <!-- PWA Service Worker 登録 -->
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js')
+    navigator.serviceWorker.register('launcher-sw.js')
       .then(reg => console.log('SW登録OK:', reg.scope))
       .catch(err => console.log('SW登録失敗:', err));
   });
+}
+</script>
+
+<!-- QRカードモーダル -->
+<div id="qrModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;" onclick="closeQrModal(event)">
+  <div style="background:#fff;border-radius:20px;padding:28px 24px;max-width:340px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.3);text-align:center;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="closeQrModal()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:#aaa;">✕</button>
+    <div id="qrModalIcon" style="font-size:40px;margin-bottom:8px;"></div>
+    <div id="qrModalName" style="font-size:16px;font-weight:900;color:#1F2937;margin-bottom:4px;"></div>
+    <div id="qrModalDesc" style="font-size:12px;color:#6B7280;margin-bottom:16px;line-height:1.5;"></div>
+    <div style="display:flex;justify-content:center;margin-bottom:10px;">
+      <div id="qrModalCode" style="width:160px;height:160px;"></div>
+    </div>
+    <div id="qrModalUrl" style="font-size:10px;color:#9CA3AF;margin-bottom:18px;word-break:break-all;"></div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="openQrTool()" style="flex:1;padding:11px;background:#2C5F2D;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;">🔗 ツールを開く</button>
+      <button onclick="printQrCard()" style="flex:1;padding:11px;background:#fff;color:#2C5F2D;border:2px solid #2C5F2D;border-radius:10px;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;">🖨️ 印刷する</button>
+    </div>
+    <div style="font-size:10px;color:#aaa;margin-top:10px;">🌳 就活の木｜多摩大学 キャリア支援課　北山 四郎</div>
+  </div>
+</div>
+
+<!-- 印刷用カード -->
+<div id="qrPrintArea" style="display:none;">
+  <div style="max-width:400px;margin:40px auto;padding:36px;border:2px solid #2C5F2D;border-radius:16px;font-family:'Noto Sans JP',sans-serif;text-align:center;">
+    <div style="display:inline-block;background:#2C5F2D;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.1em;padding:4px 14px;border-radius:20px;margin-bottom:16px;">就活の木 ツールシリーズ</div>
+    <div id="printIcon2" style="font-size:44px;margin-bottom:10px;"></div>
+    <div id="printName2" style="font-size:20px;font-weight:900;color:#1F2937;margin-bottom:6px;"></div>
+    <div id="printDesc2" style="font-size:13px;color:#6B7280;margin-bottom:20px;line-height:1.6;"></div>
+    <div style="display:flex;justify-content:center;margin-bottom:10px;"><div id="printQr2" style="width:180px;height:180px;"></div></div>
+    <div id="printUrl2" style="font-size:11px;color:#9CA3AF;margin-bottom:20px;word-break:break-all;"></div>
+    <div style="font-size:12px;color:#4A8C4B;font-weight:700;border-top:1px solid #E5E7EB;padding-top:14px;">🌳 就活の木｜多摩大学 キャリア支援課　北山 四郎</div>
+  </div>
+</div>
+
+<style>
+@media print {
+  body > *:not(#qrPrintArea) { display:none !important; }
+  #qrPrintArea { display:block !important; }
+  #qrModal { display:none !important; }
+}
+</style>
+
+<script>
+let currentQrUrl = '';
+
+function showQrCard(url, name, icon, desc) {
+  currentQrUrl = url;
+  document.getElementById('qrModalIcon').textContent = icon;
+  document.getElementById('qrModalName').textContent = name;
+  document.getElementById('qrModalDesc').textContent = desc;
+  document.getElementById('qrModalUrl').textContent = url;
+
+  // QRコード生成
+  const qrEl = document.getElementById('qrModalCode');
+  qrEl.innerHTML = '';
+  if(typeof QRCode !== 'undefined') {
+    new QRCode(qrEl, { text: url, width:160, height:160, colorDark:'#2C5F2D', colorLight:'#ffffff' });
+  }
+
+  // 印刷用も準備
+  document.getElementById('printIcon2').textContent = icon;
+  document.getElementById('printName2').textContent = name;
+  document.getElementById('printDesc2').textContent = desc;
+  document.getElementById('printUrl2').textContent = url;
+  const printQrEl = document.getElementById('printQr2');
+  printQrEl.innerHTML = '';
+  if(typeof QRCode !== 'undefined') {
+    new QRCode(printQrEl, { text: url, width:180, height:180, colorDark:'#2C5F2D', colorLight:'#ffffff' });
+  }
+
+  const modal = document.getElementById('qrModal');
+  modal.style.display = 'flex';
+}
+
+function closeQrModal(e) {
+  if(!e || e.target === document.getElementById('qrModal')) {
+    document.getElementById('qrModal').style.display = 'none';
+  }
+}
+
+function openQrTool() {
+  if(currentQrUrl) window.open(currentQrUrl, '_blank');
+}
+
+function printQrCard() {
+  document.getElementById('qrPrintArea').style.display = 'block';
+  window.print();
+  setTimeout(() => { document.getElementById('qrPrintArea').style.display = 'none'; }, 1000);
 }
 </script>
 </body>
