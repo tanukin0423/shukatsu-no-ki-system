@@ -1,14 +1,14 @@
 {
   "name": "就活の木 管理ランチャー",
-  "short_name": "キャリ爺",
+  "short_name": "ランチャー",
   "description": "多摩大学キャリア支援課｜就活支援ツール管理ランチャー",
-  "start_url": "./launcher-X.html",
+  "start_url": "/shukatsu-no-ki-system/launcher-X.html",
+  "scope": "/shukatsu-no-ki-system/launcher-X.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#1a3d28",
   "theme_color": "#2d6b4a",
   "lang": "ja",
-  "orientation": "portrait-primary",
-  "scope": "./",
   "icons": [
     {
       "src": "icon-192-counselor.png",
@@ -21,23 +21,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "categories": ["education", "productivity"],
-  "shortcuts": [
-    {
-      "name": "カルテ v5",
-      "short_name": "カルテ",
-      "description": "Firebase連動 カウンセリングカルテ",
-      "url": "https://tanukin0423.github.io/shukatsu-no-ki-system/karte_v5.html",
-      "icons": [{ "src": "icon-192-counselor.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "学生カルテ一覧",
-      "short_name": "一覧",
-      "description": "進捗確認・カード／一覧表示",
-      "url": "https://tanukin0423.github.io/shukatsu-no-ki-system/karte_list.html",
-      "icons": [{ "src": "icon-192-counselor.png", "sizes": "192x192" }]
     }
   ]
 }
