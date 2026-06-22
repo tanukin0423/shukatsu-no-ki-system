@@ -1,6 +1,6 @@
 {
   "name": "就活の木 コントロールパネル",
-  "short_name": "キャリ爺",
+  "short_name": "コントロール",
   "description": "多摩大学キャリア支援課 カウンセラー専用コントロールパネル",
   "start_url": "/shukatsu-no-ki-system/kariji.html",
   "scope": "/shukatsu-no-ki-system/kariji.html",
