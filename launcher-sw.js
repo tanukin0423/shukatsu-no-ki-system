@@ -1,9 +1,8 @@
 // ====================================
 // 就活の木 管理ランチャー専用 Service Worker
-// ※ shukatsu-no-ki-system の既存SWとは独立したキャッシュ名を使用
 // ====================================
 
-const CACHE_NAME = 'launcher-x-v2';  // ← v1→v2 に更新（変更を反映させるため）
+const CACHE_NAME = 'launcher-x-v3';  // v2→v3（修正反映）
 
 const CACHE_FILES = [
   './launcher-X.html',
@@ -29,7 +28,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// アクティベート（古いキャッシュは自分のプレフィックスのみ削除）
+// アクティベート
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -42,16 +41,17 @@ self.addEventListener('activate', event => {
   );
 });
 
-// フェッチ（Network First）
+// フェッチ（Network First）← clone順序を修正
 self.addEventListener('fetch', event => {
   if (!event.request.url.startsWith('http')) return;
   event.respondWith(
     fetch(event.request)
       .then(res => {
         if (event.request.method === 'GET' && res.status === 200) {
-          caches.open(CACHE_NAME).then(c => c.put(event.request, res.clone()));
+          const resClone = res.clone(); // ← 先にcloneしてからキャッシュ
+          caches.open(CACHE_NAME).then(c => c.put(event.request, resClone));
         }
-        return res;
+        return res; // ← オリジナルをそのまま返す
       })
       .catch(() =>
         caches.match(event.request).then(cached =>
