@@ -1,0 +1,26 @@
+{
+  "name": "就活の木 コントロールパネル",
+  "short_name": "キャリ爺",
+  "description": "多摩大学キャリア支援課 カウンセラー専用コントロールパネル",
+  "start_url": "/shukatsu-no-ki-system/kariji.html",
+  "scope": "/shukatsu-no-ki-system/kariji.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a4a2e",
+  "theme_color": "#1a4a2e",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
