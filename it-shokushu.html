@@ -6,27 +6,27 @@
 <title>IT業界 職種マップ｜就活の木</title>
 <style>
   :root{
-    --bg:#eaf6ee;
-    --bg-deep:#d8f0e0;
-    --branch:#1e4a33;
-    --branch-mid:#254f37;
+    --bg:#eaf3fb;
+    --bg-deep:#d6e9f8;
+    --branch:#163d5e;
+    --branch-mid:#1d4e76;
     --gold:#a8751b;
     --gold-card:#e0b563;
-    --mint:#178a5c;
-    --mint-card:#6de0b0;
-    --card:#1e4a33;
-    --card-border:#3a7a55;
-    --ink:#153323;
-    --ink-soft:#3f6152;
-    --ink-card:#f4f8f5;
-    --ink-card-soft:#cfe9dc;
+    --mint:#1565a8;
+    --mint-card:#5ec8f0;
+    --card:#163d5e;
+    --card-border:#2f6fa3;
+    --ink:#0f2a3d;
+    --ink-soft:#3a5770;
+    --ink-card:#f2f8fc;
+    --ink-card-soft:#cfe3f0;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     background:
-      radial-gradient(ellipse at 20% -10%, rgba(31,138,94,0.07), transparent 55%),
-      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 50%, #eef8f1 100%);
+      radial-gradient(ellipse at 20% -10%, rgba(21,101,168,0.07), transparent 55%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 50%, #eef6fc 100%);
     color:var(--ink);
     font-family:"Hiragino Sans","Yu Gothic",-apple-system,BlinkMacSystemFont,sans-serif;
     min-height:100vh;
@@ -52,9 +52,19 @@
     display:inline-flex; align-items:center; gap:8px;
     font-size:12.5px; letter-spacing:.14em;
     color:var(--mint); font-weight:700;
-    border:1px solid rgba(31,138,94,0.35);
+    border:1px solid rgba(21,101,168,0.35);
     padding:5px 14px; border-radius:99px;
-    background:rgba(31,138,94,0.08);
+    background:rgba(21,101,168,0.08);
+  }
+  .robot-badge{
+    width:56px; height:56px;
+    margin:18px auto 0;
+    border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px;
+    background:linear-gradient(160deg, var(--card), rgba(15,50,80,0.9));
+    border:1px solid var(--card-border);
+    box-shadow:0 6px 18px rgba(15,60,95,0.28);
   }
   h1{
     font-size:clamp(26px,5vw,38px);
@@ -78,7 +88,7 @@
 
   /* ---- INTRO NOTE (card) ---- */
   .note{
-    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.9));
+    background:linear-gradient(160deg, var(--card), rgba(15,50,80,0.9));
     border:1px solid var(--card-border);
     border-radius:14px;
     padding:18px 20px;
@@ -104,7 +114,7 @@
 
   /* ---- TREE (accordion branches / cards) ---- */
   .branch{
-    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.92));
+    background:linear-gradient(160deg, var(--card), rgba(15,50,80,0.92));
     border:1px solid var(--card-border);
     border-radius:16px;
     margin-bottom:14px;
@@ -137,8 +147,8 @@
   }
   .branch-count{
     font-size:11.5px; color:var(--mint-card);
-    background:rgba(109,224,176,0.12);
-    border:1px solid rgba(109,224,176,0.3);
+    background:rgba(94,200,240,0.14);
+    border:1px solid rgba(94,200,240,0.32);
     padding:3px 10px; border-radius:99px;
     white-space:nowrap;
   }
@@ -171,7 +181,7 @@
     transition:.15s ease;
   }
   .leaf:hover, .leaf:focus-visible{
-    background:rgba(109,224,176,0.2);
+    background:rgba(94,200,240,0.22);
     border-color:var(--mint-card);
     transform:translateY(-1px);
     outline:none;
@@ -181,7 +191,7 @@
   /* ---- MODAL ---- */
   .overlay{
     position:fixed; inset:0;
-    background:rgba(15,30,22,0.5);
+    background:rgba(10,26,42,0.5);
     backdrop-filter:blur(3px);
     display:none;
     align-items:center; justify-content:center;
@@ -191,7 +201,7 @@
   .overlay.show{ display:flex; }
   .modal{
     width:100%; max-width:420px;
-    background:linear-gradient(165deg, #234f38, #1a3f2b);
+    background:linear-gradient(165deg, #1a4a70, #123a58);
     border:1px solid var(--card-border);
     border-radius:18px;
     padding:26px 24px 22px;
@@ -233,7 +243,7 @@
 
   /* ---- LANGUAGE PICKER (card) ---- */
   .lang-box{
-    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.85));
+    background:linear-gradient(160deg, var(--card), rgba(15,50,80,0.85));
     border:1px solid var(--card-border);
     border-radius:16px;
     padding:20px 20px 18px;
@@ -252,13 +262,18 @@
   .lang-chips{ display:flex; flex-wrap:wrap; gap:8px; }
   .lang-chip{
     background:rgba(0,0,0,0.14);
-    border:1px solid rgba(224,181,99,0.32);
+    border:2px solid rgba(224,181,99,0.45);
     color:var(--ink-card);
     font-size:12.5px; font-weight:700;
     padding:7px 14px; border-radius:99px;
     cursor:pointer; transition:.15s ease;
   }
-  .lang-chip:hover{ background:rgba(224,181,99,0.14); }
+  .lang-chip:hover{
+    background:rgba(224,181,99,0.2);
+    border-color:var(--gold-card);
+    transform:translateY(-2px);
+    box-shadow:0 4px 12px rgba(0,0,0,0.18);
+  }
   .lang-chip.active{
     background:var(--gold-card); color:#3a3325; border-color:var(--gold-card);
   }
@@ -299,7 +314,7 @@
     text-align:center;
     border-radius:12px;
     border:1px solid var(--card-border);
-    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.85));
+    background:linear-gradient(160deg, var(--card), rgba(15,50,80,0.85));
     color:var(--ink-card-soft);
     font-size:13.5px; font-weight:700;
     cursor:pointer;
@@ -314,7 +329,7 @@
     font-size:12.5px; color:var(--ink-card-soft); line-height:1.8;
     margin:0 0 16px;
     padding:12px 15px;
-    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.85));
+    background:linear-gradient(160deg, var(--card), rgba(15,50,80,0.85));
     border-left:3px solid var(--mint-card);
     border-radius:8px;
   }
@@ -327,7 +342,7 @@
     color:var(--mint); cursor:pointer; text-decoration:underline;
   }
   .qcat{
-    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.9));
+    background:linear-gradient(160deg, var(--card), rgba(15,50,80,0.9));
     border:1px solid var(--card-border);
     border-radius:16px;
     margin-bottom:12px;
@@ -345,8 +360,8 @@
   .qcat-title{ flex:1; font-size:14.5px; font-weight:700; }
   .qcat-badge{
     font-size:11px; color:var(--mint-card);
-    background:rgba(109,224,176,0.12);
-    border:1px solid rgba(109,224,176,0.3);
+    background:rgba(94,200,240,0.14);
+    border:1px solid rgba(94,200,240,0.32);
     padding:2px 9px; border-radius:99px;
   }
   .qcat .chevron{ width:16px; height:16px; color:var(--ink-card-soft); transition:transform .25s ease; }
@@ -376,7 +391,7 @@
   .qitem.checked label{
     color:var(--ink-card-soft);
     text-decoration:line-through;
-    text-decoration-color:rgba(207,233,220,0.5);
+    text-decoration-color:rgba(207,227,240,0.5);
   }
 
   footer{
@@ -398,6 +413,7 @@
 
 <div class="hero">
   <div class="eyebrow">🌱 就活の木｜業界研究シリーズ</div>
+  <div class="robot-badge">🤖</div>
   <h1>IT業界<span>・職種マップ</span></h1>
   <p class="lead">
     「IT業界」とひとことで言っても、扱う仕事は驚くほど幅広い。
