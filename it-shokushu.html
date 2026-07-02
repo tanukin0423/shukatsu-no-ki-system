@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT業界 職種マップ｜就活の木</title>
+<style>
+  :root{
+    --bg:#eaf6ee;
+    --bg-deep:#d8f0e0;
+    --branch:#1e4a33;
+    --branch-mid:#254f37;
+    --gold:#a8751b;
+    --gold-card:#e0b563;
+    --mint:#178a5c;
+    --mint-card:#6de0b0;
+    --card:#1e4a33;
+    --card-border:#3a7a55;
+    --ink:#153323;
+    --ink-soft:#3f6152;
+    --ink-card:#f4f8f5;
+    --ink-card-soft:#cfe9dc;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(31,138,94,0.07), transparent 55%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 50%, #eef8f1 100%);
+    color:var(--ink);
+    font-family:"Hiragino Sans","Yu Gothic",-apple-system,BlinkMacSystemFont,sans-serif;
+    min-height:100vh;
+    padding:0 0 60px;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px;}
+
+  /* ---- HERO ---- */
+  .hero{
+    position:relative;
+    padding:52px 20px 40px;
+    text-align:center;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 50% 120%, rgba(168,117,27,0.08), transparent 60%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; letter-spacing:.14em;
+    color:var(--mint); font-weight:700;
+    border:1px solid rgba(31,138,94,0.35);
+    padding:5px 14px; border-radius:99px;
+    background:rgba(31,138,94,0.08);
+  }
+  h1{
+    font-size:clamp(26px,5vw,38px);
+    margin:18px 0 10px;
+    font-weight:800;
+    letter-spacing:.02em;
+    color:var(--ink);
+  }
+  h1 span{color:var(--gold);}
+  .hero p.lead{
+    max-width:560px; margin:0 auto;
+    color:var(--ink-soft); font-size:15px; line-height:1.9;
+  }
+  .stat-row{
+    display:flex; justify-content:center; gap:28px; flex-wrap:wrap;
+    margin-top:26px;
+  }
+  .stat{ text-align:center; }
+  .stat b{ display:block; font-size:22px; color:var(--mint); font-weight:800;}
+  .stat span{ font-size:11.5px; color:var(--ink-soft); letter-spacing:.05em;}
+
+  /* ---- INTRO NOTE (card) ---- */
+  .note{
+    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.9));
+    border:1px solid var(--card-border);
+    border-radius:14px;
+    padding:18px 20px;
+    font-size:13.5px;
+    line-height:1.85;
+    color:var(--ink-card-soft);
+    margin:8px 0 40px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.12);
+  }
+  .note b{color:var(--gold-card); font-weight:700;}
+
+  /* ---- SECTION LABEL ---- */
+  .section-label{
+    display:flex; align-items:center; gap:10px;
+    margin:44px 0 16px;
+  }
+  .section-label .leaf-ico{font-size:18px;}
+  .section-label h2{
+    font-size:17px; margin:0; font-weight:800; letter-spacing:.02em;
+    color:var(--ink);
+  }
+  .section-label .rule{flex:1; height:1px; background:linear-gradient(90deg, var(--card-border), transparent);}
+
+  /* ---- TREE (accordion branches / cards) ---- */
+  .branch{
+    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.92));
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    margin-bottom:14px;
+    overflow:hidden;
+    box-shadow:0 4px 14px rgba(0,0,0,0.16);
+    transition:box-shadow .2s ease, transform .2s ease;
+  }
+  .branch:hover{ transform:translateY(-1px); }
+  .branch.open{ box-shadow:0 10px 28px rgba(0,0,0,0.24); }
+  .branch-head{
+    width:100%;
+    display:flex; align-items:center; gap:14px;
+    padding:18px 20px;
+    background:none; border:none; cursor:pointer;
+    text-align:left; color:var(--ink-card); font-family:inherit;
+  }
+  .branch-num{
+    flex:0 0 auto;
+    width:34px;height:34px;border-radius:10px;
+    background:rgba(224,181,99,0.18);
+    border:1px solid rgba(224,181,99,0.4);
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;
+  }
+  .branch-title{flex:1;}
+  .branch-title .name{font-size:15.5px; font-weight:700;}
+  .branch-title .desc{
+    font-size:12.5px; color:var(--ink-card-soft); margin-top:3px; line-height:1.7;
+    max-width:640px;
+  }
+  .branch-count{
+    font-size:11.5px; color:var(--mint-card);
+    background:rgba(109,224,176,0.12);
+    border:1px solid rgba(109,224,176,0.3);
+    padding:3px 10px; border-radius:99px;
+    white-space:nowrap;
+  }
+  .chevron{
+    width:18px; height:18px; flex:0 0 auto;
+    transition:transform .25s ease;
+    color:var(--ink-card-soft);
+  }
+  .branch.open .chevron{ transform:rotate(180deg); }
+
+  .leaves{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .35s ease;
+    padding:0 20px;
+  }
+  .branch.open .leaves{ padding:2px 20px 22px; }
+  .leaf-grid{
+    display:flex; flex-wrap:wrap; gap:9px;
+  }
+  .leaf{
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(0,0,0,0.2);
+    border:1px solid rgba(255,255,255,0.14);
+    color:var(--ink-card);
+    padding:9px 14px;
+    border-radius:99px;
+    font-size:13px;
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .leaf:hover, .leaf:focus-visible{
+    background:rgba(109,224,176,0.2);
+    border-color:var(--mint-card);
+    transform:translateY(-1px);
+    outline:none;
+  }
+  .leaf::before{ content:"🍃"; font-size:11px; opacity:.8;}
+
+  /* ---- MODAL ---- */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(15,30,22,0.5);
+    backdrop-filter:blur(3px);
+    display:none;
+    align-items:center; justify-content:center;
+    padding:20px;
+    z-index:50;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    width:100%; max-width:420px;
+    background:linear-gradient(165deg, #234f38, #1a3f2b);
+    border:1px solid var(--card-border);
+    border-radius:18px;
+    padding:26px 24px 22px;
+    box-shadow:0 14px 34px rgba(0,0,0,0.28);
+    animation:pop .2s ease;
+    color:var(--ink-card);
+  }
+  @keyframes pop{ from{transform:scale(.94); opacity:0;} to{transform:scale(1); opacity:1;} }
+  .modal-tag{
+    font-size:11px; color:var(--mint-card); letter-spacing:.08em; font-weight:700;
+  }
+  .modal h3{
+    font-size:19px; margin:8px 0 14px; font-weight:800; line-height:1.5;
+    color:var(--ink-card);
+  }
+  .modal p{
+    font-size:14px; line-height:1.9; color:var(--ink-card-soft); margin:0 0 22px;
+  }
+  .modal-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn{
+    flex:1;
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    padding:12px 16px;
+    border-radius:11px;
+    font-size:13.5px; font-weight:700;
+    text-decoration:none;
+    cursor:pointer;
+    border:1px solid transparent;
+    transition:.15s ease;
+  }
+  .btn-primary{
+    background:var(--gold-card); color:#3a3325;
+  }
+  .btn-primary:hover{ filter:brightness(1.08); }
+  .btn-ghost{
+    background:transparent; color:var(--ink-card-soft); border-color:rgba(255,255,255,0.25);
+  }
+  .btn-ghost:hover{ background:rgba(255,255,255,0.08); }
+
+  /* ---- LANGUAGE PICKER (card) ---- */
+  .lang-box{
+    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.85));
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    padding:20px 20px 18px;
+    margin-bottom:10px;
+    color:var(--ink-card);
+    box-shadow:0 4px 14px rgba(0,0,0,0.14);
+  }
+  .lang-box .lb-head{
+    display:flex; align-items:baseline; gap:8px; margin-bottom:4px;
+  }
+  .lang-box .lb-head span.ico{font-size:16px;}
+  .lang-box .lb-head h2{font-size:15.5px; margin:0; font-weight:800;}
+  .lang-box .lb-sub{
+    font-size:12.5px; color:var(--ink-card-soft); margin:0 0 14px; line-height:1.8;
+  }
+  .lang-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .lang-chip{
+    background:rgba(0,0,0,0.14);
+    border:1px solid rgba(224,181,99,0.32);
+    color:var(--ink-card);
+    font-size:12.5px; font-weight:700;
+    padding:7px 14px; border-radius:99px;
+    cursor:pointer; transition:.15s ease;
+  }
+  .lang-chip:hover{ background:rgba(224,181,99,0.14); }
+  .lang-chip.active{
+    background:var(--gold-card); color:#3a3325; border-color:var(--gold-card);
+  }
+  .lang-note{
+    display:none;
+    margin-top:14px;
+    padding:13px 15px;
+    background:rgba(0,0,0,0.22);
+    border-left:3px solid var(--gold-card);
+    border-radius:8px;
+    font-size:13px; line-height:1.85; color:var(--ink-card-soft);
+  }
+  .lang-note.show{ display:block; }
+  .lang-note b{ color:var(--gold-card); }
+  .lang-note .clear-btn{
+    display:inline-block; margin-top:8px;
+    font-size:11.5px; color:var(--mint-card); cursor:pointer; text-decoration:underline;
+  }
+
+  .leaf.dim{ opacity:.4; filter:grayscale(.25); }
+  .leaf.match{
+    background:rgba(224,181,99,0.18);
+    border-color:var(--gold-card);
+    box-shadow:none;
+  }
+  .leaf.match::before{ content:"⭐"; }
+  .branch.has-match{
+    border-color:var(--gold-card);
+  }
+
+  /* ---- INTERVIEW QUESTIONS ---- */
+  .qtabs{
+    display:flex; gap:8px; margin-bottom:16px;
+  }
+  .qtab{
+    flex:1;
+    padding:12px 10px;
+    text-align:center;
+    border-radius:12px;
+    border:1px solid var(--card-border);
+    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.85));
+    color:var(--ink-card-soft);
+    font-size:13.5px; font-weight:700;
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .qtab.active{
+    background:var(--gold-card);
+    color:#3a3325;
+    border-color:var(--gold-card);
+  }
+  .q-sub{
+    font-size:12.5px; color:var(--ink-card-soft); line-height:1.8;
+    margin:0 0 16px;
+    padding:12px 15px;
+    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.85));
+    border-left:3px solid var(--mint-card);
+    border-radius:8px;
+  }
+  .q-progress{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:14px;
+    font-size:12px; color:var(--ink-soft);
+  }
+  .q-progress .reset-link{
+    color:var(--mint); cursor:pointer; text-decoration:underline;
+  }
+  .qcat{
+    background:linear-gradient(160deg, var(--card), rgba(30,74,51,0.9));
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    margin-bottom:12px;
+    overflow:hidden;
+    box-shadow:0 4px 14px rgba(0,0,0,0.16);
+  }
+  .qcat-head{
+    width:100%;
+    display:flex; align-items:center; gap:12px;
+    padding:15px 18px;
+    background:none; border:none; cursor:pointer;
+    text-align:left; color:var(--ink-card); font-family:inherit;
+  }
+  .qcat-icon{ font-size:17px; }
+  .qcat-title{ flex:1; font-size:14.5px; font-weight:700; }
+  .qcat-badge{
+    font-size:11px; color:var(--mint-card);
+    background:rgba(109,224,176,0.12);
+    border:1px solid rgba(109,224,176,0.3);
+    padding:2px 9px; border-radius:99px;
+  }
+  .qcat .chevron{ width:16px; height:16px; color:var(--ink-card-soft); transition:transform .25s ease; }
+  .qcat.open .chevron{ transform:rotate(180deg); }
+  .qlist{
+    max-height:0; overflow:hidden;
+    transition:max-height .3s ease;
+    padding:0 18px;
+  }
+  .qcat.open .qlist{ padding:0 18px 16px; }
+  .qitem{
+    display:flex; align-items:flex-start; gap:10px;
+    padding:9px 0;
+    border-top:1px solid rgba(255,255,255,0.1);
+    cursor:pointer;
+  }
+  .qitem:first-child{ border-top:none; }
+  .qitem input{
+    margin-top:3px;
+    width:16px; height:16px; flex:0 0 auto;
+    accent-color:var(--gold-card);
+    cursor:pointer;
+  }
+  .qitem label{
+    font-size:13.5px; line-height:1.75; color:var(--ink-card); cursor:pointer;
+  }
+  .qitem.checked label{
+    color:var(--ink-card-soft);
+    text-decoration:line-through;
+    text-decoration-color:rgba(207,233,220,0.5);
+  }
+
+  footer{
+    text-align:center; margin-top:50px;
+    font-size:12px; color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer .brand{ color:var(--gold); font-weight:700; }
+
+  @media (max-width:520px){
+    .branch-head{ padding:15px 16px; gap:10px; }
+    .leaves{ padding:0 16px; }
+    .branch.open .leaves{ padding:2px 16px 18px; }
+    .stat-row{ gap:20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="eyebrow">🌱 就活の木｜業界研究シリーズ</div>
+  <h1>IT業界<span>・職種マップ</span></h1>
+  <p class="lead">
+    「IT業界」とひとことで言っても、扱う仕事は驚くほど幅広い。
+    まずは6つの分野に分けて、それぞれどんな職種があるのかを一緒に見ていこう。
+  </p>
+  <div class="stat-row">
+    <div class="stat"><b>6</b><span>分野</span></div>
+    <div class="stat"><b>34</b><span>職種</span></div>
+    <div class="stat"><b>0</b><span>必須資格</span></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="note">
+    <b>IT業界の特徴</b>：PCやスマホのような身近なものから、企業の大規模システムまでを扱う裾野の広い業界。
+    人手不足が続いており、<b>未経験からでも挑戦できる仕事</b>が多いのも特徴です。
+    まずは「自分はどの分野に興味があるか」を、下のマップから探してみましょう。
+    職種名をタップすると詳しい説明が出て、そこから公的な職業情報サイト「job tag（厚生労働省）」にもジャンプできます。
+  </div>
+
+  <div class="lang-box">
+    <div class="lb-head"><span class="ico">🗣️</span><h2>学んでいる言語からさがす</h2></div>
+    <p class="lb-sub">「大学で○○を勉強している」という話が出たら、ここから関連する職種にジャンプできます。言語をタップすると、下のマップで該当する職種が光ります。</p>
+    <div class="lang-chips" id="lang-chips"></div>
+    <div class="lang-note" id="lang-note"></div>
+  </div>
+
+  <div class="section-label">
+    <span class="leaf-ico">🌳</span>
+    <h2>分野から職種をさがす</h2>
+    <span class="rule"></span>
+  </div>
+
+  <div id="tree"></div>
+
+  <div class="section-label">
+    <span class="leaf-ico">🎯</span>
+    <h2>面談で使う質問集</h2>
+    <span class="rule"></span>
+  </div>
+
+  <div class="qtabs" id="qtabs"></div>
+  <p class="q-sub" id="q-sub"></p>
+  <div class="q-progress">
+    <span id="q-progress-text"></span>
+    <span class="reset-link" onclick="resetChecks()">この学生の分をリセット</span>
+  </div>
+  <div id="qcats"></div>
+
+  <footer>
+    出典：職業情報提供サイト job tag（厚生労働省）／各職種の解説は就活の木にて要約作成<br>
+    <span class="brand">就活の木</span>｜あなたの就活を、木を育てるように。
+  </footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-tag" id="m-field">分野</div>
+    <h3 id="m-name">職種名</h3>
+    <p id="m-desc">説明文</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">閉じる</button>
+      <a class="btn btn-primary" id="m-link" href="#" target="_blank" rel="noopener">job tagで詳しく見る ↗</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const LANG_INFO = {
+  python:   { label:"Python",     note:"AI・データ分析・自動化まで幅広く使われる言語。データサイエンティストやAIエンジニアの定番。" },
+  java:     { label:"Java",       note:"企業の基幹システムや大規模な受託開発で長年使われてきた言語。SIer業界で特に強い。" },
+  javascript:{label:"JavaScript", note:"Webサイトやアプリに「動き」をつける言語。Webサービス開発に欠かせない。" },
+  php:      { label:"PHP",        note:"Webサービスのサーバー側の処理でよく使われる言語。" },
+  ruby:     { label:"Ruby",       note:"Webサービス開発で使われる言語。日本発の言語として国内のWeb系企業でも人気。" },
+  sql:      { label:"SQL",        note:"データベースを操作するための言語。データ活用やシステム基盤の仕事で必須。" },
+  c:        { label:"C",          note:"家電・自動車・通信機器など「モノ」に組み込むソフトウェア開発でよく使われる言語。" },
+  cpp:      { label:"C++",        note:"処理速度が求められる組込み機器やゲーム、AI開発などで使われる言語。" },
+  cs:       { label:"C#",         note:"Windowsアプリやゲーム開発、業務システム開発で使われる言語。" },
+  swift:    { label:"Swift",      note:"iPhoneアプリ（iOS）を開発するための言語。" },
+  kotlin:   { label:"Kotlin",     note:"Androidアプリを開発するための言語。" },
+  cobol:    { label:"COBOL",      note:"銀行や官公庁など、大型コンピュータの基幹システムで今も使われ続けている言語。" },
+  html_css: { label:"HTML/CSS",   note:"Webページの構造や見た目を作る、Web制作の基本となる言語。" },
+};
+
+const DATA = [
+  {
+    field: "共通（業界を横断する職種）",
+    icon: "🤝",
+    desc: "特定の分野に限らず、どの現場でも必要とされる職種。企画・戦略・データ活用・セキュリティなど、技術と経営をつなぐ役割が多い。",
+    jobs: [
+      { name:"プロジェクトマネージャー（IT）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/322", desc:"システム開発プロジェクト全体の進行・予算・人員を管理し、納期と品質を守る責任者。", lang:[] },
+      { name:"コンサルティング営業（IT）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/452", desc:"顧客企業の課題を聞き取り、ITを使った解決策を提案して受注につなげる仕事。", lang:[] },
+      { name:"DXプロデューサー", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/324", desc:"企業のデジタル変革（DX）を企画し、部署をまたいで推進する役割。", lang:[] },
+      { name:"ITコンサルタント", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/362", desc:"企業の経営課題をIT視点で分析し、戦略やシステム化の方向性を助言する。", lang:[] },
+      { name:"データサイエンティスト", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/323", desc:"大量のデータを分析し、ビジネス課題の解決につながる知見を導き出す。", lang:["python","sql"] },
+      { name:"データエンジニア", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/523", desc:"データを収集・整理し、活用しやすい形に整えるための基盤を設計・構築する。", lang:["python","sql"] },
+      { name:"AIエンジニア", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/325", desc:"AI・機械学習の仕組みを設計し、実際のサービスに組み込む技術者。", lang:["python"] },
+      { name:"ブロックチェーン・エンジニア", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/581", desc:"改ざんが難しい分散型台帳技術を使ったシステムを開発する専門職。", lang:["cpp","java"] },
+    ]
+  },
+  {
+    field: "SIer・SES分野",
+    icon: "🏢",
+    desc: "企業や自治体のシステムを、要件定義から構築・運用まで一貫して請け負う分野。プロジェクトごとに技術者を提供する働き方（SES）もある。",
+    jobs: [
+      { name:"システムエンジニア（受託開発）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/312", desc:"顧客企業から依頼を受け、要件定義からシステム構築までを担う。", lang:["java","python","cs"] },
+      { name:"システムエンジニア（基盤システム）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/318", desc:"サーバーやネットワークなど、システムの土台となる基盤部分を設計・構築する。", lang:["java","cobol","sql"] },
+      { name:"運用・管理（IT）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/319", desc:"稼働中のシステムを監視し、安定して動き続けるよう保守・管理する。", lang:["sql"] },
+      { name:"ヘルプデスク（IT）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/320", desc:"社内外からのITに関する問い合わせに対応し、トラブル解決に導く。", lang:[] },
+      { name:"セキュリティエキスパート（オペレーション）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/321", desc:"システムを不正アクセスや攻撃から守るための日常的な監視・対応を行う。", lang:[] },
+      { name:"セキュリティエキスパート（脆弱性診断）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/520", desc:"システムに潜む弱点（脆弱性）を洗い出し、対策を提案する。", lang:["python"] },
+      { name:"セキュリティエキスパート（デジタルフォレンジック）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/533", desc:"サイバー攻撃や不正の痕跡を解析し、原因究明を行う専門職。", lang:["python"] },
+      { name:"セキュリティエキスパート（情報セキュリティ監査）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/534", desc:"企業の情報セキュリティ体制が適切かどうかを第三者の立場で確認する。", lang:[] },
+    ]
+  },
+  {
+    field: "ハードウェア分野",
+    icon: "🔧",
+    desc: "パソコンやスマホ本体、周辺機器など「モノ」自体を企画・設計・製造する分野。近年はVRやドローンなど新しい機器の開発も広がっている。",
+    jobs: [
+      { name:"機械設計技術者", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/262", desc:"製品や装置の機械部分を設計する技術者。", lang:[] },
+      { name:"電子機器技術者", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/273", desc:"家電やデバイスなどに使われる電子回路・部品を設計・開発する。", lang:["c"] },
+      { name:"精密機器技術者", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/271", desc:"高い精度が求められるカメラや医療機器などを設計・開発する。", lang:["c"] },
+      { name:"CADオペレーター", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/25", desc:"設計図面をCADソフトを使って作成・修正する専門職。", lang:[] },
+      { name:"電子機器組立", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/261", desc:"設計図に基づき、電子機器の部品を組み立てる作業を担う。", lang:[] },
+      { name:"インダストリアルデザイナー", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/354", desc:"製品の形状や使いやすさをデザインする仕事。", lang:[] },
+      { name:"システムエンジニア（組込み、IoT）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/315", desc:"家電や自動車など、モノに組み込むソフトウェアを設計・開発する。", lang:["c","cpp"] },
+      { name:"プログラマー", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/313", desc:"設計書をもとにプログラムを実際に書き、システムの機能を実装する。", lang:["c","cpp","java","python"] },
+      { name:"情報工学研究者", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/389", desc:"情報技術に関する新しい理論や技術を研究する専門職。", lang:["python"] },
+      { name:"自動運転開発エンジニア（自動車）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/528", desc:"自動車の自動運転技術を開発するエンジニア。", lang:["c","cpp"] },
+    ]
+  },
+  {
+    field: "ソフトウェア分野",
+    icon: "💻",
+    desc: "パソコンやスマホで動くアプリケーション、業務システムやゲームソフトなどのプログラムを開発する分野。顧客の要望に応じてつくる受託開発と、誰もが使える製品として売るパッケージ開発に分かれる。",
+    jobs: [
+      { name:"ソフトウェア開発（パッケージソフト）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/316", desc:"広く一般に販売するソフトウェア製品を企画・開発する。", lang:["cs","cpp","java"] },
+      { name:"デバッグ作業", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/540", desc:"完成したプログラムの不具合（バグ）を見つけ、修正につなげる作業。", lang:[] },
+    ]
+  },
+  {
+    field: "通信サービス分野",
+    icon: "📡",
+    desc: "電話やインターネット回線など、情報をやり取りするための通信インフラとそのサービスを提供する分野。",
+    jobs: [
+      { name:"電気通信技術者", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/274", desc:"電話や光ファイバーなど、通信インフラの設計・保守を担う。", lang:["c"] },
+    ]
+  },
+  {
+    field: "インターネット分野（Web分野）",
+    icon: "🌐",
+    desc: "企業サイトやSNS、ECサイトなど、インターネット上でサービスを届ける分野。比較的新しく、少人数でも大きな影響力を持つサービスを生み出せるのが特徴。",
+    jobs: [
+      { name:"Webディレクター（Web制作会社）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/327", desc:"Webサイトやサービス制作の方向性を決め、プロジェクト全体を統括する。", lang:[] },
+      { name:"Webデザイナー（Web制作会社）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/326", desc:"Webサイトの見た目や使いやすさをデザインする。", lang:["html_css"] },
+      { name:"システムエンジニア（Webサービス開発）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/314", desc:"Webサービスの仕組みを設計・構築するエンジニア。", lang:["javascript","php","ruby","java"] },
+      { name:"ソフトウェア開発（スマホアプリ）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/317", desc:"スマートフォン向けアプリを企画・開発する。", lang:["swift","kotlin"] },
+      { name:"Webマーケティング（ネット広告・販売促進）", url:"https://shigoto.mhlw.go.jp/User/Occupation/Detail/240", desc:"Web広告やSNSを活用し、商品・サービスの認知や販売を促進する。", lang:[] },
+    ]
+  },
+];
+
+const tree = document.getElementById('tree');
+
+DATA.forEach((field, i) => {
+  const branch = document.createElement('div');
+  branch.className = 'branch';
+  branch.innerHTML = `
+    <button class="branch-head" data-idx="${i}">
+      <div class="branch-num">${field.icon}</div>
+      <div class="branch-title">
+        <div class="name">${field.field}</div>
+        <div class="desc">${field.desc}</div>
+      </div>
+      <div class="branch-count">${field.jobs.length}職種</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="leaves">
+      <div class="leaf-grid">
+        ${field.jobs.map((j, ji) => `<button class="leaf" data-field="${i}" data-job="${ji}" data-lang="${j.lang.join(',')}">${j.name}</button>`).join('')}
+      </div>
+    </div>
+  `;
+  tree.appendChild(branch);
+});
+
+tree.addEventListener('click', (e) => {
+  const head = e.target.closest('.branch-head');
+  if (head) {
+    head.closest('.branch').classList.toggle('open');
+    const leaves = head.nextElementSibling;
+    leaves.style.maxHeight = head.closest('.branch').classList.contains('open') ? leaves.scrollHeight + 40 + 'px' : '0px';
+    return;
+  }
+  const leaf = e.target.closest('.leaf');
+  if (leaf) {
+    const f = DATA[leaf.dataset.field];
+    const j = f.jobs[leaf.dataset.job];
+    openModal(f.field, j);
+  }
+});
+
+// keep open branches sized correctly on resize
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.branch.open .leaves').forEach(l => {
+    l.style.maxHeight = l.scrollHeight + 40 + 'px';
+  });
+});
+
+/* ---- language picker ---- */
+const langChipsEl = document.getElementById('lang-chips');
+const langNoteEl = document.getElementById('lang-note');
+let activeLang = null;
+
+Object.keys(LANG_INFO).forEach(key => {
+  const chip = document.createElement('button');
+  chip.className = 'lang-chip';
+  chip.dataset.lang = key;
+  chip.textContent = LANG_INFO[key].label;
+  chip.addEventListener('click', () => selectLang(key));
+  langChipsEl.appendChild(chip);
+});
+
+function selectLang(key){
+  if (activeLang === key){
+    resetLangFilter();
+    return;
+  }
+  activeLang = key;
+  document.querySelectorAll('.lang-chip').forEach(c => c.classList.toggle('active', c.dataset.lang === key));
+
+  langNoteEl.innerHTML = `<b>${LANG_INFO[key].label}</b>：${LANG_INFO[key].note}<div class="clear-btn" onclick="resetLangFilter()">絞り込みを解除</div>`;
+  langNoteEl.classList.add('show');
+
+  let firstMatchBranch = null;
+  document.querySelectorAll('.branch').forEach(branchEl => {
+    let hasMatch = false;
+    branchEl.querySelectorAll('.leaf').forEach(leafEl => {
+      const langs = (leafEl.dataset.lang || '').split(',').filter(Boolean);
+      const isMatch = langs.includes(key);
+      leafEl.classList.toggle('match', isMatch);
+      leafEl.classList.toggle('dim', !isMatch);
+      if (isMatch) hasMatch = true;
+    });
+    branchEl.classList.toggle('has-match', hasMatch);
+    if (hasMatch){
+      branchEl.classList.add('open');
+      const leaves = branchEl.querySelector('.leaves');
+      leaves.style.maxHeight = leaves.scrollHeight + 40 + 'px';
+      if (!firstMatchBranch) firstMatchBranch = branchEl;
+    }
+  });
+
+  if (firstMatchBranch){
+    setTimeout(() => firstMatchBranch.scrollIntoView({ behavior:'smooth', block:'center' }), 80);
+  }
+}
+
+function resetLangFilter(){
+  activeLang = null;
+  document.querySelectorAll('.lang-chip').forEach(c => c.classList.remove('active'));
+  langNoteEl.classList.remove('show');
+  document.querySelectorAll('.leaf').forEach(l => { l.classList.remove('match'); l.classList.remove('dim'); });
+  document.querySelectorAll('.branch').forEach(b => b.classList.remove('has-match'));
+}
+
+/* ---- interview questions ---- */
+const QUESTIONS = {
+  student: {
+    label: "学生・未経験者向け",
+    sub: "知識量より「自分で手を動かした経験」と「伸びしろ」を見る質問です。",
+    categories: [
+      { title:"学習の実態を確認する", icon:"📚", qs:[
+        "これまで触ったことのある言語・ツールは？",
+        "授業や課題以外で、自分から作ってみたものはある？",
+        "一番つまずいた場面はどこ？そこをどう乗り越えた？",
+      ]},
+      { title:"自己申告の水増しを見分ける", icon:"🔍", qs:[
+        "そのアプリ、実際どこからどこまで自分一人で作った？",
+        "コード量や制作期間はどれくらい？GitHubなど見せられるものはある？",
+      ]},
+      { title:"適性・志向を引き出す", icon:"🌱", qs:[
+        "開発していて、一番「おもしろい」と感じる瞬間はどこ？",
+        "わからないことにぶつかった時、まずどう動く？",
+        "職種マップで気になった分野はどこだった？なぜそこが気になった？",
+      ]},
+    ]
+  },
+  career: {
+    label: "転職者向け",
+    sub: "実務の「深さ」と「再現性」を見る質問です。武勇伝ではなく、切り分けられた事実を引き出しましょう。",
+    categories: [
+      { title:"役割の切り分けを確認する", icon:"🧩", qs:[
+        "直近のプロジェクトで、あなたの担当範囲はどこからどこまで？",
+        "使っていた言語・フレームワーク・開発環境は？",
+        "チーム規模と開発手法（アジャイル／ウォーターフォールなど）は？",
+      ]},
+      { title:"成果を言語化させる", icon:"📊", qs:[
+        "その仕事で、数字や具体的な変化で語れる成果はある？",
+        "一番大変だったトラブルと、その時どう対応した？",
+      ]},
+      { title:"キャリアの位置づけを見る", icon:"🪜", qs:[
+        "要件定義や設計など、上流工程に関わったことは？",
+        "後輩の指導やコードレビューの経験は？",
+      ]},
+      { title:"動機と軸", icon:"🧭", qs:[
+        "今回の転職で、譲れない軸は何？",
+        "これまでの仕事で「一番自分らしく働けた」と感じた瞬間は？",
+      ]},
+      { title:"裏付けを取る", icon:"📎", qs:[
+        "その経験を証明できるもの（ポートフォリオ・資格・GitHub）はある？",
+      ]},
+    ]
+  }
+};
+
+let activeTab = 'student';
+const checkedState = {}; // key: "tab-catIdx-qIdx" -> bool
+
+const qtabsEl = document.getElementById('qtabs');
+const qSubEl = document.getElementById('q-sub');
+const qcatsEl = document.getElementById('qcats');
+const qProgressEl = document.getElementById('q-progress-text');
+
+Object.keys(QUESTIONS).forEach(key => {
+  const tab = document.createElement('div');
+  tab.className = 'qtab' + (key === activeTab ? ' active' : '');
+  tab.dataset.tab = key;
+  tab.textContent = QUESTIONS[key].label;
+  tab.addEventListener('click', () => { activeTab = key; renderQuestions(); });
+  qtabsEl.appendChild(tab);
+});
+
+function totalQCount(tabKey){
+  return QUESTIONS[tabKey].categories.reduce((sum, c) => sum + c.qs.length, 0);
+}
+function checkedQCount(tabKey){
+  let n = 0;
+  QUESTIONS[tabKey].categories.forEach((c, ci) => {
+    c.qs.forEach((q, qi) => { if (checkedState[`${tabKey}-${ci}-${qi}`]) n++; });
+  });
+  return n;
+}
+
+function renderQuestions(){
+  document.querySelectorAll('.qtab').forEach(t => t.classList.toggle('active', t.dataset.tab === activeTab));
+  const data = QUESTIONS[activeTab];
+  qSubEl.textContent = data.sub;
+  qProgressEl.textContent = `チェック済み ${checkedQCount(activeTab)} / ${totalQCount(activeTab)}`;
+
+  qcatsEl.innerHTML = '';
+  data.categories.forEach((cat, ci) => {
+    const el = document.createElement('div');
+    el.className = 'qcat';
+    el.innerHTML = `
+      <button class="qcat-head" data-ci="${ci}">
+        <span class="qcat-icon">${cat.icon}</span>
+        <span class="qcat-title">${cat.title}</span>
+        <span class="qcat-badge">${cat.qs.length}問</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="qlist">
+        ${cat.qs.map((q, qi) => {
+          const id = `q-${activeTab}-${ci}-${qi}`;
+          const checked = !!checkedState[`${activeTab}-${ci}-${qi}`];
+          return `<div class="qitem ${checked ? 'checked' : ''}" data-ci="${ci}" data-qi="${qi}">
+            <input type="checkbox" id="${id}" ${checked ? 'checked' : ''}>
+            <label for="${id}">${q}</label>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+    qcatsEl.appendChild(el);
+  });
+}
+renderQuestions();
+
+qcatsEl.addEventListener('click', (e) => {
+  const head = e.target.closest('.qcat-head');
+  if (head) {
+    const cat = head.closest('.qcat');
+    cat.classList.toggle('open');
+    const list = cat.querySelector('.qlist');
+    list.style.maxHeight = cat.classList.contains('open') ? list.scrollHeight + 20 + 'px' : '0px';
+    return;
+  }
+  const item = e.target.closest('.qitem');
+  if (item && e.target.tagName !== 'INPUT') {
+    const cb = item.querySelector('input');
+    cb.checked = !cb.checked;
+    toggleCheck(item, cb.checked);
+  } else if (e.target.tagName === 'INPUT') {
+    toggleCheck(item, e.target.checked);
+  }
+});
+
+function toggleCheck(item, isChecked){
+  const ci = item.dataset.ci, qi = item.dataset.qi;
+  checkedState[`${activeTab}-${ci}-${qi}`] = isChecked;
+  item.classList.toggle('checked', isChecked);
+  qProgressEl.textContent = `チェック済み ${checkedQCount(activeTab)} / ${totalQCount(activeTab)}`;
+}
+
+function resetChecks(){
+  Object.keys(QUESTIONS[activeTab].categories).forEach(() => {});
+  QUESTIONS[activeTab].categories.forEach((c, ci) => {
+    c.qs.forEach((q, qi) => { delete checkedState[`${activeTab}-${ci}-${qi}`]; });
+  });
+  renderQuestions();
+  // reopen previously open categories back to closed state (fresh view)
+  document.querySelectorAll('.qcat').forEach(c => c.classList.remove('open'));
+}
+
+function openModal(fieldName, job){
+  document.getElementById('m-field').textContent = fieldName;
+  document.getElementById('m-name').textContent = job.name;
+  document.getElementById('m-desc').textContent = job.desc;
+  document.getElementById('m-link').href = job.url;
+  document.getElementById('overlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+}
+document.getElementById('overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'overlay') closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+
+</body>
+</html>
