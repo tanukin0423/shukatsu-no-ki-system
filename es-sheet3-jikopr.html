@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自己PR作成シート｜就活の木</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gd:#2d5a27;--gm:#4a8c3f;--gp:#e8f5e3;--gbg:#f3faf0;
+  --bark:#6b4c2a;--border:#c8dfc2;--text:#2a2a2a;--tl:#888;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans JP',sans-serif;
+  background:var(--gbg);
+  color:var(--text);
+  padding:20px;
+  line-height:1.6;
+}
+.sheet{
+  max-width:760px;margin:0 auto;background:#fff;
+  border-radius:16px;box-shadow:0 8px 30px rgba(45,90,39,0.12);
+  padding:32px 34px 40px;
+}
+.top-badge{
+  display:inline-block;background:var(--gp);color:var(--gd);
+  font-size:0.7rem;font-weight:700;letter-spacing:0.06em;
+  padding:4px 12px;border-radius:20px;margin-bottom:10px;
+}
+h1{font-size:1.35rem;color:var(--gd);margin-bottom:4px;}
+.subtitle{font-size:0.8rem;color:var(--tl);margin-bottom:22px;line-height:1.7;}
+.meta-row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:26px;
+  border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--gbg);}
+.meta-field{flex:1;min-width:140px;}
+.meta-field label{display:block;font-size:0.68rem;font-weight:700;color:var(--tl);margin-bottom:4px;}
+.meta-field input{width:100%;border:none;border-bottom:1.5px solid var(--border);
+  background:transparent;font-family:inherit;font-size:0.85rem;padding:4px 2px;color:var(--text);}
+.meta-field input:focus{outline:none;border-bottom-color:var(--gm);}
+
+.type-box{margin-bottom:24px;border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;}
+.type-box label{display:block;font-size:0.72rem;font-weight:700;color:var(--gd);margin-bottom:6px;}
+.type-ref{font-size:0.68rem;color:var(--tl);margin-bottom:8px;line-height:1.7;}
+.type-box input{width:100%;border:none;border-bottom:1.5px solid var(--border);
+  background:transparent;font-family:inherit;font-size:0.85rem;padding:6px 2px;color:var(--text);}
+.type-box input:focus{outline:none;border-bottom-color:var(--gm);}
+
+.section{margin-bottom:26px;padding-bottom:22px;border-bottom:1px dashed var(--border);}
+.section:last-of-type{border-bottom:none;}
+.section-title{font-size:1rem;font-weight:700;color:var(--gd);margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;}
+.hint-box{
+  background:var(--gp);border-radius:10px;padding:10px 14px;margin-bottom:8px;
+  font-size:0.76rem;color:#3a5a35;
+}
+.hint-box .hint-label{font-weight:700;color:var(--gd);margin-bottom:4px;display:block;}
+.hint-box ul{margin:0;padding-left:1.1em;}
+.hint-box li{margin-bottom:2px;}
+.example-box{
+  font-size:0.74rem;color:var(--tl);font-style:italic;
+  background:#faf9f5;border-left:3px solid var(--bark);
+  padding:8px 12px;margin-bottom:10px;border-radius:0 6px 6px 0;
+}
+textarea{
+  width:100%;min-height:90px;border:1.5px solid var(--border);border-radius:8px;
+  padding:10px 12px;font-family:inherit;font-size:0.88rem;color:var(--text);
+  resize:vertical;line-height:1.7;
+}
+textarea:focus{outline:none;border-color:var(--gm);background:#fbfffa;}
+
+.apply-box{
+  margin-top:8px;border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;
+  display:flex;flex-wrap:wrap;gap:14px;background:var(--gbg);
+}
+.apply-box .meta-field{min-width:130px;}
+
+.char-count{
+  text-align:right;font-size:0.7rem;color:var(--tl);margin-top:4px;font-weight:700;
+}
+.char-count.near{color:#B45309;}
+.char-count.over{color:#B91C1C;}
+
+.total-count-box{
+  margin-top:12px;padding:12px 16px;border-radius:10px;
+  background:var(--gp);color:var(--gd);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;
+  font-size:0.85rem;font-weight:700;transition:background 0.2s,color 0.2s;
+}
+.total-count-box.near{background:#FEF3C7;color:#92400E;}
+.total-count-box.over{background:#FEE2E2;color:#991B1B;}
+.total-count-box .num{font-size:1.05rem;}
+
+.toolbar{
+  max-width:760px;margin:0 auto 14px;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;
+}
+.toolbar button{
+  font-family:inherit;font-size:0.78rem;font-weight:700;cursor:pointer;
+  border-radius:8px;padding:8px 16px;border:1.5px solid var(--gd);
+  background:#fff;color:var(--gd);
+}
+.toolbar button:hover{background:var(--gp);}
+.toolbar .primary{background:var(--gd);color:#fff;}
+.toolbar .primary:hover{background:var(--gm);}
+
+/* 全文表示パネル */
+.fulltext-overlay{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px;
+}
+.fulltext-overlay.open{display:flex;}
+.fulltext-box{
+  background:#fff;border-radius:16px;max-width:640px;width:100%;max-height:85vh;
+  display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3);
+}
+.fulltext-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+}
+.fulltext-head h2{font-size:1rem;color:var(--gd);}
+.fulltext-head button{background:none;border:none;font-size:1.1rem;color:#999;cursor:pointer;}
+.fulltext-body{padding:16px 20px;overflow-y:auto;flex:1;}
+.fulltext-body textarea{
+  width:100%;min-height:320px;border:1.5px solid var(--border);border-radius:8px;
+  padding:12px;font-family:inherit;font-size:0.85rem;line-height:1.8;color:var(--text);
+}
+.fulltext-foot{
+  display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--border);
+}
+.fulltext-foot button{
+  flex:1;padding:11px;border-radius:10px;font-size:0.85rem;font-weight:700;
+  font-family:inherit;cursor:pointer;
+}
+.fulltext-foot .primary{background:var(--gd);color:#fff;border:none;}
+.fulltext-foot .outline{background:#fff;color:var(--gd);border:2px solid var(--gd);}
+
+.footer-note{
+  text-align:center;margin-top:28px;padding-top:18px;border-top:1px solid var(--border);
+  font-size:0.72rem;color:var(--tl);line-height:1.8;
+}
+.footer-note .quote{color:var(--gd);font-weight:700;display:block;margin-bottom:6px;}
+.footer-note .sign{font-style:italic;color:var(--bark);}
+
+.toolbar{
+  max-width:760px;margin:0 auto 14px;display:flex;justify-content:flex-end;gap:8px;
+}
+.toolbar button{
+  font-family:inherit;font-size:0.78rem;font-weight:700;cursor:pointer;
+  border-radius:8px;padding:8px 16px;border:1.5px solid var(--gd);
+  background:#fff;color:var(--gd);
+}
+.toolbar button:hover{background:var(--gp);}
+.toolbar .primary{background:var(--gd);color:#fff;}
+.toolbar .primary:hover{background:var(--gm);}
+
+@media print{
+  body{background:#fff;padding:0;}
+  .toolbar{display:none;}
+  .sheet{box-shadow:none;border-radius:0;max-width:100%;padding:6px 10px;}
+  textarea{border:1px solid #ccc;background:#fff;}
+  .section{page-break-inside:avoid;}
+}
+@media (max-width:600px){
+  .sheet{padding:22px 18px 28px;}
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="clearSheet()">🗑 クリア</button>
+  <button onclick="openFullText()">📄 全文表示</button>
+  <button onclick="downloadText()">⬇️ テキストをダウンロード</button>
+  <button class="primary" onclick="window.print()">🖨 印刷する</button>
+</div>
+
+<div class="sheet">
+  <div class="top-badge">🌟 就活の木｜ES作成シート</div>
+  <h1>自己PR作成シート</h1>
+  <div class="subtitle">あなたの強みを、STAR＋WHY＋Cの順に、自分の言葉で書いてみましょう。</div>
+  
+<div class="meta-row">
+  <div class="meta-field"><label>氏名</label><input type="text" id="meta_name"></div>
+  <div class="meta-field"><label>学籍番号</label><input type="text" id="meta_no"></div>
+  <div class="meta-field"><label>記入日</label><input type="text" id="meta_date" placeholder="　月　日"></div>
+</div>
+
+  
+<div class="type-box">
+  <label>【強みを一言で】</label>
+  <div class="type-ref">例：継続力・忍耐力／主体性／実行力／働きかけ力／課題発見力／計画力／創造力／発信力／傾聴力・共感力／柔軟性・適応力／情況把握力／協調性・規律性　など、自分に一番しっくりくる言葉を選ぼう。</div>
+  <input type="text" id="theme" data-label="強みを一言で" placeholder="強みを一言で">
+</div>
+
+<div class="type-box">
+  <label>【強みを発揮した活動名】</label>
+  <div class="type-ref"></div>
+  <input type="text" id="theme2" data-label="強みを発揮した活動名" placeholder="活動名を記入">
+</div>
+
+<div class="section">
+  <div class="section-title">【S】Situation（状況）</div>
+  <div class="hint-box">
+    <span class="hint-label">🌱 北山からのヒント</span>
+    <ul><li>いつ・どこで・誰と・何をしていた？</li><li>どんな雰囲気・どんな規模だった？</li><li>数字や固有名詞を入れると伝わりやすくなるよ。</li></ul>
+  </div>
+  <div class="example-box">📘 参考例：大学入学時、英語が苦手でTOEICのスコアが400点だった。就職活動で700点が必要になると知り、大きなギャップを感じた。</div>
+  <textarea id="s" rows="4" data-label="【S】Situation（状況）" placeholder="ここに自分の言葉で書いてみよう"></textarea>
+  <div class="char-count" id="s_count">0 文字</div>
+</div>
+
+<div class="section">
+  <div class="section-title">【T】Task（課題・困ったこと）※任意</div>
+  <div class="hint-box">
+    <span class="hint-label">🌱 北山からのヒント</span>
+    <ul><li>そのとき、困ったことや「うまくいかないな」と感じた場面はあった？</li><li>「なんでこうなるんだろう」とモヤモヤした瞬間は？</li></ul>
+  </div>
+  <div class="example-box">📘 参考例：就職活動に向けて700点以上が必要だとわかり、250点以上のギャップを埋める必要があった。</div>
+  <textarea id="t" rows="4" data-label="【T】Task（課題・困ったこと）※任意" placeholder="ここに自分の言葉で書いてみよう"></textarea>
+  <div class="char-count" id="t_count">0 文字</div>
+</div>
+
+<div class="section">
+  <div class="section-title">💡 なぜ、あなたはそれに取り組み続けられたのですか？（ここが核心）</div>
+  <div class="hint-box">
+    <span class="hint-label">🌱 北山からのヒント</span>
+    <ul><li>そのとき「このままじゃダメだ」と思ったのはなぜ？</li><li>「続けられた」理由を、正直な言葉で。</li></ul>
+  </div>
+  <div class="example-box">📘 参考例：「今日だけ休もう」という誘惑に負けた翌日の自分が嫌いで、続けることで自分を保っている感覚がある。</div>
+  <textarea id="why" rows="4" data-label="💡 なぜ、あなたはそれに取り組み続けられたのですか？（ここが核心）" placeholder="ここに自分の言葉で書いてみよう"></textarea>
+  <div class="char-count" id="why_count">0 文字</div>
+</div>
+
+<div class="section">
+  <div class="section-title">【A】Action（行動）</div>
+  <div class="hint-box">
+    <span class="hint-label">🌱 北山からのヒント</span>
+    <ul><li>その課題に対して、あなたは具体的に何をした？</li><li>なぜその方法を選んだの？</li><li>うまくいかなかった試みや、試行錯誤があれば、それも書いてみて。</li></ul>
+  </div>
+  <div class="example-box">📘 参考例：「卒業までに700点」という目標を立て、1日1時間の学習を3年間欠かさず続けた。通学中の「スキマ時間」を単語学習に充てるなど習慣化した。</div>
+  <textarea id="a" rows="4" data-label="【A】Action（行動）" placeholder="ここに自分の言葉で書いてみよう"></textarea>
+  <div class="char-count" id="a_count">0 文字</div>
+</div>
+
+<div class="section">
+  <div class="section-title">【R】Result（結果）</div>
+  <div class="hint-box">
+    <span class="hint-label">🌱 北山からのヒント</span>
+    <ul><li>行動した結果、何がどう変わった？</li><li>数字で言えるなら数字で（〇%改善、〇人が〜など）。</li><li>数字が出なくても、誰かの言葉や表情の変化でもOK。</li></ul>
+  </div>
+  <div class="example-box">📘 参考例：3年次には750点を取得。大きな成果も日々の小さな積み重ねから生まれると学んだ。</div>
+  <textarea id="r" rows="4" data-label="【R】Result（結果）" placeholder="ここに自分の言葉で書いてみよう"></textarea>
+  <div class="char-count" id="r_count">0 文字</div>
+</div>
+
+<div class="section">
+  <div class="section-title">【C】入社後の活かし方</div>
+  <div class="hint-box">
+    <span class="hint-label">🌱 北山からのヒント</span>
+    <ul><li>この経験で身についた力を、入社後どんな場面で使えそう？</li><li>「貢献したいです」だけで終わらず、具体的な場面を想像して書こう。</li></ul>
+  </div>
+  <div class="example-box">📘 参考例：目標達成のために、地道な努力をコツコツと継続する力は、御社の業務においても着実な成果を出すために活かせる。</div>
+  <textarea id="c" rows="4" data-label="【C】入社後の活かし方" placeholder="ここに自分の言葉で書いてみよう"></textarea>
+  <div class="char-count" id="c_count">0 文字</div>
+</div>
+
+<div class="apply-box">
+  <div class="meta-field"><label>企業名</label><input type="text" id="app_company"></div>
+  <div class="meta-field"><label>業界</label><input type="text" id="app_industry"></div>
+  <div class="meta-field"><label>職種</label><input type="text" id="app_job"></div>
+  <div class="meta-field"><label>目標文字数</label><input type="text" id="app_chars" placeholder="例：400" inputmode="numeric"></div>
+</div>
+<div class="total-count-box" id="total_count_box">
+  <span>📝 記入文字数（全項目合計）</span>
+  <span><span class="num" id="total_count">0</span> 文字<span id="target_display"></span></span>
+</div>
+
+  
+<div class="footer-note">
+  <span class="quote">「仕事を通して必要とされる生き方を、自分の手で作り上げていくこと」——それが、就職の本質です。</span>
+  <span class="sign">君は、一人じゃない。いつでも、目の前のキャリア支援課の扉は開いているよ。——北山</span>
+</div>
+
+</div>
+
+<div class="fulltext-overlay" id="fulltextOverlay" onclick="closeFullTextBg(event)">
+  <div class="fulltext-box" onclick="event.stopPropagation()">
+    <div class="fulltext-head">
+      <h2>📄 全文プレビュー</h2>
+      <button onclick="closeFullText()">✕</button>
+    </div>
+    <div class="fulltext-body">
+      <textarea id="fulltextArea" readonly></textarea>
+    </div>
+    <div class="fulltext-foot">
+      <button class="outline" onclick="copyFullText()">📋 コピー</button>
+      <button class="primary" onclick="downloadText()">⬇️ テキストをダウンロード</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+function clearSheet(){
+  if(!confirm('入力内容をすべてクリアしますか？')) return;
+  document.querySelectorAll('textarea, input[type=text]').forEach(el => el.value = '');
+  try { localStorage.removeItem('shukatsu_es3_jikopr'); } catch(e){}
+  updateCounts();
+}
+
+// 各欄・合計の文字数を計算（画面表示・全文出力の両方から使う共通処理）
+function getCharStats(){
+  const textareas = document.querySelectorAll('textarea:not(#fulltextArea)');
+  let total = 0;
+  textareas.forEach(ta => { total += ta.value.length; });
+  const targetEl = document.getElementById('app_chars');
+  const targetNum = targetEl ? parseInt((targetEl.value || '').replace(/[^0-9]/g, ''), 10) : NaN;
+  return { total, target: (!isNaN(targetNum) && targetNum > 0) ? targetNum : null };
+}
+
+// 各欄・合計の文字数カウント（画面表示用）
+function updateCounts(){
+  const textareas = document.querySelectorAll('textarea:not(#fulltextArea)');
+  textareas.forEach(ta => {
+    const countEl = document.getElementById(ta.id + '_count');
+    if(countEl) countEl.textContent = ta.value.length + ' 文字';
+  });
+
+  const stats = getCharStats();
+  const totalEl = document.getElementById('total_count');
+  const boxEl = document.getElementById('total_count_box');
+  const targetDisplayEl = document.getElementById('target_display');
+  if(totalEl) totalEl.textContent = stats.total;
+
+  if(boxEl){
+    boxEl.classList.remove('near','over');
+    if(targetDisplayEl) targetDisplayEl.textContent = '';
+    if(stats.target){
+      if(targetDisplayEl) targetDisplayEl.textContent = ' / 目標 ' + stats.target + ' 文字';
+      const ratio = stats.total / stats.target;
+      if(stats.total > stats.target){
+        boxEl.classList.add('over');
+      } else if(ratio >= 0.9){
+        boxEl.classList.add('near');
+      }
+    }
+  }
+}
+
+// 記入内容をまとめて1本のテキストに変換（添削ツールへの貼り付け用）
+function compileFullText(){
+  const lines = [];
+  const stats = getCharStats();
+  lines.push('【文字数】' + stats.total + ' 文字' + (stats.target ? '（目標 ' + stats.target + ' 文字）' : ''));
+  lines.push('');
+  const themeEl = document.getElementById('theme');
+  if(themeEl && themeEl.value.trim()){
+    lines.push('◆ ' + (themeEl.dataset.label || 'テーマ・活動名') + '（' + themeEl.value.trim().length + '文字）');
+    lines.push(themeEl.value.trim());
+    lines.push('');
+  }
+  const theme2El = document.getElementById('theme2');
+  if(theme2El && theme2El.value.trim()){
+    lines.push('◆ ' + (theme2El.dataset.label || '活動名') + '（' + theme2El.value.trim().length + '文字）');
+    lines.push(theme2El.value.trim());
+    lines.push('');
+  }
+
+  document.querySelectorAll('textarea[data-label]').forEach(ta => {
+    if(ta.value.trim()){
+      lines.push('◆ ' + ta.dataset.label + '（' + ta.value.trim().length + '文字）');
+      lines.push(ta.value.trim());
+      lines.push('');
+    }
+  });
+
+  const company = document.getElementById('app_company');
+  const industry = document.getElementById('app_industry');
+  const job = document.getElementById('app_job');
+  const applyInfo = [];
+  if(company && company.value.trim()) applyInfo.push('企業名：' + company.value.trim());
+  if(industry && industry.value.trim()) applyInfo.push('業界：' + industry.value.trim());
+  if(job && job.value.trim()) applyInfo.push('職種：' + job.value.trim());
+  if(applyInfo.length){
+    lines.push('◆ 応募先');
+    lines.push(applyInfo.join('／'));
+    lines.push('');
+  }
+
+  return lines.join('\n').trim();
+}
+
+function openFullText(){
+  const ta = document.getElementById('fulltextArea');
+  ta.value = compileFullText() || '（まだ何も入力されていません）';
+  document.getElementById('fulltextOverlay').classList.add('open');
+}
+function closeFullText(){
+  document.getElementById('fulltextOverlay').classList.remove('open');
+}
+function closeFullTextBg(e){
+  if(e.target.id === 'fulltextOverlay') closeFullText();
+}
+function copyFullText(){
+  const ta = document.getElementById('fulltextArea');
+  ta.select();
+  try {
+    navigator.clipboard.writeText(ta.value);
+    alert('コピーしました。添削ツールに貼り付けてください。');
+  } catch(e){
+    document.execCommand('copy');
+  }
+}
+function downloadText(){
+  const text = compileFullText();
+  if(!text){ alert('まだ何も入力されていません。'); return; }
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const themeEl = document.getElementById('theme');
+  const namePart = (themeEl && themeEl.value.trim()) ? themeEl.value.trim().replace(/[\\/:*?"<>|]/g,'') : 'shukatsu_es3_jikopr';
+  a.href = url;
+  a.download = namePart + '.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// 簡易オートセーブ（同じ端末・同じブラウザでの再訪時に復元）
+(function(){
+  const KEY = 'shukatsu_es3_jikopr';
+  const fields = document.querySelectorAll('textarea:not(#fulltextArea), input[type=text]');
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+    fields.forEach(el => { if(saved[el.id]) el.value = saved[el.id]; });
+  } catch(e){}
+  function save(){
+    const data = {};
+    fields.forEach(el => { if(el.id) data[el.id] = el.value; });
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e){}
+  }
+  fields.forEach(el => el.addEventListener('input', () => { save(); updateCounts(); }));
+  updateCounts();
+})();
+</script>
+
+</body>
+</html>
