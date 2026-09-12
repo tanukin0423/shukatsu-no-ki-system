@@ -196,10 +196,22 @@
 <header>
   <div class="kicker">就活の木 ｜ 内部運用ツール</div>
   <h1>想定問答プロンプト作成ツール</h1>
-  <p>入力して「プロンプトを生成」を押すだけで、想定問答作成プロジェクト用の投稿文を組み立てます</p>
+  <p>入力して「プロンプトを生成」を押すだけで、想定問答作成用の投稿文を組み立てます</p>
 </header>
 
 <main>
+
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">0</div>
+      <h2>使用先を選択</h2>
+    </div>
+    <div class="radio-row">
+      <label class="pill"><input type="radio" name="mode" value="project" checked>プロジェクト用(短縮版)</label>
+      <label class="pill"><input type="radio" name="mode" value="general">汎用AI用(指示文フル同梱)</label>
+    </div>
+    <p class="hint" id="modeHint">「想定問答作成(汎用版)」プロジェクトの指示欄に、あらかじめカスタム指示文を登録済みの場合はこちら。入力内容だけの短い投稿文を作ります。</p>
+  </div>
 
   <div class="step">
     <div class="step-head">
@@ -253,7 +265,7 @@
     </div>
     <div id="outputBox"></div>
     <button id="copyBtn">コピーする</button>
-    <p class="hint">コピー後、想定問答作成プロジェクトの新規チャットに貼り付けてください。</p>
+    <p class="hint" id="outputHint">コピー後、想定問答作成プロジェクトの新規チャットに貼り付けてください。</p>
   </div>
 
 </main>
@@ -264,8 +276,79 @@
   const copyBtn = document.getElementById('copyBtn');
   const outputSection = document.getElementById('output-section');
   const outputBox = document.getElementById('outputBox');
+  const modeHint = document.getElementById('modeHint');
+  const outputHint = document.getElementById('outputHint');
 
-  function buildPrompt() {
+  const FULL_INSTRUCTIONS = `あなたは大学キャリアカウンセラー「キャリ爺」の想定問答作成アシスタントです。
+以下の手順に厳密に従い、学生の面接想定問答を作成してください。
+
+【入力される情報】
+・志望企業名
+・希望職種
+・学生のエントリーシート(学業/学業以外/自己PR/志望動機/その他)
+・面接段階(一次面接/二次面接/最終面接のいずれか)
+
+【Step1:企業研究】
+以下の情報源を横断的に調査し、「求められる人物像」を言語化してください。
+1. 企業公式サイト(採用ページ、代表メッセージ、中期経営計画、事業内容)
+2. 就職・転職口コミサイト(OpenWork、転職会議等)の社員・元社員の声
+3. 企業の公式SNS(X、Instagram、採用担当者の発信等)
+4. 直近のニュースリリース・決算資料(業績動向、新規事業、課題)
+まとめる際は、公式の「求める人物像」の引用、口コミから見える実際の社風とのギャップ、
+直近の事業動向から見える職種への期待、面接官が確認したがるであろう点を3〜5点整理してください。
+口コミサイトの情報は断定せず「〜という声がある」という距離感で扱い、
+悪評のみを鵜呑みにして企業批判のトーンにならないよう注意してください。
+ウェブ検索を積極的に使用してください。
+
+【Step2:想定問答15問の設計】
+以下の構成で15問を作成してください。
+1問目:自己紹介(ES全体の要約、1分程度で話せる長さ)
+2〜4問目:学業(ゼミ・卒論・資格等)についての深掘り
+5〜7問目:学業以外(サークル・アルバイト・部活動等)についての深掘り
+8〜9問目:自己PRについての深掘り
+10〜13問目:志望動機・企業理解についての深掘り(Step1の企業研究結果を踏まえる)
+14問目:その他・逆境や失敗経験など(ESに記載がなければ学業/学業以外から再構成)
+15問目:逆質問(「最後に何か質問はありますか」への回答例)
+
+面接段階によって重点を変えてください。
+・一次面接:人物像の基礎確認中心。質問は基本的・事実確認型。逆質問は制度・働き方など答えやすい範囲。
+・二次面接:深掘り中心。ES内の意思決定の分岐点(なぜAでなくBを選んだか)を突く質問を増やす。
+  志望動機は他社との比較まで踏み込む。逆質問は業務内容・配属に関するもの。
+・最終面接:入社意欲・覚悟の確認中心。入社後の活躍、他社選考状況、条件面等、経営層目線の質問を含める。
+  逆質問は経営方針・将来のキャリアパスに関するもの。
+
+【Step3:回答案作成時の絶対ルール(金太郎飴回避)】
+各質問の回答案を作成する際、以下を厳守してください。
+
+絶対に残す要素:
+・ES本文に書かれている具体的な数字、固有名詞、エピソードの描写
+・ES本文中の「〜も検討したが、あえて〜を選んだ」という意思決定の分岐点
+・その学生固有の言い回し(可能な限り、ES原文の表現を活かす)
+
+禁止事項:
+・「貴社の理念に共感し」等、どの企業にも使える定型句に言い換えること
+・ESに書かれていない実績やエピソードを新たに作り出すこと(捏造禁止)
+・複数の学生に共通するような、当たり障りのない一般論での回答
+
+回答の長さ:口頭で1問あたり30秒〜1分程度で話せる分量(200〜300字目安)
+
+【Step4:出力形式】
+Word文書として出力してください。構成は以下の通りです。
+・表紙:学生名、志望企業名、希望職種、面接段階、作成日
+・本文:15問を「質問→回答案→(補足:深掘りされた場合の追加想定)」の3段構成で1問ずつ記載
+・末尾:Step1の企業研究サマリーを添付資料として掲載
+企業ごとにカラーコードを設定し(既存の「就活の木」運用に準拠)、
+面接段階(一次/二次/最終)がひと目でわかるよう見出しに明記してください。
+
+Word文書として出力できない場合は、上記の構成に沿ったテキストで回答してください。
+
+---
+
+以下、対象学生の入力情報です。
+
+`;
+
+  function buildInputBlock() {
     const company = document.getElementById('company').value.trim() || '(未入力)';
     const jobtype = document.getElementById('jobtype').value.trim() || '(未入力)';
     const stage = document.querySelector('input[name="stage"]:checked').value;
@@ -296,6 +379,30 @@ ${motivation}
 ${other}`;
   }
 
+  function buildPrompt() {
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    const inputBlock = buildInputBlock();
+    if (mode === 'general') {
+      return FULL_INSTRUCTIONS + inputBlock;
+    }
+    return inputBlock;
+  }
+
+  function updateModeHint() {
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    if (mode === 'general') {
+      modeHint.textContent = 'ChatGPTなど、想定問答用のカスタム指示を登録していない汎用AIで使う場合はこちら。企業研究〜出力形式までの指示文をまるごと入力内容に同梱します。';
+      outputHint.textContent = 'この投稿文には指示文一式が含まれています。汎用AIの新規チャットにそのまま貼り付けてください。';
+    } else {
+      modeHint.textContent = '「想定問答作成(汎用版)」プロジェクトの指示欄に、あらかじめカスタム指示文を登録済みの場合はこちら。入力内容だけの短い投稿文を作ります。';
+      outputHint.textContent = 'コピー後、想定問答作成プロジェクトの新規チャットに貼り付けてください。';
+    }
+  }
+
+  document.querySelectorAll('input[name="mode"]').forEach(el => {
+    el.addEventListener('change', updateModeHint);
+  });
+
   generateBtn.addEventListener('click', () => {
     outputBox.textContent = buildPrompt();
     outputSection.classList.add('show');
@@ -307,6 +414,8 @@ ${other}`;
   resetBtn.addEventListener('click', () => {
     document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
     document.querySelector('input[name="stage"][value="一次面接"]').checked = true;
+    document.querySelector('input[name="mode"][value="project"]').checked = true;
+    updateModeHint();
     outputSection.classList.remove('show');
   });
 
