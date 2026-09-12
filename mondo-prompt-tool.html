@@ -6,112 +6,152 @@
 <title>想定問答プロンプト作成ツール|就活の木</title>
 <style>
   :root {
-    --bg: #f6f4ed;
-    --panel: #ffffff;
-    --ink: #2f3b2f;
-    --ink-soft: #5c6b5a;
-    --line: #d9dccb;
-    --moss: #4a6741;
-    --moss-dark: #37502f;
-    --clay: #b3714f;
-    --clay-soft: #f1e3d8;
+    --paper: #f1ede1;
+    --panel: #fbf9f2;
+    --ink: #1f2a1e;
+    --ink-soft: #6b7568;
+    --line: #d9d3bf;
+    --forest: #2c4a2e;
+    --forest-deep: #16281a;
+    --gold: #a8853f;
+    --gold-soft: #ece2c8;
+    --mono-bg: #16281a;
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
-    background: var(--bg);
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(44,74,46,0.05), transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(168,133,63,0.06), transparent 45%);
     color: var(--ink);
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", "游明朝", serif;
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
     line-height: 1.7;
-    padding: 0 0 80px;
+    padding: 0 0 100px;
   }
+
   header {
-    padding: 48px 24px 28px;
+    padding: 64px 24px 40px;
     text-align: center;
-    border-bottom: 1px solid var(--line);
-    background: linear-gradient(180deg, #eef0e2 0%, var(--bg) 100%);
+    position: relative;
+  }
+  header::after {
+    content: '';
+    display: block;
+    width: 34px;
+    height: 1px;
+    background: var(--gold);
+    margin: 22px auto 0;
   }
   header .kicker {
-    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    color: var(--moss);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    color: var(--gold);
   }
   header h1 {
-    margin: 10px 0 6px;
-    font-size: 26px;
+    margin: 16px 0 12px;
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "游明朝", serif;
+    font-size: 30px;
     font-weight: 600;
+    color: var(--forest-deep);
+    letter-spacing: 0.03em;
   }
   header p {
-    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
     font-size: 13px;
     color: var(--ink-soft);
     margin: 0;
+    max-width: 380px;
+    margin-inline: auto;
   }
+
   main {
-    max-width: 720px;
-    margin: 36px auto 0;
-    padding: 0 20px;
+    max-width: 640px;
+    margin: 40px auto 0;
+    padding: 0 24px;
+    position: relative;
   }
+
+  /* 縦につながる幹の線 */
+  main::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    bottom: 60px;
+    left: 39px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--line) 0%, var(--line) 92%, transparent 100%);
+  }
+
   .step {
+    position: relative;
     background: var(--panel);
     border: 1px solid var(--line);
-    border-radius: 4px;
-    padding: 26px 28px;
-    margin-bottom: 20px;
+    border-radius: 2px;
+    padding: 28px 30px 30px 30px;
+    margin: 0 0 22px 56px;
+    box-shadow: 0 1px 2px rgba(22,40,26,0.04);
   }
   .step-head {
     display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 16px;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
   }
   .step-num {
-    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    position: absolute;
+    left: -56px;
+    top: 26px;
+    width: 30px;
+    height: 30px;
+    background: var(--forest);
+    color: var(--gold-soft);
     font-size: 12px;
-    color: var(--clay);
-    border: 1px solid var(--clay);
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
+    clip-path: polygon(50% 0%, 100% 30%, 82% 100%, 18% 100%, 0% 30%);
     flex-shrink: 0;
   }
   .step-head h2 {
-    font-size: 16px;
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "游明朝", serif;
+    font-size: 17px;
     margin: 0;
     font-weight: 600;
+    color: var(--forest-deep);
   }
+
   label {
     display: block;
-    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
-    font-size: 12.5px;
+    font-size: 12px;
+    letter-spacing: 0.02em;
     color: var(--ink-soft);
-    margin: 14px 0 6px;
+    margin: 16px 0 7px;
   }
   label:first-of-type { margin-top: 0; }
+
   input[type="text"], textarea {
     width: 100%;
     font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
     font-size: 14px;
     color: var(--ink);
-    background: #fbfaf6;
+    background: #ffffff;
     border: 1px solid var(--line);
-    border-radius: 3px;
-    padding: 10px 12px;
+    border-radius: 2px;
+    padding: 11px 13px;
     resize: vertical;
+    transition: border-color 0.15s;
   }
-  textarea { min-height: 90px; }
+  textarea { min-height: 92px; }
   input[type="text"]:focus, textarea:focus {
     outline: none;
-    border-color: var(--moss);
-    background: #fff;
+    border-color: var(--forest);
   }
+
   .radio-row {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
   }
   .radio-row label.pill {
@@ -119,84 +159,171 @@
     align-items: center;
     gap: 6px;
     margin: 0;
-    padding: 8px 14px;
+    padding: 8px 16px;
     border: 1px solid var(--line);
-    border-radius: 20px;
+    border-radius: 2px;
     cursor: pointer;
-    font-size: 13px;
-    color: var(--ink);
-    background: #fbfaf6;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    background: #ffffff;
+    transition: all 0.15s;
   }
-  .radio-row input[type="radio"] { accent-color: var(--moss); }
+  .radio-row input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .radio-row label.pill { position: relative; }
   .radio-row label.pill:has(input:checked) {
-    border-color: var(--moss);
-    background: #eef2e9;
-    color: var(--moss-dark);
+    border-color: var(--forest);
+    background: var(--forest);
+    color: #f1ede1;
   }
+
+  .spark {
+    color: #c9773f;
+    font-size: 12px;
+    margin-right: 1px;
+  }
+
+  /* 面接段階カード */
+  .stage-row {
+    display: flex;
+    gap: 10px;
+  }
+  .stage-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .stage-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+  .stage-icon { font-size: 20px; line-height: 1; filter: grayscale(65%); opacity: 0.55; transition: all 0.15s; }
+  .stage-label { font-size: 12px; color: var(--ink-soft); transition: all 0.15s; }
+  .stage-card:hover { border-color: var(--ink-soft); }
+  .stage-card.stage-1:has(input:checked) { border-color: #5f8f5c; background: #eef5ec; }
+  .stage-card.stage-2:has(input:checked) { border-color: #b3922f; background: #faf3e2; }
+  .stage-card.stage-3:has(input:checked) { border-color: #2c4a2e; background: #e7ede4; }
+  .stage-card:has(input:checked) .stage-icon { filter: grayscale(0%); opacity: 1; transform: scale(1.08); }
+  .stage-card:has(input:checked) .stage-label { color: var(--ink); font-weight: 700; }
+
+  /* ESブロックの色分け */
+  .es-block {
+    border-left: 3px solid var(--line);
+    padding: 4px 0 4px 16px;
+    margin-bottom: 22px;
+  }
+  .es-block:last-child { margin-bottom: 0; }
+  .es-block-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .es-block textarea { background: #ffffff; }
+
+  .es-blue { border-left-color: #6f8fb5; }
+  .es-blue .es-block-title { color: #4c6a8c; }
+  .es-blue textarea:focus, .es-blue input:focus { border-color: #6f8fb5; }
+
+  .es-green { border-left-color: #7fac83; }
+  .es-green .es-block-title { color: #587e5c; }
+  .es-green textarea:focus { border-color: #7fac83; }
+
+  .es-purple { border-left-color: #a68fc0; }
+  .es-purple .es-block-title { color: #7c619a; }
+  .es-purple textarea:focus { border-color: #a68fc0; }
+
+  .es-beige { border-left-color: #c2a878; }
+  .es-beige .es-block-title { color: #93764a; }
+  .es-beige textarea:focus { border-color: #c2a878; }
+
+  .hint {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+
   .actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     justify-content: center;
-    margin: 30px 0;
+    margin: 8px 0 34px 56px;
   }
   button {
     font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
-    font-size: 14px;
-    border-radius: 3px;
-    padding: 12px 26px;
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+    border-radius: 2px;
+    padding: 13px 28px;
     cursor: pointer;
     border: 1px solid transparent;
+    transition: all 0.15s;
   }
   #generateBtn {
-    background: var(--moss);
-    color: #fff;
+    background: var(--forest);
+    color: #f6f2e6;
   }
-  #generateBtn:hover { background: var(--moss-dark); }
+  #generateBtn:hover { background: var(--forest-deep); }
   #resetBtn {
     background: transparent;
     color: var(--ink-soft);
     border-color: var(--line);
   }
-  #resetBtn:hover { border-color: var(--ink-soft); }
-  #output-section {
-    display: none;
-  }
+  #resetBtn:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+  #output-section { display: none; }
   #output-section.show { display: block; }
+
   #outputBox {
     width: 100%;
     min-height: 260px;
     font-family: "SFMono-Regular", Menlo, Consolas, monospace;
     font-size: 12.5px;
-    line-height: 1.6;
-    background: #232920;
-    color: #e7ecdf;
+    line-height: 1.65;
+    background: var(--mono-bg);
+    color: #dfe6d8;
     border: none;
-    border-radius: 4px;
-    padding: 18px;
+    border-radius: 2px;
+    padding: 20px;
     white-space: pre-wrap;
   }
   #copyBtn {
-    margin-top: 12px;
-    background: var(--clay);
-    color: #fff;
+    margin-top: 14px;
+    background: var(--gold);
+    color: #2a2210;
     width: 100%;
+    font-weight: 700;
   }
-  #copyBtn:hover { background: #9c5f41; }
-  #copyBtn.copied { background: var(--moss); }
-  .hint {
-    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
-    font-size: 11.5px;
-    color: var(--ink-soft);
-    margin-top: 8px;
+  #copyBtn:hover { background: #937329; }
+  #copyBtn.copied { background: var(--forest); color: #f1ede1; }
+
+  @media (max-width: 520px) {
+    main { padding: 0 16px; }
+    main::before { left: 27px; }
+    .step { margin-left: 44px; padding: 22px 20px 24px; }
+    .step-num { left: -44px; width: 26px; height: 26px; font-size: 11px; }
+    .actions { margin-left: 44px; }
+    header h1 { font-size: 24px; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="kicker">就活の木 ｜ 内部運用ツール</div>
-  <h1>想定問答プロンプト作成ツール</h1>
-  <p>入力して「プロンプトを生成」を押すだけで、想定問答作成用の投稿文を組み立てます</p>
+  <div class="kicker">就活の木　内部運用ツール</div>
+  <h1>想定問答プロンプト作成</h1>
+  <p>企業名・職種・エントリーシートを入力するだけで、想定問答作成用の投稿文を組み立てます</p>
 </header>
 
 <main>
@@ -207,7 +334,7 @@
       <h2>使用先を選択</h2>
     </div>
     <div class="radio-row">
-      <label class="pill"><input type="radio" name="mode" value="project" checked>プロジェクト用(短縮版)</label>
+      <label class="pill mode-pill"><input type="radio" name="mode" value="project" checked><span class="spark">✦</span>プロジェクト用(短縮版)</label>
       <label class="pill"><input type="radio" name="mode" value="general">汎用AI用(指示文フル同梱)</label>
     </div>
     <p class="hint" id="modeHint">「想定問答作成(汎用版)」プロジェクトの指示欄に、あらかじめカスタム指示文を登録済みの場合はこちら。入力内容だけの短い投稿文を作ります。</p>
@@ -225,10 +352,10 @@
     <input type="text" id="jobtype" placeholder="例:法人営業職">
 
     <label>面接段階</label>
-    <div class="radio-row">
-      <label class="pill"><input type="radio" name="stage" value="一次面接" checked>一次面接</label>
-      <label class="pill"><input type="radio" name="stage" value="二次面接">二次面接</label>
-      <label class="pill"><input type="radio" name="stage" value="最終面接">最終面接</label>
+    <div class="stage-row">
+      <label class="stage-card stage-1"><input type="radio" name="stage" value="一次面接" checked><span class="stage-icon">🌱</span><span class="stage-label">一次面接</span></label>
+      <label class="stage-card stage-2"><input type="radio" name="stage" value="二次面接"><span class="stage-icon">🌿</span><span class="stage-label">二次面接</span></label>
+      <label class="stage-card stage-3"><input type="radio" name="stage" value="最終面接"><span class="stage-icon">🌳</span><span class="stage-label">最終面接</span></label>
     </div>
   </div>
 
@@ -237,20 +364,33 @@
       <div class="step-num">2</div>
       <h2>エントリーシート本文</h2>
     </div>
-    <label for="academic">学業(ゼミ・卒論・資格等)</label>
-    <textarea id="academic" placeholder="学業に関するES本文を貼り付け"></textarea>
 
-    <label for="nonacademic">学業以外(サークル・アルバイト・部活動等)</label>
-    <textarea id="nonacademic" placeholder="学業以外に関するES本文を貼り付け"></textarea>
+    <div class="es-block es-blue">
+      <div class="es-block-title">ガクチカ</div>
+      <label for="academic">学業(ゼミ・卒論・資格等)</label>
+      <textarea id="academic" placeholder="学業に関するES本文を貼り付け"></textarea>
 
-    <label for="selfpr">自己PR</label>
-    <textarea id="selfpr" placeholder="自己PRのES本文を貼り付け"></textarea>
+      <label for="nonacademic">学業以外(サークル・アルバイト・部活動等)</label>
+      <textarea id="nonacademic" placeholder="学業以外に関するES本文を貼り付け"></textarea>
+    </div>
 
-    <label for="motivation">志望動機</label>
-    <textarea id="motivation" placeholder="志望動機のES本文を貼り付け"></textarea>
+    <div class="es-block es-green">
+      <div class="es-block-title">自己PR</div>
+      <label for="selfpr">自己PR</label>
+      <textarea id="selfpr" placeholder="自己PRのES本文を貼り付け"></textarea>
+    </div>
 
-    <label for="other">その他(あれば)</label>
-    <textarea id="other" placeholder="その他、補足したいエピソード等(なければ空欄可)"></textarea>
+    <div class="es-block es-purple">
+      <div class="es-block-title">志望動機</div>
+      <label for="motivation">志望動機</label>
+      <textarea id="motivation" placeholder="志望動機のES本文を貼り付け"></textarea>
+    </div>
+
+    <div class="es-block es-beige">
+      <div class="es-block-title">その他</div>
+      <label for="other">その他(あれば)</label>
+      <textarea id="other" placeholder="その他、補足したいエピソード等(なければ空欄可)"></textarea>
+    </div>
   </div>
 
   <div class="actions">
