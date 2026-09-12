@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>想定問答プロンプト作成ツール|就活の木</title>
+<style>
+  :root {
+    --bg: #f6f4ed;
+    --panel: #ffffff;
+    --ink: #2f3b2f;
+    --ink-soft: #5c6b5a;
+    --line: #d9dccb;
+    --moss: #4a6741;
+    --moss-dark: #37502f;
+    --clay: #b3714f;
+    --clay-soft: #f1e3d8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "游明朝", serif;
+    line-height: 1.7;
+    padding: 0 0 80px;
+  }
+  header {
+    padding: 48px 24px 28px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #eef0e2 0%, var(--bg) 100%);
+  }
+  header .kicker {
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--moss);
+  }
+  header h1 {
+    margin: 10px 0 6px;
+    font-size: 26px;
+    font-weight: 600;
+  }
+  header p {
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  main {
+    max-width: 720px;
+    margin: 36px auto 0;
+    padding: 0 20px;
+  }
+  .step {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 26px 28px;
+    margin-bottom: 20px;
+  }
+  .step-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .step-num {
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    font-size: 12px;
+    color: var(--clay);
+    border: 1px solid var(--clay);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-head h2 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 600;
+  }
+  label {
+    display: block;
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 14px 0 6px;
+  }
+  label:first-of-type { margin-top: 0; }
+  input[type="text"], textarea {
+    width: 100%;
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: #fbfaf6;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 10px 12px;
+    resize: vertical;
+  }
+  textarea { min-height: 90px; }
+  input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--moss);
+    background: #fff;
+  }
+  .radio-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .radio-row label.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink);
+    background: #fbfaf6;
+  }
+  .radio-row input[type="radio"] { accent-color: var(--moss); }
+  .radio-row label.pill:has(input:checked) {
+    border-color: var(--moss);
+    background: #eef2e9;
+    color: var(--moss-dark);
+  }
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 30px 0;
+  }
+  button {
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    font-size: 14px;
+    border-radius: 3px;
+    padding: 12px 26px;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  #generateBtn {
+    background: var(--moss);
+    color: #fff;
+  }
+  #generateBtn:hover { background: var(--moss-dark); }
+  #resetBtn {
+    background: transparent;
+    color: var(--ink-soft);
+    border-color: var(--line);
+  }
+  #resetBtn:hover { border-color: var(--ink-soft); }
+  #output-section {
+    display: none;
+  }
+  #output-section.show { display: block; }
+  #outputBox {
+    width: 100%;
+    min-height: 260px;
+    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    background: #232920;
+    color: #e7ecdf;
+    border: none;
+    border-radius: 4px;
+    padding: 18px;
+    white-space: pre-wrap;
+  }
+  #copyBtn {
+    margin-top: 12px;
+    background: var(--clay);
+    color: #fff;
+    width: 100%;
+  }
+  #copyBtn:hover { background: #9c5f41; }
+  #copyBtn.copied { background: var(--moss); }
+  .hint {
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">就活の木 ｜ 内部運用ツール</div>
+  <h1>想定問答プロンプト作成ツール</h1>
+  <p>入力して「プロンプトを生成」を押すだけで、想定問答作成プロジェクト用の投稿文を組み立てます</p>
+</header>
+
+<main>
+
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <h2>基本情報</h2>
+    </div>
+    <label for="company">志望企業名</label>
+    <input type="text" id="company" placeholder="例:株式会社〇〇">
+
+    <label for="jobtype">希望職種</label>
+    <input type="text" id="jobtype" placeholder="例:法人営業職">
+
+    <label>面接段階</label>
+    <div class="radio-row">
+      <label class="pill"><input type="radio" name="stage" value="一次面接" checked>一次面接</label>
+      <label class="pill"><input type="radio" name="stage" value="二次面接">二次面接</label>
+      <label class="pill"><input type="radio" name="stage" value="最終面接">最終面接</label>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <h2>エントリーシート本文</h2>
+    </div>
+    <label for="academic">学業(ゼミ・卒論・資格等)</label>
+    <textarea id="academic" placeholder="学業に関するES本文を貼り付け"></textarea>
+
+    <label for="nonacademic">学業以外(サークル・アルバイト・部活動等)</label>
+    <textarea id="nonacademic" placeholder="学業以外に関するES本文を貼り付け"></textarea>
+
+    <label for="selfpr">自己PR</label>
+    <textarea id="selfpr" placeholder="自己PRのES本文を貼り付け"></textarea>
+
+    <label for="motivation">志望動機</label>
+    <textarea id="motivation" placeholder="志望動機のES本文を貼り付け"></textarea>
+
+    <label for="other">その他(あれば)</label>
+    <textarea id="other" placeholder="その他、補足したいエピソード等(なければ空欄可)"></textarea>
+  </div>
+
+  <div class="actions">
+    <button id="generateBtn">プロンプトを生成</button>
+    <button id="resetBtn">リセット</button>
+  </div>
+
+  <div class="step" id="output-section">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <h2>生成されたプロンプト</h2>
+    </div>
+    <div id="outputBox"></div>
+    <button id="copyBtn">コピーする</button>
+    <p class="hint">コピー後、想定問答作成プロジェクトの新規チャットに貼り付けてください。</p>
+  </div>
+
+</main>
+
+<script>
+  const generateBtn = document.getElementById('generateBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const outputSection = document.getElementById('output-section');
+  const outputBox = document.getElementById('outputBox');
+
+  function buildPrompt() {
+    const company = document.getElementById('company').value.trim() || '(未入力)';
+    const jobtype = document.getElementById('jobtype').value.trim() || '(未入力)';
+    const stage = document.querySelector('input[name="stage"]:checked').value;
+    const academic = document.getElementById('academic').value.trim() || '(記載なし)';
+    const nonacademic = document.getElementById('nonacademic').value.trim() || '(記載なし)';
+    const selfpr = document.getElementById('selfpr').value.trim() || '(記載なし)';
+    const motivation = document.getElementById('motivation').value.trim() || '(記載なし)';
+    const other = document.getElementById('other').value.trim() || '(記載なし)';
+
+    return `■志望企業名:${company}
+■希望職種:${jobtype}
+■面接段階:${stage}
+■学生のエントリーシート:
+
+【学業】
+${academic}
+
+【学業以外】
+${nonacademic}
+
+【自己PR】
+${selfpr}
+
+【志望動機】
+${motivation}
+
+【その他】
+${other}`;
+  }
+
+  generateBtn.addEventListener('click', () => {
+    outputBox.textContent = buildPrompt();
+    outputSection.classList.add('show');
+    outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    copyBtn.textContent = 'コピーする';
+    copyBtn.classList.remove('copied');
+  });
+
+  resetBtn.addEventListener('click', () => {
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+    document.querySelector('input[name="stage"][value="一次面接"]').checked = true;
+    outputSection.classList.remove('show');
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(outputBox.textContent);
+      copyBtn.textContent = 'コピーしました';
+      copyBtn.classList.add('copied');
+      setTimeout(() => {
+        copyBtn.textContent = 'コピーする';
+        copyBtn.classList.remove('copied');
+      }, 2000);
+    } catch (e) {
+      alert('コピーに失敗しました。テキストを選択して手動でコピーしてください。');
+    }
+  });
+</script>
+
+</body>
+</html>
