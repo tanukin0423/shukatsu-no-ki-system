@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>就活ES・面接対策 AIカウンセラー（学生用）</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: "Helvetica Neue", Arial, "ヒラギノ角ゴ ProN", "Hiragino Kaku Gothic ProN", メイリオ, Meiryo, sans-serif;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+        h1 {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1rem;
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+        }
+        .app-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #e9ecef;
+        }
+        .main {
+            flex: 1;
+            min-width: 0;
+        }
+        #newThreadBtn {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #newThreadBtn:hover { background-color: #218838; }
+        #threadList {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .thread-item {
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 6px;
+            border: 1px solid transparent;
+        }
+        .thread-item:hover { background-color: #f1f3f5; }
+        .thread-item.active {
+            background-color: #e7f1ff;
+            border: 1px solid #007bff;
+        }
+        .thread-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #2c3e50;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .thread-date {
+            font-size: 0.75rem;
+            color: #868e96;
+        }
+        .settings-mini {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e9ecef;
+            font-size: 0.85rem;
+        }
+        .settings-mini label { display: block; margin-bottom: 4px; color: #495057; }
+        .settings-mini input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .control-panel {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="password"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-primary:hover { background-color: #0069d9; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-danger:hover { background-color: #c82333; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-success:hover { background-color: #218838; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #565e64; }
+
+        #chat-box {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+        }
+        .message {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .user-msg {
+            color: #004085;
+            background-color: #cce5ff;
+            padding: 12px;
+            border-radius: 8px 8px 0px 8px;
+            margin-left: 40px;
+        }
+        .ai-msg {
+            color: #1b1e21;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 12px;
+            border-radius: 8px 8px 8px 0px;
+            margin-right: 40px;
+        }
+        .system-msg {
+            color: #6c757d;
+            font-size: 0.85rem;
+            text-align: center;
+            margin: 10px 0;
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+        .status {
+            font-size: 0.85rem;
+            margin-top: 8px;
+            color: #495057;
+            font-weight: bold;
+        }
+        .thread-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        <!-- 左サイドバー：スレッド一覧 -->
+        <div class="sidebar">
+            <h2>相談スレッド</h2>
+            <button id="newThreadBtn" onclick="handleNewThread()">＋ 新しい相談を始める</button>
+            <div id="threadList"></div>
+            <div class="settings-mini">
+                <label for="studentName">学生名（エクスポート時のファイル名に使用）</label>
+                <input type="text" id="studentName" placeholder="例：山田太郎" onchange="saveStudentName()">
+            </div>
+        </div>
+
+        <!-- メインエリア -->
+        <div class="main">
+            <h1>就活ES・面接対策 AIカウンセラー</h1>
+
+            <!-- 設定・管理パネル -->
+            <div class="control-panel">
+                <label for="apiKey"><strong>Google Gemini APIキー設定:</strong></label>
+                <div class="input-group">
+                    <input type="password" id="apiKey" placeholder="AI Studioで取得したAPIキーを貼り付け">
+                    <button class="btn-primary" onclick="saveApiKey()">保存</button>
+                    <button class="btn-danger" onclick="clearAllData()">キーと全履歴を完全削除（共有PC用）</button>
+                </div>
+                <div id="status" class="status">状況: APIキー未設定</div>
+            </div>
+
+            <!-- チャット表示エリア -->
+            <div id="chat-box"></div>
+
+            <!-- 入力フォーム -->
+            <div class="input-group">
+                <input type="text" id="userInput" placeholder="例：車の整備工場でアルバイトをしました。水が冷たくて辛かったです。" onkeypress="handleKeyPress(event)">
+                <button class="btn-success" onclick="sendMessage()">送信</button>
+            </div>
+
+            <!-- スレッド操作 -->
+            <div class="thread-actions">
+                <button class="btn-secondary" onclick="renameCurrentThread()">スレッド名を変更</button>
+                <button class="btn-primary" onclick="exportCurrentThread()">この相談をエクスポート（先生へ提出用）</button>
+                <button class="btn-danger" onclick="deleteCurrentThread()">このスレッドを削除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 定数・キー =====
+        const THREADS_KEY = "shukatsu_threads_v1";
+        const CURRENT_KEY = "shukatsu_current_thread_id";
+        const STUDENT_NAME_KEY = "shukatsu_student_name";
+        const API_KEY_KEY = "gemini_api_key";
+        const MODEL_NAME = "gemini-3.7-flash";
+        const FALLBACK_MODEL_NAME = "gemini-3.1-flash-lite";
+
+        // AIの役割（面接官・カウンセラー）を設定する指示文
+        const SYSTEM_INSTRUCTION = "あなたは採用面接官およびキャリアカウンセラーです。ユーザーの体験談に対して『面接で深掘りされそうな曖昧な部分』や『本当に本人がやったのか疑問に思う点』を2点指摘し、自身の言葉でどう語るべきか親身にアドバイスしてください。抽象的・綺麗すぎる就活用語（主体性、コミュニケーション能力など）は使わず、具体的で生の体験を引き出してください。";
+
+        let threads = [];
+        let currentThreadId = null;
+
+        // ===== 初期化 =====
+        window.onload = function() {
+            const savedKey = localStorage.getItem(API_KEY_KEY);
+            if (savedKey) {
+                document.getElementById("apiKey").value = savedKey;
+                document.getElementById("status").innerText = "状況: APIキー保存済み";
+            }
+
+            const savedName = localStorage.getItem(STUDENT_NAME_KEY);
+            if (savedName) {
+                document.getElementById("studentName").value = savedName;
+            }
+
+            loadThreads();
+            if (threads.length === 0) {
+                createThread("新しい相談");
+            }
+            const savedCurrentId = localStorage.getItem(CURRENT_KEY);
+            currentThreadId = threads.some(t => t.id === savedCurrentId) ? savedCurrentId : threads[0].id;
+
+            renderThreadList();
+            renderChat();
+        };
+
+        // ===== スレッド管理 =====
+        function loadThreads() {
+            threads = JSON.parse(localStorage.getItem(THREADS_KEY) || "[]");
+        }
+
+        function saveThreads() {
+            localStorage.setItem(THREADS_KEY, JSON.stringify(threads));
+        }
+
+        function createThread(title) {
+            const now = new Date().toISOString();
+            const t = {
+                id: "t_" + Date.now(),
+                title: title || "新しい相談",
+                createdAt: now,
+                updatedAt: now,
+                messages: []
+            };
+            threads.unshift(t);
+            saveThreads();
+            return t;
+        }
+
+        function getCurrentThread() {
+            return threads.find(t => t.id === currentThreadId);
+        }
+
+        function touchCurrentThread() {
+            const t = getCurrentThread();
+            if (!t) return;
+            t.updatedAt = new Date().toISOString();
+            threads = [t, ...threads.filter(x => x.id !== t.id)];
+            saveThreads();
+        }
+
+        function handleNewThread() {
+            const t = createThread("新しい相談");
+            selectThread(t.id);
+        }
+
+        function selectThread(id) {
+            currentThreadId = id;
+            localStorage.setItem(CURRENT_KEY, id);
+            renderThreadList();
+            renderChat();
+        }
+
+        function renameCurrentThread() {
+            const t = getCurrentThread();
+            if (!t) return;
+            const newTitle = prompt("新しいスレッド名を入力してください", t.title);
+            if (newTitle && newTitle.trim()) {
+                t.title = newTitle.trim();
+                saveThreads();
+                renderThreadList();
+            }
+        }
+
+        function deleteCurrentThread() {
+            const t = getCurrentThread();
+            if (!t) return;
+            const ok = confirm(`「${t.title}」を削除します。よろしいですか？（この操作は取り消せません）`);
+            if (!ok) return;
+            threads = threads.filter(x => x.id !== t.id);
+            if (threads.length === 0) {
+                createThread("新しい相談");
+            }
+            currentThreadId = threads[0].id;
+            saveThreads();
+            localStorage.setItem(CURRENT_KEY, currentThreadId);
+            renderThreadList();
+            renderChat();
+        }
+
+        function saveStudentName() {
+            localStorage.setItem(STUDENT_NAME_KEY, document.getElementById("studentName").value.trim());
+        }
+
+        // ===== エクスポート =====
+        function exportCurrentThread() {
+            const t = getCurrentThread();
+            if (!t || t.messages.length === 0) {
+                alert("エクスポートする会話がありません。まずは相談を入力してください。");
+                return;
+            }
+            const studentName = document.getElementById("studentName").value.trim() || "無記名";
+            const payload = {
+                studentName: studentName,
+                threadTitle: t.title,
+                createdAt: t.createdAt,
+                updatedAt: t.updatedAt,
+                exportedAt: new Date().toISOString(),
+                messages: t.messages
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            const dateStr = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "");
+            a.href = url;
+            a.download = `相談ログ_${studentName}_${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            document.getElementById("status").innerText = "状況: エクスポート完了（先生に提出してください）";
+        }
+
+        // ===== 一覧描画 =====
+        function renderThreadList() {
+            const listEl = document.getElementById("threadList");
+            listEl.innerHTML = "";
+            threads.forEach(t => {
+                const item = document.createElement("div");
+                item.className = "thread-item" + (t.id === currentThreadId ? " active" : "");
+                const dateStr = new Date(t.updatedAt).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+                const titleDiv = document.createElement("div");
+                titleDiv.className = "thread-title";
+                titleDiv.innerText = t.title;
+                const dateDiv = document.createElement("div");
+                dateDiv.className = "thread-date";
+                dateDiv.innerText = dateStr;
+                item.appendChild(titleDiv);
+                item.appendChild(dateDiv);
+                item.onclick = () => selectThread(t.id);
+                listEl.appendChild(item);
+            });
+        }
+
+        function renderChat() {
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML = "";
+            const t = getCurrentThread();
+            if (!t) return;
+            if (t.messages.length === 0) {
+                appendSystemMessage(`システム: 「${t.title}」の相談を開始します。アルバイトや学業などの体験談を入力してください。`);
+                return;
+            }
+            t.messages.forEach(msg => {
+                const sender = msg.role === "user" ? "あなた" : "面接官AI";
+                const className = msg.role === "user" ? "user-msg" : "ai-msg";
+                appendMessage(sender, msg.parts[0].text, className);
+            });
+        }
+
+        // ===== APIキー管理 =====
+        function saveApiKey() {
+            const key = document.getElementById("apiKey").value.trim();
+            if (!key) {
+                alert("APIキーを入力してください。");
+                return;
+            }
+            localStorage.setItem(API_KEY_KEY, key);
+            document.getElementById("status").innerText = "状況: APIキー保存済み";
+            alert("APIキーを保存しました。");
+        }
+
+        function clearAllData() {
+            const confirmDelete = confirm("保存されている「APIキー」と「すべての相談スレッド」を削除しますか？\n※共有PCから離れる場合は必ず削除してください。");
+            if (confirmDelete) {
+                localStorage.removeItem(API_KEY_KEY);
+                localStorage.removeItem(THREADS_KEY);
+                localStorage.removeItem(CURRENT_KEY);
+                localStorage.removeItem(STUDENT_NAME_KEY);
+                document.getElementById("apiKey").value = "";
+                document.getElementById("studentName").value = "";
+                threads = [];
+                createThread("新しい相談");
+                currentThreadId = threads[0].id;
+                renderThreadList();
+                renderChat();
+                document.getElementById("status").innerText = "状況: 削除完了（未設定）";
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // ===== Gemini API呼び出し（自動リトライ＋フォールバック付き） =====
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function callGeminiWithRetry(apiKey, contents, statusEl) {
+            const retryDelaysMs = [2000, 4000]; // 1回目失敗後2秒待機、2回目失敗後4秒待機
+            let modelName = MODEL_NAME;
+
+            for (let attempt = 1; attempt <= 3; attempt++) {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+                const requestBody = {
+                    system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+                    contents: contents
+                };
+
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (response.status === 429) {
+                    throw new Error("無料枠の使用上限（リクエスト制限）に達しました。1分ほど待ってから再度送信してください。");
+                }
+
+                if (response.status === 503) {
+                    if (attempt < 3) {
+                        statusEl.innerText = `状況: サーバーが混雑しています。自動的に再試行しています…（${attempt}回目）`;
+                        await sleep(retryDelaysMs[attempt - 1]);
+                        continue;
+                    }
+                    // 3回失敗 → フォールバックモデルへ切り替えて最後にもう一度だけ試す
+                    statusEl.innerText = "状況: 混雑が続くため、別モデルで再試行しています…";
+                    modelName = FALLBACK_MODEL_NAME;
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+                    const fallbackResponse = await fetch(fallbackUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(requestBody)
+                    });
+                    if (!fallbackResponse.ok) {
+                        const errJson = await fallbackResponse.json().catch(() => ({}));
+                        throw new Error(errJson.error?.message || "現在サーバーが混雑しています。しばらく時間をおいてから再度お試しください。");
+                    }
+                    return await fallbackResponse.json();
+                }
+
+                if (!response.ok) {
+                    const errorJson = await response.json().catch(() => ({}));
+                    throw new Error(errorJson.error?.message || "APIとの通信でエラーが発生しました。");
+                }
+
+                return await response.json();
+            }
+        }
+
+        // ===== 送信処理 =====
+        async function sendMessage() {
+            const apiKey = localStorage.getItem(API_KEY_KEY) || document.getElementById("apiKey").value.trim();
+            const userInput = document.getElementById("userInput").value.trim();
+
+            if (!apiKey) {
+                alert("APIキーが設定されていません。上部の入力欄にAPIキーを入力して「保存」を押してください。");
+                return;
+            }
+            if (!userInput) return;
+
+            const t = getCurrentThread();
+            if (!t) return;
+
+            appendMessage("あなた", userInput, "user-msg");
+            t.messages.push({ role: "user", parts: [{ text: userInput }] });
+
+            const isFirstMessage = t.messages.filter(m => m.role === "user").length === 1;
+            if (isFirstMessage && t.title === "新しい相談") {
+                t.title = userInput.length > 20 ? userInput.slice(0, 20) + "…" : userInput;
+            }
+
+            saveThreads();
+            renderThreadList();
+            document.getElementById("userInput").value = "";
+
+            const statusEl = document.getElementById("status");
+
+            try {
+                statusEl.innerText = "状況: AI面接官が回答を考えています...";
+
+                const data = await callGeminiWithRetry(apiKey, t.messages, statusEl);
+                const aiReply = data.candidates[0].content.parts[0].text;
+
+                appendMessage("面接官AI", aiReply, "ai-msg");
+                t.messages.push({ role: "model", parts: [{ text: aiReply }] });
+
+                touchCurrentThread();
+                renderThreadList();
+                statusEl.innerText = "状況: 応答完了（相談内容を保存しました）";
+
+            } catch (error) {
+                alert("【エラー】" + error.message);
+                statusEl.innerText = "状況: エラーが発生しました";
+            }
+        }
+
+        // ===== 表示用ヘルパー =====
+        function appendMessage(sender, text, className) {
+            const chatBox = document.getElementById("chat-box");
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `message ${className}`;
+            msgDiv.innerText = `【${sender}】\n${text}`;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function appendSystemMessage(text) {
+            const chatBox = document.getElementById("chat-box");
+            const msgDiv = document.createElement("div");
+            msgDiv.className = "system-msg";
+            msgDiv.innerText = text;
+            chatBox.appendChild(msgDiv);
+        }
+    </script>
+</body>
+</html>

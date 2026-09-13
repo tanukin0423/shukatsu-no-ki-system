@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>就活相談 AIカウンセラー（教員用）</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: "Helvetica Neue", Arial, "ヒラギノ角ゴ ProN", "Hiragino Kaku Gothic ProN", メイリオ, Meiryo, sans-serif;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+        h1 {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 1rem;
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+        }
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .tab-btn {
+            padding: 10px 16px;
+            border: 1px solid #ced4da;
+            background: #ffffff;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            color: #495057;
+        }
+        .tab-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .app-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #e9ecef;
+        }
+        .main {
+            flex: 1;
+            min-width: 0;
+        }
+        .file-drop {
+            border: 2px dashed #ced4da;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 12px;
+        }
+        input[type="file"] { width: 100%; font-size: 0.85rem; }
+        .list-scroll {
+            max-height: 460px;
+            overflow-y: auto;
+        }
+        .record-item, .thread-item {
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 6px;
+            border: 1px solid #e9ecef;
+        }
+        .record-item:hover, .thread-item:hover { background-color: #f1f3f5; }
+        .record-item.active, .thread-item.active {
+            background-color: #e7f1ff;
+            border: 1px solid #007bff;
+        }
+        .record-student, .thread-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #2c3e50;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .record-title {
+            font-size: 0.8rem;
+            color: #495057;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .record-date, .thread-date {
+            font-size: 0.75rem;
+            color: #868e96;
+        }
+        .empty-hint {
+            color: #868e96;
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .control-panel {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+        }
+        .record-meta-row {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #495057;
+        }
+        .record-meta-row strong { color: #2c3e50; }
+        #viewChatBox, #liveChatBox {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            height: 380px;
+            overflow-y: auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+        }
+        .message {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .user-msg {
+            color: #004085;
+            background-color: #cce5ff;
+            padding: 12px;
+            border-radius: 8px 8px 0px 8px;
+            margin-left: 40px;
+        }
+        .ai-msg {
+            color: #1b1e21;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 12px;
+            border-radius: 8px 8px 8px 0px;
+            margin-right: 40px;
+        }
+        .system-msg {
+            color: #6c757d;
+            font-size: 0.85rem;
+            text-align: center;
+            margin: 10px 0;
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+        .note-panel {
+            background: #fff9e6;
+            border: 1px solid #ffe08a;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        .note-panel label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #7a5c00;
+            margin-bottom: 6px;
+        }
+        .note-panel textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px;
+            border: 1px solid #e0c46c;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+        button {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-primary:hover { background-color: #0069d9; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-danger:hover { background-color: #c82333; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-success:hover { background-color: #218838; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #565e64; }
+        .actions-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .thread-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .status {
+            font-size: 0.85rem;
+            margin-top: 8px;
+            color: #495057;
+            font-weight: bold;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="password"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        #newLiveThreadBtn {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #newLiveThreadBtn:hover { background-color: #218838; }
+        .settings-mini {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e9ecef;
+            font-size: 0.85rem;
+        }
+        .settings-mini label { display: block; margin-bottom: 4px; color: #495057; }
+        .settings-mini input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>就活相談 AIカウンセラー（教員用）</h1>
+
+    <div class="tab-bar">
+        <button id="tabViewBtn" class="tab-btn active" onclick="switchMode('view')">📂 提出済みログを確認</button>
+        <button id="tabLiveBtn" class="tab-btn" onclick="switchMode('live')">💬 ライブ相談（壁打ち）</button>
+    </div>
+
+    <!-- ================= 閲覧モード ================= -->
+    <div id="viewMode" class="app-layout">
+        <div class="sidebar">
+            <h2>相談記録一覧</h2>
+            <div class="file-drop">
+                学生から提出された「相談ログ_○○.json」ファイルを選択してください（複数選択可）
+                <input type="file" id="fileInput" multiple accept="application/json" onchange="handleFileSelect(event)">
+            </div>
+            <div id="recordList" class="list-scroll"></div>
+        </div>
+
+        <div class="main">
+            <div id="emptyState" class="control-panel">
+                <p>左のファイル選択から、学生が提出した相談ログ（.json）を読み込んでください。読み込んだ記録は、この端末のブラウザに保存され、次回以降も一覧に残ります。</p>
+                <p>「ライブ相談」タブで自分自身が学生と行った相談を、そのままこの一覧に保存することもできます。</p>
+            </div>
+
+            <div id="detailArea" style="display:none;">
+                <div class="control-panel">
+                    <div class="record-meta-row">
+                        <span><strong>学生名:</strong> <span id="metaStudent"></span></span>
+                        <span><strong>相談タイトル:</strong> <span id="metaTitle"></span></span>
+                        <span><strong>更新日時:</strong> <span id="metaUpdated"></span></span>
+                        <span><strong>種別:</strong> <span id="metaSource"></span></span>
+                    </div>
+                </div>
+
+                <div id="viewChatBox"></div>
+
+                <div class="note-panel">
+                    <label for="teacherNote">教員メモ（この端末にのみ保存されます。学生には送信されません）</label>
+                    <textarea id="teacherNote" placeholder="例：ボランティア経験の具体化が必要。次回面談で深掘り予定。"></textarea>
+                    <div class="actions-row">
+                        <button class="btn-primary" onclick="saveNote()">メモを保存</button>
+                        <button class="btn-danger" onclick="deleteCurrentRecord()">この記録をリストから削除</button>
+                    </div>
+                    <div id="noteStatus" class="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ライブ相談モード ================= -->
+    <div id="liveMode" class="app-layout" style="display:none;">
+        <div class="sidebar">
+            <h2>ライブ相談スレッド</h2>
+            <button id="newLiveThreadBtn" onclick="handleNewLiveThread()">＋ 新しいライブ相談を始める</button>
+            <div id="liveThreadList" class="list-scroll"></div>
+            <div class="settings-mini">
+                <label for="liveStudentName">相手の学生名（記録・エクスポート用）</label>
+                <input type="text" id="liveStudentName" placeholder="例：山田太郎" onchange="saveLiveStudentName()">
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="control-panel">
+                <label for="liveApiKey"><strong>Google Gemini APIキー設定（先生自身のキー）:</strong></label>
+                <div class="input-group">
+                    <input type="password" id="liveApiKey" placeholder="AI Studioで取得したAPIキーを貼り付け">
+                    <button class="btn-primary" onclick="saveLiveApiKey()">保存</button>
+                    <button class="btn-danger" onclick="clearLiveData()">キーと全ライブ履歴を削除</button>
+                </div>
+                <div id="liveStatus" class="status">状況: APIキー未設定</div>
+            </div>
+
+            <div id="liveChatBox"></div>
+
+            <div class="input-group">
+                <input type="text" id="liveUserInput" placeholder="例：学生の発言や、確認したい体験談の内容を入力" onkeypress="handleLiveKeyPress(event)">
+                <button class="btn-success" onclick="sendLiveMessage()">送信</button>
+            </div>
+
+            <div class="thread-actions">
+                <button class="btn-secondary" onclick="renameCurrentLiveThread()">スレッド名を変更</button>
+                <button class="btn-success" onclick="saveLiveThreadToRecords()">この相談を「確認」タブの記録に保存</button>
+                <button class="btn-primary" onclick="exportCurrentLiveThread()">ファイルとしてエクスポート</button>
+                <button class="btn-danger" onclick="deleteCurrentLiveThread()">このスレッドを削除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===================================================
+        // 共通定数
+        // ===================================================
+        const MODEL_NAME = "gemini-3.7-flash";
+        const FALLBACK_MODEL_NAME = "gemini-3.1-flash-lite";
+        const SYSTEM_INSTRUCTION = "あなたは採用面接官およびキャリアカウンセラーです。ユーザーの体験談に対して『面接で深掘りされそうな曖昧な部分』や『本当に本人がやったのか疑問に思う点』を2点指摘し、自身の言葉でどう語るべきか親身にアドバイスしてください。抽象的・綺麗すぎる就活用語（主体性、コミュニケーション能力など）は使わず、具体的で生の体験を引き出してください。";
+
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+        async function callGeminiWithRetry(apiKey, contents, statusEl) {
+            const retryDelaysMs = [2000, 4000];
+            let modelName = MODEL_NAME;
+
+            for (let attempt = 1; attempt <= 3; attempt++) {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+                const requestBody = {
+                    system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+                    contents: contents
+                };
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (response.status === 429) {
+                    throw new Error("無料枠の使用上限（リクエスト制限）に達しました。1分ほど待ってから再度送信してください。");
+                }
+
+                if (response.status === 503) {
+                    if (attempt < 3) {
+                        statusEl.innerText = `状況: サーバーが混雑しています。自動的に再試行しています…（${attempt}回目）`;
+                        await sleep(retryDelaysMs[attempt - 1]);
+                        continue;
+                    }
+                    statusEl.innerText = "状況: 混雑が続くため、別モデルで再試行しています…";
+                    modelName = FALLBACK_MODEL_NAME;
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+                    const fallbackResponse = await fetch(fallbackUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(requestBody)
+                    });
+                    if (!fallbackResponse.ok) {
+                        const errJson = await fallbackResponse.json().catch(() => ({}));
+                        throw new Error(errJson.error?.message || "現在サーバーが混雑しています。しばらく時間をおいてから再度お試しください。");
+                    }
+                    return await fallbackResponse.json();
+                }
+
+                if (!response.ok) {
+                    const errorJson = await response.json().catch(() => ({}));
+                    throw new Error(errorJson.error?.message || "APIとの通信でエラーが発生しました。");
+                }
+                return await response.json();
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement("div");
+            div.innerText = str;
+            return div.innerHTML;
+        }
+
+        // ===================================================
+        // タブ切り替え
+        // ===================================================
+        function switchMode(mode) {
+            document.getElementById("viewMode").style.display = mode === "view" ? "flex" : "none";
+            document.getElementById("liveMode").style.display = mode === "live" ? "flex" : "none";
+            document.getElementById("tabViewBtn").classList.toggle("active", mode === "view");
+            document.getElementById("tabLiveBtn").classList.toggle("active", mode === "live");
+        }
+
+        // ===================================================
+        // 【閲覧モード】提出済みログ確認
+        // ===================================================
+        const RECORDS_KEY = "shukatsu_teacher_records_v1";
+        let records = [];
+        let currentRecordId = null;
+
+        function loadRecords() {
+            records = JSON.parse(localStorage.getItem(RECORDS_KEY) || "[]");
+        }
+        function saveRecords() {
+            localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
+        }
+        function makeRecordId(rec) {
+            const raw = `${rec.studentName}|${rec.threadTitle}|${rec.createdAt}`;
+            return btoa(unescape(encodeURIComponent(raw)));
+        }
+
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+            let importedCount = 0;
+            let processed = 0;
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    processed++;
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (!data.messages || !Array.isArray(data.messages)) {
+                            throw new Error("形式が正しくありません（messagesが見つかりません）");
+                        }
+                        const recordId = makeRecordId(data);
+                        const existingIndex = records.findIndex(r => r.recordId === recordId);
+                        const newRecord = {
+                            recordId: recordId,
+                            studentName: data.studentName || "無記名",
+                            threadTitle: data.threadTitle || "（無題）",
+                            createdAt: data.createdAt || data.exportedAt || new Date().toISOString(),
+                            updatedAt: data.updatedAt || data.exportedAt || new Date().toISOString(),
+                            importedAt: new Date().toISOString(),
+                            source: data.source || "学生提出",
+                            messages: data.messages,
+                            teacherNote: existingIndex >= 0 ? records[existingIndex].teacherNote : ""
+                        };
+                        if (existingIndex >= 0) {
+                            records[existingIndex] = newRecord;
+                        } else {
+                            records.push(newRecord);
+                        }
+                        importedCount++;
+                    } catch (err) {
+                        alert(`ファイル「${file.name}」の読み込みに失敗しました：${err.message}`);
+                    } finally {
+                        if (processed === files.length) {
+                            saveRecords();
+                            renderRecordList();
+                            if (importedCount > 0) {
+                                selectRecord(records[records.length - 1].recordId);
+                            }
+                            event.target.value = "";
+                        }
+                    }
+                };
+                reader.readAsText(file, "UTF-8");
+            });
+        }
+
+        function renderRecordList() {
+            const listEl = document.getElementById("recordList");
+            listEl.innerHTML = "";
+            if (records.length === 0) {
+                listEl.innerHTML = '<div class="empty-hint">まだ記録がありません</div>';
+                return;
+            }
+            const sorted = [...records].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+            sorted.forEach(r => {
+                const item = document.createElement("div");
+                item.className = "record-item" + (r.recordId === currentRecordId ? " active" : "");
+                const dateStr = new Date(r.updatedAt).toLocaleString("ja-JP", { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+                item.innerHTML = `
+                    <div class="record-student">${escapeHtml(r.studentName)}</div>
+                    <div class="record-title">${escapeHtml(r.threadTitle)}</div>
+                    <div class="record-date">${dateStr}（${escapeHtml(r.source || "学生提出")}）</div>
+                `;
+                item.onclick = () => selectRecord(r.recordId);
+                listEl.appendChild(item);
+            });
+        }
+
+        function selectRecord(recordId) {
+            currentRecordId = recordId;
+            const r = records.find(x => x.recordId === recordId);
+            if (!r) return;
+
+            document.getElementById("emptyState").style.display = "none";
+            document.getElementById("detailArea").style.display = "block";
+
+            document.getElementById("metaStudent").innerText = r.studentName;
+            document.getElementById("metaTitle").innerText = r.threadTitle;
+            document.getElementById("metaUpdated").innerText = new Date(r.updatedAt).toLocaleString("ja-JP");
+            document.getElementById("metaSource").innerText = r.source || "学生提出";
+
+            const chatBox = document.getElementById("viewChatBox");
+            chatBox.innerHTML = "";
+            r.messages.forEach(msg => {
+                const sender = msg.role === "user" ? "学生" : "面接官AI";
+                const className = msg.role === "user" ? "user-msg" : "ai-msg";
+                const msgDiv = document.createElement("div");
+                msgDiv.className = `message ${className}`;
+                msgDiv.innerText = `【${sender}】\n${msg.parts[0].text}`;
+                chatBox.appendChild(msgDiv);
+            });
+
+            document.getElementById("teacherNote").value = r.teacherNote || "";
+            document.getElementById("noteStatus").innerText = "";
+            renderRecordList();
+        }
+
+        function saveNote() {
+            const r = records.find(x => x.recordId === currentRecordId);
+            if (!r) return;
+            r.teacherNote = document.getElementById("teacherNote").value;
+            saveRecords();
+            document.getElementById("noteStatus").innerText = "状況: メモを保存しました";
+        }
+
+        function deleteCurrentRecord() {
+            const r = records.find(x => x.recordId === currentRecordId);
+            if (!r) return;
+            const ok = confirm(`「${r.studentName}」さんの「${r.threadTitle}」をリストから削除します。よろしいですか？`);
+            if (!ok) return;
+            records = records.filter(x => x.recordId !== currentRecordId);
+            saveRecords();
+            if (records.length > 0) {
+                selectRecord(records[0].recordId);
+            } else {
+                currentRecordId = null;
+                document.getElementById("detailArea").style.display = "none";
+                document.getElementById("emptyState").style.display = "block";
+                renderRecordList();
+            }
+        }
+
+        // ===================================================
+        // 【ライブ相談モード】先生自身がその場でAPIを使って相談
+        // ===================================================
+        const LIVE_THREADS_KEY = "shukatsu_teacher_live_threads_v1";
+        const LIVE_CURRENT_KEY = "shukatsu_teacher_live_current_id";
+        const LIVE_STUDENT_NAME_KEY = "shukatsu_teacher_live_student_name";
+        const LIVE_API_KEY_KEY = "gemini_api_key_teacher";
+
+        let liveThreads = [];
+        let currentLiveThreadId = null;
+
+        function loadLiveThreads() {
+            liveThreads = JSON.parse(localStorage.getItem(LIVE_THREADS_KEY) || "[]");
+        }
+        function saveLiveThreads() {
+            localStorage.setItem(LIVE_THREADS_KEY, JSON.stringify(liveThreads));
+        }
+        function createLiveThread(title) {
+            const now = new Date().toISOString();
+            const t = { id: "lt_" + Date.now(), title: title || "新しいライブ相談", createdAt: now, updatedAt: now, messages: [] };
+            liveThreads.unshift(t);
+            saveLiveThreads();
+            return t;
+        }
+        function getCurrentLiveThread() {
+            return liveThreads.find(t => t.id === currentLiveThreadId);
+        }
+        function touchCurrentLiveThread() {
+            const t = getCurrentLiveThread();
+            if (!t) return;
+            t.updatedAt = new Date().toISOString();
+            liveThreads = [t, ...liveThreads.filter(x => x.id !== t.id)];
+            saveLiveThreads();
+        }
+
+        function handleNewLiveThread() {
+            const t = createLiveThread("新しいライブ相談");
+            selectLiveThread(t.id);
+        }
+        function selectLiveThread(id) {
+            currentLiveThreadId = id;
+            localStorage.setItem(LIVE_CURRENT_KEY, id);
+            renderLiveThreadList();
+            renderLiveChat();
+        }
+        function renameCurrentLiveThread() {
+            const t = getCurrentLiveThread();
+            if (!t) return;
+            const newTitle = prompt("新しいスレッド名を入力してください", t.title);
+            if (newTitle && newTitle.trim()) {
+                t.title = newTitle.trim();
+                saveLiveThreads();
+                renderLiveThreadList();
+            }
+        }
+        function deleteCurrentLiveThread() {
+            const t = getCurrentLiveThread();
+            if (!t) return;
+            const ok = confirm(`「${t.title}」を削除します。よろしいですか？（この操作は取り消せません）`);
+            if (!ok) return;
+            liveThreads = liveThreads.filter(x => x.id !== t.id);
+            if (liveThreads.length === 0) {
+                createLiveThread("新しいライブ相談");
+            }
+            currentLiveThreadId = liveThreads[0].id;
+            saveLiveThreads();
+            localStorage.setItem(LIVE_CURRENT_KEY, currentLiveThreadId);
+            renderLiveThreadList();
+            renderLiveChat();
+        }
+        function saveLiveStudentName() {
+            localStorage.setItem(LIVE_STUDENT_NAME_KEY, document.getElementById("liveStudentName").value.trim());
+        }
+
+        function renderLiveThreadList() {
+            const listEl = document.getElementById("liveThreadList");
+            listEl.innerHTML = "";
+            liveThreads.forEach(t => {
+                const item = document.createElement("div");
+                item.className = "thread-item" + (t.id === currentLiveThreadId ? " active" : "");
+                const dateStr = new Date(t.updatedAt).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+                item.innerHTML = `<div class="thread-title">${escapeHtml(t.title)}</div><div class="thread-date">${dateStr}</div>`;
+                item.onclick = () => selectLiveThread(t.id);
+                listEl.appendChild(item);
+            });
+        }
+
+        function renderLiveChat() {
+            const chatBox = document.getElementById("liveChatBox");
+            chatBox.innerHTML = "";
+            const t = getCurrentLiveThread();
+            if (!t) return;
+            if (t.messages.length === 0) {
+                const msgDiv = document.createElement("div");
+                msgDiv.className = "system-msg";
+                msgDiv.innerText = `システム: 「${t.title}」を開始します。学生との壁打ちで確認したい体験談を入力してください。`;
+                chatBox.appendChild(msgDiv);
+                return;
+            }
+            t.messages.forEach(msg => {
+                const sender = msg.role === "user" ? "入力内容" : "面接官AI";
+                const className = msg.role === "user" ? "user-msg" : "ai-msg";
+                const msgDiv = document.createElement("div");
+                msgDiv.className = `message ${className}`;
+                msgDiv.innerText = `【${sender}】\n${msg.parts[0].text}`;
+                chatBox.appendChild(msgDiv);
+            });
+        }
+
+        function saveLiveApiKey() {
+            const key = document.getElementById("liveApiKey").value.trim();
+            if (!key) { alert("APIキーを入力してください。"); return; }
+            localStorage.setItem(LIVE_API_KEY_KEY, key);
+            document.getElementById("liveStatus").innerText = "状況: APIキー保存済み";
+            alert("APIキーを保存しました。");
+        }
+
+        function clearLiveData() {
+            const confirmDelete = confirm("保存されている「APIキー」と「すべてのライブ相談スレッド」を削除しますか？\n※共有PCから離れる場合は必ず削除してください。");
+            if (confirmDelete) {
+                localStorage.removeItem(LIVE_API_KEY_KEY);
+                localStorage.removeItem(LIVE_THREADS_KEY);
+                localStorage.removeItem(LIVE_CURRENT_KEY);
+                localStorage.removeItem(LIVE_STUDENT_NAME_KEY);
+                document.getElementById("liveApiKey").value = "";
+                document.getElementById("liveStudentName").value = "";
+                liveThreads = [];
+                createLiveThread("新しいライブ相談");
+                currentLiveThreadId = liveThreads[0].id;
+                renderLiveThreadList();
+                renderLiveChat();
+                document.getElementById("liveStatus").innerText = "状況: 削除完了（未設定）";
+            }
+        }
+
+        function handleLiveKeyPress(e) {
+            if (e.key === 'Enter') sendLiveMessage();
+        }
+
+        async function sendLiveMessage() {
+            const apiKey = localStorage.getItem(LIVE_API_KEY_KEY) || document.getElementById("liveApiKey").value.trim();
+            const userInput = document.getElementById("liveUserInput").value.trim();
+            if (!apiKey) {
+                alert("APIキーが設定されていません。上部の入力欄にAPIキーを入力して「保存」を押してください。");
+                return;
+            }
+            if (!userInput) return;
+
+            const t = getCurrentLiveThread();
+            if (!t) return;
+
+            const msgDiv = document.createElement("div");
+            const chatBox = document.getElementById("liveChatBox");
+            msgDiv.className = "message user-msg";
+            msgDiv.innerText = `【入力内容】\n${userInput}`;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            t.messages.push({ role: "user", parts: [{ text: userInput }] });
+
+            const isFirstMessage = t.messages.filter(m => m.role === "user").length === 1;
+            if (isFirstMessage && t.title === "新しいライブ相談") {
+                t.title = userInput.length > 20 ? userInput.slice(0, 20) + "…" : userInput;
+            }
+
+            saveLiveThreads();
+            renderLiveThreadList();
+            document.getElementById("liveUserInput").value = "";
+
+            const statusEl = document.getElementById("liveStatus");
+            try {
+                statusEl.innerText = "状況: AI面接官が回答を考えています...";
+                const data = await callGeminiWithRetry(apiKey, t.messages, statusEl);
+                const aiReply = data.candidates[0].content.parts[0].text;
+
+                const aiDiv = document.createElement("div");
+                aiDiv.className = "message ai-msg";
+                aiDiv.innerText = `【面接官AI】\n${aiReply}`;
+                chatBox.appendChild(aiDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                t.messages.push({ role: "model", parts: [{ text: aiReply }] });
+                touchCurrentLiveThread();
+                renderLiveThreadList();
+                statusEl.innerText = "状況: 応答完了";
+            } catch (error) {
+                alert("【エラー】" + error.message);
+                statusEl.innerText = "状況: エラーが発生しました";
+            }
+        }
+
+        function exportCurrentLiveThread() {
+            const t = getCurrentLiveThread();
+            if (!t || t.messages.length === 0) {
+                alert("エクスポートする会話がありません。");
+                return;
+            }
+            const studentName = document.getElementById("liveStudentName").value.trim() || "無記名";
+            const payload = {
+                studentName: studentName,
+                threadTitle: t.title,
+                createdAt: t.createdAt,
+                updatedAt: t.updatedAt,
+                exportedAt: new Date().toISOString(),
+                source: "教員ライブ相談",
+                messages: t.messages
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            const dateStr = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "");
+            a.href = url;
+            a.download = `相談ログ_${studentName}_${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            document.getElementById("liveStatus").innerText = "状況: エクスポート完了";
+        }
+
+        function saveLiveThreadToRecords() {
+            const t = getCurrentLiveThread();
+            if (!t || t.messages.length === 0) {
+                alert("保存する会話がありません。");
+                return;
+            }
+            const studentName = document.getElementById("liveStudentName").value.trim() || "無記名";
+            const rec = {
+                studentName: studentName,
+                threadTitle: t.title,
+                createdAt: t.createdAt,
+                updatedAt: t.updatedAt,
+                source: "教員ライブ相談",
+                messages: t.messages
+            };
+            const recordId = makeRecordId(rec);
+            const existingIndex = records.findIndex(r => r.recordId === recordId);
+            const newRecord = {
+                recordId: recordId,
+                studentName: rec.studentName,
+                threadTitle: rec.threadTitle,
+                createdAt: rec.createdAt,
+                updatedAt: rec.updatedAt,
+                importedAt: new Date().toISOString(),
+                source: rec.source,
+                messages: rec.messages,
+                teacherNote: existingIndex >= 0 ? records[existingIndex].teacherNote : ""
+            };
+            if (existingIndex >= 0) {
+                records[existingIndex] = newRecord;
+            } else {
+                records.push(newRecord);
+            }
+            saveRecords();
+            renderRecordList();
+            alert(`「確認」タブの記録一覧に保存しました（学生名: ${studentName}）。`);
+        }
+
+        // ===================================================
+        // 初期化
+        // ===================================================
+        window.onload = function() {
+            // 閲覧モード
+            loadRecords();
+            renderRecordList();
+            if (records.length > 0) selectRecord(records[0].recordId);
+
+            // ライブ相談モード
+            const savedLiveKey = localStorage.getItem(LIVE_API_KEY_KEY);
+            if (savedLiveKey) {
+                document.getElementById("liveApiKey").value = savedLiveKey;
+                document.getElementById("liveStatus").innerText = "状況: APIキー保存済み";
+            }
+            const savedLiveName = localStorage.getItem(LIVE_STUDENT_NAME_KEY);
+            if (savedLiveName) document.getElementById("liveStudentName").value = savedLiveName;
+
+            loadLiveThreads();
+            if (liveThreads.length === 0) createLiveThread("新しいライブ相談");
+            const savedCurrentLiveId = localStorage.getItem(LIVE_CURRENT_KEY);
+            currentLiveThreadId = liveThreads.some(t => t.id === savedCurrentLiveId) ? savedCurrentLiveId : liveThreads[0].id;
+            renderLiveThreadList();
+            renderLiveChat();
+        };
+    </script>
+</body>
+</html>
