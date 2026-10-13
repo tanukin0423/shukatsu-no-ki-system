@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ES作成ナビ｜就活の木</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+ --accent:#2D6B4A;--soft:#E8F2EC;--bg:#F4F6F5;--paper:#FFFFFF;--ink:#22302A;--sub:#5C6863;--line:#D5DCD8;
+ --whhm:#FFF6C2;--whhm-ink:#6B5300;--warn:#B3261E;--ok:#2E7D32;--shallow:#F6E4E2;--deep:#E2F1E4;--tip:#EEF3FB;--tip-ink:#1A4FA3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#151A18;--paper:#1E2522;--ink:#E6ECE9;--sub:#A3AFAA;--line:#36413C;--whhm:#3F3612;--whhm-ink:#FFE37A;--warn:#FF8A80;--ok:#81C784;--shallow:#3A2422;--deep:#1F3524;--tip:#1E2A3A;--tip-ink:#9EC2FF}}
+:root[data-theme="dark"]{--bg:#151A18;--paper:#1E2522;--ink:#E6ECE9;--sub:#A3AFAA;--line:#36413C;--whhm:#3F3612;--whhm-ink:#FFE37A;--warn:#FF8A80;--ok:#81C784;--shallow:#3A2422;--deep:#1F3524;--tip:#1E2A3A;--tip-ink:#9EC2FF}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;font-size:16px;line-height:1.75}
+.wrap{max-width:820px;margin:0 auto;padding:0 18px 80px}
+.band{background:var(--accent);color:#fff;padding:24px 0 22px;transition:background .35s}
+.band small{display:block;font-size:.82rem;opacity:.88}
+.band h1{margin:2px 0 4px;font-size:clamp(1.45rem,4vw,2rem);font-weight:900;line-height:1.35}
+.band p{margin:0;font-size:.92rem;opacity:.93;max-width:40em}
+section.step{background:var(--paper);border:1px solid var(--line);border-radius:6px;margin-top:20px;padding:20px 22px 22px}
+.sh{display:flex;gap:12px;align-items:baseline;margin-bottom:4px}
+.no{flex:none;width:2rem;height:2rem;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;transform:translateY(.35rem);transition:background .35s}
+h2{margin:0;font-size:1.18rem}
+.lead{margin:2px 0 14px 2.75rem;color:var(--sub);font-size:.9rem}
+label.f{display:block;font-weight:700;font-size:.93rem;margin:0 0 3px}
+.hint{display:block;color:var(--sub);font-size:.84rem;line-height:1.6}
+.req{color:var(--warn);font-size:.78rem;margin-left:.35em;font-weight:500}.opt{color:var(--sub);font-size:.78rem;margin-left:.35em;font-weight:500}
+input[type=text],textarea,select{font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:4px;width:100%}
+input[type=text],select{padding:9px 10px}
+textarea{padding:10px 12px;resize:vertical;line-height:1.7}
+textarea::placeholder,input::placeholder{color:var(--sub);opacity:.8;font-size:.9rem}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+button:focus-visible,a:focus-visible,label.card:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:600px){.row{grid-template-columns:1fr}}
+.field+.field,.row+.field,.field+.row,.row+.row,.cards+.row{margin-top:14px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}@media(max-width:600px){.cards{grid-template-columns:1fr}}
+label.card{display:block;position:relative;border:2px solid var(--line);border-radius:8px;padding:11px 14px 11px 42px;cursor:pointer;background:var(--paper)}
+label.card input{position:absolute;left:14px;top:15px;width:18px;height:18px;accent-color:var(--accent)}
+label.card b{display:block}label.card span{display:block;color:var(--sub);font-size:.84rem;line-height:1.6}
+label.card:has(input:checked){border-color:var(--accent);background:var(--soft)}
+:root[data-theme="dark"] label.card:has(input:checked){background:color-mix(in srgb,var(--accent) 25%,var(--paper))}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) label.card:has(input:checked){background:color-mix(in srgb,var(--accent) 25%,var(--paper))}}
+/* wizard */
+.prog{display:flex;align-items:center;gap:10px;margin:2px 0 12px}
+.prog .bar{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}.prog .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.prog span{font-size:.85rem;color:var(--sub);white-space:nowrap}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.dot{font:inherit;font-size:.78rem;border:1.5px solid var(--line);background:var(--paper);color:var(--sub);border-radius:999px;padding:1px 10px;cursor:pointer}
+.dot.done{border-color:var(--accent);color:var(--accent)}.dot.cur{background:var(--accent);border-color:var(--accent);color:#fff}
+.dot.w{box-shadow:inset 0 -3px 0 #F2C94C}
+.qcard{border:1.5px solid var(--accent);border-radius:8px;overflow:hidden}
+.qcard.whhm{border-color:#E0B72E}
+.qhead{background:var(--accent);color:#fff;padding:8px 14px;font-weight:700;display:flex;gap:10px;align-items:center;transition:background .35s}
+.qcard.whhm .qhead{background:#8A6A00}
+.qhead .tag{margin-left:auto;background:#FFF59D;color:#5A4500;border-radius:3px;padding:0 8px;font-size:.8rem}
+.qbody{padding:14px 16px 16px}
+.qcard.whhm .qbody{background:var(--whhm)}
+.qq{font-size:1.15rem;font-weight:700;margin:0 0 4px;line-height:1.55}
+.qcard.whhm .qq,.qcard.whhm .hint{color:var(--whhm-ink)}
+.tipbox{background:var(--tip);color:var(--tip-ink);border-radius:4px;padding:6px 10px;font-size:.86rem;margin:8px 0}
+.sbtn{font:inherit;font-size:.82rem;font-weight:700;color:var(--whhm-ink);background:transparent;border:1.5px solid currentColor;border-radius:999px;padding:1px 12px;cursor:pointer;margin:8px 0 6px}
+.sample{display:none;margin:2px 0 10px;border-radius:4px;overflow:hidden;border:1px solid var(--line);background:var(--paper)}
+.sample.open{display:block}.sample .cap{font-size:.78rem;color:var(--sub);padding:6px 10px;border-bottom:1px solid var(--line)}
+.sample .pair{display:grid;grid-template-columns:1fr 1.6fr}@media(max-width:600px){.sample .pair{grid-template-columns:1fr}}
+.sample .s,.sample .d{padding:8px 10px;font-size:.86rem;line-height:1.65}.sample .s{background:var(--shallow)}.sample .d{background:var(--deep)}
+.sample b{display:block;font-size:.78rem}
+.meta{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;color:var(--sub);margin-top:3px}
+.deepq{display:none;margin-top:10px;border-left:4px solid var(--warn);background:color-mix(in srgb,var(--warn) 8%,var(--paper));padding:8px 12px;font-size:.92rem}
+.deepq.show{display:block}.deepq b{color:var(--warn)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;cursor:pointer;border-radius:4px;padding:10px 18px;border:2px solid var(--accent);background:var(--accent);color:#fff;transition:background .35s,border-color .35s}
+.btn.ghost{background:transparent;color:var(--accent)}.btn.small{padding:6px 12px;font-size:.88rem}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.okmsg{color:var(--ok);font-weight:700;font-size:.9rem}
+.notice{margin-top:10px;padding:10px 14px;border-left:4px solid var(--warn);background:color-mix(in srgb,var(--warn) 8%,transparent);font-size:.9rem;display:none}.notice.show{display:block}
+.viewtabs{display:flex;gap:6px;margin-bottom:8px}
+.vt{font:inherit;font-size:.85rem;border:1.5px solid var(--line);background:var(--paper);color:var(--sub);border-radius:4px;padding:3px 12px;cursor:pointer}
+.vt[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.count{font-size:.86rem;margin-top:4px}.count.over{color:var(--warn);font-weight:700}.count.ok{color:var(--ok);font-weight:700}
+.skel{font-size:.95rem;min-height:260px}
+.prompt{font-size:.85rem;min-height:360px;background:color-mix(in srgb,var(--accent) 5%,var(--paper))}
+.ai-links{font-size:.88rem;color:var(--sub)}.ai-links a{color:var(--accent);font-weight:700;margin-right:.9em}
+footer{margin-top:30px;color:var(--sub);font-size:.82rem;text-align:center}
+@media(max-width:600px){.lead{margin-left:0}section.step{padding:16px 14px 18px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="band"><div class="wrap">
+ <small>就活の木｜学生ひとりでも、面談でも</small>
+ <h1>ES作成ナビ</h1>
+ <p>問いに一つずつ答えていくと、あなたの言葉でESの骨組みができあがります。仕上げは、AIに「あなたの言葉のまま」整えてもらいます。</p>
+</div></header>
+<main class="wrap">
+
+<section class="step" aria-labelledby="h1">
+ <div class="sh"><span class="no">1</span><h2 id="h1">何を書きますか</h2></div>
+ <p class="lead">作成目的を選ぶと、問いがそのESの形に切り替わります。</p>
+ <select id="purpose" aria-label="作成目的">
+  <option value="">― 作成目的を選んでください ―</option>
+  <option value="gaigai">ガクチカ（学業以外）</option>
+  <option value="gaku">ガクチカ（学業：ゼミ・研究・学習）</option>
+  <option value="prA">自己PR（強み発揮型：強みを発揮した場面）</option>
+  <option value="prB">自己PR（強み育成型：時間をかけて育てた強み）</option>
+  <option value="shibo">志望動機</option>
+ </select>
+ <div class="cards" role="radiogroup" aria-label="使い方">
+  <label class="card"><input type="radio" name="who" value="self" checked><b>学生ひとりで使う</b><span>問いに自分で答えていきます。</span></label>
+  <label class="card"><input type="radio" name="who" value="talk"><b>面談で一緒に使う</b><span>相談員向けに「面談での聞き方」のヒントが出ます。</span></label>
+ </div>
+ <div class="row">
+  <div class="field"><label class="f" for="limit">字数制限</label>
+   <select id="limit"><option value="">字数なし</option><option>200</option><option>250</option><option>300</option><option selected>400</option><option>500</option><option>600</option><option>800</option></select></div>
+  <div class="field"><label class="f" for="question">設問文<span class="opt">任意</span></label><input type="text" id="question" placeholder="企業の設問をそのまま貼る"></div>
+ </div>
+ <div class="row">
+  <div class="field"><label class="f" for="company">企業名<span class="req" id="cReq" hidden>必須</span><span class="opt" id="cOpt">任意</span></label><input type="text" id="company" placeholder="〇〇株式会社"></div>
+  <div class="field"><label class="f" for="job">職種<span class="opt">任意</span></label><input type="text" id="job" placeholder="総合職・営業職など"></div>
+ </div>
+ <div class="field"><label class="f" for="persona">求める人物像<span class="opt">任意・採用ページから貼りつけ</span></label><textarea id="persona" rows="2" placeholder="採用ページの「求める人物像」などをそのまま"></textarea></div>
+</section>
+
+<section class="step" id="qStep" hidden aria-labelledby="h2">
+ <div class="sh"><span class="no">2</span><h2 id="h2">問いに一つずつ答える</h2></div>
+ <p class="lead">黄色の問い（Why・How・More & Better）が、あなたらしさの出るところです。うまく書けなくても大丈夫。思い出したままを書きましょう。</p>
+ <div class="prog"><div class="bar"><i id="pbar"></i></div><span id="ptext"></span></div>
+ <div class="dots" id="dots" aria-label="問いの一覧"></div>
+ <div id="qcard"></div>
+ <div class="nav">
+  <button class="btn ghost" id="prev" type="button">← 前の問い</button>
+  <button class="btn" id="next" type="button">次の問い →</button>
+ </div>
+</section>
+
+<section class="step" id="skStep" hidden aria-labelledby="h3">
+ <div class="sh"><span class="no">3</span><h2 id="h3">骨組みを確かめる</h2></div>
+ <p class="lead">あなたの答えを、ESの順番に並べました。つなぎの言葉は、このあとAIが整えます。ここで直してもかまいません。</p>
+ <div class="viewtabs" role="group" aria-label="表示の切り替え">
+  <button class="vt" id="vBody" type="button" aria-pressed="true">本文として読む</button>
+  <button class="vt" id="vHead" type="button" aria-pressed="false">構成を確かめる（見出しつき）</button>
+ </div>
+ <textarea id="skel" class="skel" aria-label="ESの骨組み"></textarea>
+ <div class="count" id="count"></div>
+ <div class="notice" id="gapNote"></div>
+ <div class="actions"><button class="btn ghost small" id="copySkel" type="button">骨組みをコピー</button><button class="btn ghost small" id="resetSkel" type="button">答えから作り直す</button><span class="okmsg" id="skMsg" aria-live="polite"></span></div>
+</section>
+
+<section class="step" id="aiStep" hidden aria-labelledby="h4">
+ <div class="sh"><span class="no">4</span><h2 id="h4">AIに仕上げてもらう</h2></div>
+ <p class="lead">骨組みを、あなたの言葉のまま、伝わる文章に整えてもらう依頼文です。AIが勝手に話を足したり、ありきたりな言葉に置き換えたりしないよう、ルールを書き込んであります。</p>
+ <div class="actions" style="margin-top:0"><button class="btn" id="makeCopy" type="button">依頼文をつくってコピー</button><button class="btn ghost" id="make" type="button">つくって表示だけ</button><span class="okmsg" id="aiMsg" aria-live="polite"></span></div>
+ <div class="notice" id="aiErr" role="alert"></div>
+ <div id="aiOut" hidden>
+  <textarea id="prompt" class="prompt" readonly aria-label="AIへの依頼文" style="margin-top:12px"></textarea>
+  <div class="actions"><button class="btn small" id="copyP" type="button">依頼文をコピー</button><span class="okmsg" id="cpMsg" aria-live="polite"></span></div>
+  <p class="ai-links">貼りつけ先：<a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a><a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a><a href="https://copilot.microsoft.com/" target="_blank" rel="noopener">Copilot</a></p>
+  <p class="hint">AIの字数は10〜20字ずれることがあります。最終確認はWordなどの文字カウントで。返ってきた文章は、声に出して読み、自分の言葉として話せるか確かめてください。</p>
+ </div>
+</section>
+
+<div class="actions" style="justify-content:flex-end"><button class="btn ghost small" id="reset" type="button">入力をすべて消す</button></div>
+<footer>入力内容は、この端末のブラウザにだけ一時保存されます。　就活の木</footer>
+</main>
+<script>
+/* ===== 作成目的ごとの問い =====
+ q: メインの問い / hint: 補足 / ph: 入力欄の問いかけ / deep: 抽象的・短いときの深掘り / tip: 面談での聞き方
+ ex: 見本（浅い s / 深い d） */
+const Q_WHY='いつ頃のこと？ どこで、誰と？\nそのとき何が起きて、どう感じた？';
+const F=(id,sec,label,q,o={})=>Object.assign({id,sec,label,q,hint:'',ph:'',deep:'',tip:'',whhm:null,required:false,ex:null,rows:4},o);
+const SHEETS={
+gaigai:{name:'ガクチカ（学業以外）',topic:'学生時代に学業以外で力を入れたこと',color:'#1E6FC8',soft:'#E3F0FC',exNote:'市民プールの監視員アルバイトをした、架空の学生の例',fields:[
+ F('c1','① 結論','取り組んだこと','学業以外で、いちばん力を入れて取り組んだことは何ですか？',{ph:'アルバイト・サークル・ボランティア・趣味など。一言で',required:true,rows:2,tip:'「この4年間で、時間をいちばん使ったことは？」と広く聞く'}),
+ F('c2','② 動機・背景','なぜ、それに取り組んだのか','なぜ、それに取り組もうと思ったのですか？',{whhm:'Why',ph:Q_WHY,hint:'始める前の、あなたの経験まで書いてみましょう。',deep:'それは、経験で言うと？ 始める前に、何か心に残っている出来事はありますか？',tip:'「始めたきっかけは？」→「その前に、何かあった？」と時間をさかのぼる',ex:{s:'人の役に立つことがしたかったからです。',d:'小学4年の夏、弟がプールで溺れかけ、監視員さんがすぐに飛び込んで助けてくれました。何もできずに立ちすくんだ自分が悔しく、今度は見守る側になりたいと思い、大学1年で監視員の仕事を始めました。'}}),
+ F('c3','③ 具体的な説明','どんな活動か','それは、どんな活動でしたか？',{ph:'どんな場所で、何人くらいで、あなたはどんな役割だった？',tip:'人数・期間・自分の立場を数字で聞く'}),
+ F('c4','④ 課題・困難','ぶつかった壁','取り組む中で、どんな壁にぶつかりましたか？',{ph:'うまくいかなかったこと、困ったことは？ それはなぜ起きていた？',tip:'「いちばん大変だった日は？」と一日を特定する'}),
+ F('c5','⑤ 行動','どう取り組んだか','その壁に、あなたはどう取り組みましたか？',{whhm:'How',ph:'最初に何をした？ 周りの反応は？ そのあとどうした？',hint:'チームではなく、あなた自身がしたことを。',deep:'そのとき、あなたは具体的に何をしましたか？ 誰に、何と言いましたか？',tip:'「みんなで」が出たら「その中で、あなたは？」と聞き返す',ex:{s:'周りと協力して頑張りました。',d:'ヒヤリとした場面をメモに残し、毎朝の打ち合わせで共有しようと提案しました。最初は誰も書かなかったので、まず自分が毎日3件ずつ書いて見せました。'}}),
+ F('c5b','⑤ 行動','もっと良くするために','途中で、さらに重ねた行動や、やり方を見直したことはありますか？',{whhm:'More & Better',ph:'やってみて気づいたことは？ 何を変えた？ 何を試した？',hint:'More＝さらに重ねた行動、Better＝見直した工夫。最初の行動とは別のことを。',deep:'やってみてうまくいかなかったとき、何を変えましたか？',tip:'「最初のやり方から、途中で変えたことは？」と聞く',ex:{s:'さらに努力を続けました。',d:'メモを時間帯ごとに数えてみると、危ない場面が夕方4時台に集中していると分かりました。そこで、その時間だけ監視台を一つ増やす配置を責任者に提案しました。'}}),
+ F('c6','⑥ 結果・学び','結果と、これから','どんな結果になり、そこから何を得ましたか？',{ph:'どう変わった？（数字や、周りの人の言葉があれば）　それを今後どう活かしたい？',tip:'「周りの人に何と言われた？」と、人の言葉を引き出す'})]},
+gaku:{name:'ガクチカ（学業）',topic:'学生時代に学業（ゼミ・研究・学習）で力を入れたこと',color:'#1A3C7A',soft:'#E6ECF6',exNote:'商店街の空き店舗を調べるゼミに入った、架空の学生の例',fields:[
+ F('c1','① 結論','所属と取り組み','どんなゼミ・分野に所属し、その中で何に取り組みましたか？',{ph:'例：「〇〇を研究する△△ゼミに所属し、その中で〜に取り組みました」',required:true,rows:2,tip:'ゼミの研究テーマと、本人の担当を分けて聞く'}),
+ F('c2','② 動機・背景','なぜ、そのテーマか','なぜ、そのゼミ・研究テーマを選んだのですか？',{whhm:'Why',ph:'そのテーマが気になり始めたきっかけは？\nいつ、どんな出来事や疑問があった？',hint:'先生の提案で決まった場合は、「提案を聞いて、なぜやりたいと思ったか」を。',deep:'それは、経験で言うと？ そのテーマが気になった、具体的な場面はありますか？',tip:'題材が先生の提案なら「聞いたとき、どう思った？」と聞く',ex:{s:'地域活性化に興味があったからです。',d:'高校時代に通っていた駅前の本屋が閉店し、シャッターの増えていく通学路を毎日見ていました。なぜ店が続かないのかをきちんと知りたくて、地域経済を扱う今のゼミを選びました。'}}),
+ F('c3','③ 具体的な説明','どんな研究か','どんな研究・学習でしたか？',{ph:'何を、どんな方法で調べた？ あなたの担当は？',tip:'専門用語は「高校生に説明するなら？」と言い換えてもらう'}),
+ F('c4','④ 課題・困難','ぶつかった壁','研究・学習を進める中で、どんな壁にぶつかりましたか？',{ph:'研究が進まなかったところは？ 何が難しかった？'}),
+ F('c5','⑤ 行動','どう取り組んだか','その壁に、あなたはどう取り組みましたか？',{whhm:'How',ph:'どうやって乗り越えようとした？ 具体的に何をした？',deep:'そのとき、あなたは具体的に何をしましたか？ どこへ行き、誰に会いましたか？',ex:{s:'たくさん調べて分析しました。',d:'統計データだけでは理由が見えなかったので、商店街の12店舗に自分で連絡をとり、店主さんに1軒30分ずつ話を聞きに行きました。'}}),
+ F('c5b','⑤ 行動','もっと良くするために','途中で、さらに重ねた行動や、やり方を見直したことはありますか？',{whhm:'More & Better',ph:'もっと良い研究にするために、何を変えた？ 何を試した？',hint:'最初の行動とは別のことを。',deep:'やってみて、何を見直しましたか？',ex:{s:'より良くするために工夫しました。',d:'聞いた話を「家賃」「後継ぎ」「お客さんの年齢層」の3つに分けて表にし、ゼミの仲間の調査と並べて比べられる形にしました。'}}),
+ F('c6','⑥ 結果・学び','結果と、これから','研究で何が分かり、あなたは何を得ましたか？',{ph:'分かったこと、変わったこと。それを今後どう活かしたい？'})]},
+prA:{name:'自己PR（強み発揮型）',topic:'自己PR（強みを発揮したエピソード）',color:'#2E7D32',soft:'#E8F5E9',exNote:'「段取り力」を強みにした、架空の学生の例',fields:[
+ F('c1','① 結論','あなたの強み','あなたの強みを一言で言うと、何ですか？',{ph:'例：「私の強みは〜です」　強みは一つにしぼりましょう',required:true,rows:2,tip:'「友だちによく頼まれることは？」から強みを探す'}),
+ F('c2','② 根拠・背景','なぜ、それが強みと言えるか','なぜ、それがあなたの強みだと言えるのですか？',{whhm:'Why',ph:'その強みに初めて気づいたのはいつ？\nどんな場面で、誰に何と言われた？',hint:'強みが身についた、きっかけの経験まで。',deep:'それは、経験で言うと？ その強みに気づいた、最初の出来事は？',tip:'「いつから、そう言われるようになった？」と起点を聞く',ex:{s:'昔から計画的に物事を進めるのが得意だからです。',d:'中学の吹奏楽部で、楽器の運び出しのたびに出発が遅れていました。運ぶ順番を紙に書いて配ってみると15分早く出られ、先輩に「助かった」と言われたのが、この強みに気づいた最初です。'}}),
+ F('c3','③ 発揮した場面','強みを使った場面','その強みを、どんな場面で発揮しましたか？',{ph:'いつ、どこで、どんな場面だった？'}),
+ F('c4','④ 課題・困難','その場面の課題','その場面で、何が問題になっていましたか？',{ph:'放っておくと、どうなりそうだった？'}),
+ F('c5','⑤ 行動','どう発揮したか','その強みを使って、具体的に何をしましたか？',{whhm:'How',ph:'強みを使って、まず何をした？',deep:'そのとき、あなたは具体的に何をしましたか？',ex:{s:'段取りを工夫して進めました。',d:'模擬店の準備が前日に集中しそうだったので、作業を30個に分けて担当と期限を表にし、毎日昼休みに5分だけ進み具合を確かめ合いました。'}}),
+ F('c5b','⑤ 行動','もっと良くするために','途中で、さらに重ねた行動や、やり方を見直したことはありますか？',{whhm:'More & Better',ph:'途中で何を見直した？ もっと良くするために何を変えた？',hint:'最初の行動とは別のことを。',deep:'やってみて、うまくいかなかったところはどう変えましたか？',ex:{s:'さらに改善しました。',d:'1日目の行列を見て、注文と受け渡しの窓口を分ければ待ち時間が減ると考え、2日目は机の並べ方を変えました。'}}),
+ F('c6','⑥ 結果・活かし方','結果と、仕事での活かし方','どんな結果になり、その強みを仕事でどう活かしたいですか？',{ph:'どんな結果に？ その強みを、仕事のどんな場面で使いたい？'})]},
+prB:{name:'自己PR（強み育成型）',topic:'自己PR（時間をかけて強みを育ててきた歩み）',color:'#5E8F2A',soft:'#F1F8E9',exNote:'もともと人前で話すのが苦手だった、架空の学生の例',fields:[
+ F('c1','① 結論','あなたの強み','時間をかけて身につけてきた強みは、何ですか？',{ph:'例：「私の強みは〜です」',required:true,rows:2}),
+ F('c2','② 出発点','なぜ、それが強みになってきたか','なぜ、それがあなたの強みになってきたのですか？',{whhm:'Why',ph:'最初はどんな状態だった？（得意？ 苦手？）\n育て始めるきっかけになった出来事は？',hint:'決意表明ではなく、歩みの振り返りとして。',deep:'それは、経験で言うと？ 育て始めるきっかけになった場面は？',tip:'「最初からできた？」と出発点を聞く',ex:{s:'話すことが好きで、自然と強みになりました。',d:'もともと人前で話すのが苦手で、高校の発表では声が震えて途中で止まってしまいました。その悔しさから、大学では毎週人前で話す機会のあるアルバイトを選んだのが出発点です。'}}),
+ F('c3','③ 磨いてきた過程①','どう取り組み始めたか','強みを育てるために、まず何から始めましたか？',{whhm:'How',ph:'最初の一歩として、何を始めた？ どれくらい続けた？',deep:'具体的に、何を、どれくらいの頻度でやりましたか？',ex:{s:'練習を頑張りました。',d:'まずは説明会の受付で、同じ案内を1日20回、毎回同じ言い方で話すことから始めました。'}}),
+ F('c4','④ ぶつかった壁','壁','続ける中で、どんな壁にぶつかりましたか？',{ph:'うまくいかなくなったことは？'}),
+ F('c5b','⑤ 磨いてきた過程②','もっと良くするために','壁を越えるために、さらに重ねた行動や、見直したことは何ですか？',{whhm:'More & Better',ph:'何を変えた？ 何を試した？ それをどれくらい続けた？',hint:'育成型の主役です。小さな工夫の積み重ねを、時間の流れとともに。',deep:'やり方を変えたきっかけは何でしたか？ どのくらい続けましたか？',ex:{s:'工夫を重ねて上達しました。',d:'自分の案内を録音して聞き返すと、早口なのが分かりました。そこで一文ごとに相手の顔を見て間をとるようにし、それを半年続けました。'}}),
+ F('c6','⑥ 現在地・活かし方','今と、仕事での活かし方','今はどこまでできるようになり、仕事でどう活かしたいですか？',{ph:'今の自分は？ その強みを仕事のどんな場面で使いたい？'})]},
+shibo:{name:'志望動機',topic:'志望動機',color:'#6A1B9A',soft:'#F3E5F5',exNote:'地方の路線バス会社を志望する、架空の学生の例',company:true,fields:[
+ F('c1','① 結論','志望する理由','この会社を志望する理由を、一言で言うと何ですか？',{ph:'なぜこの会社なのか、一言で',required:true,rows:2}),
+ F('w1','② なぜこの会社か','第1段：何がいいと思ったか','この会社の「どこ」に惹かれましたか？',{whhm:'Why',ph:'説明会や企業研究で、具体的に何を見て・聞いて惹かれた？',hint:'事業・人・理念・社風など。どの会社にも言える内容になっていないか。',deep:'それは、他の会社にはないところですか？ 具体的に何を見聞きしましたか？',tip:'「説明会で、いちばん覚えている言葉は？」と聞く',ex:{s:'地域に貢献している点に魅力を感じました。',d:'説明会で、利用者の少ない山あいの路線も「通院する人がいる限り走らせる」と話されていたことです。'}}),
+ F('w2','② なぜこの会社か','第2段：なぜ、それをいいと思ったか','なぜ、それを「いい」と感じたのですか？',{whhm:'Why',ph:'それを「いい」と感じたのは、あなたが何を大事にしているから？',hint:'あなたの価値観・判断基準が出てくるところです。',deep:'あなたは、仕事をするうえで何を大事にしたいですか？',ex:{s:'社会の役に立つ仕事だと思ったからです。',d:'効率だけで決めず、一人の困りごとを見捨てない判断に、自分が大事にしたい働き方が重なったからです。'}}),
+ F('w3','② なぜこの会社か','第3段：その気持ちの原体験','その気持ちは、どんな経験から来ていますか？',{whhm:'Why',ph:Q_WHY,hint:'一番深い根っこです。ここが書けると、面接で崩れません。',deep:'それは、経験で言うと？ そう思うようになった場面は？',tip:'「そう思うようになったのは、いつ頃から？」とさかのぼる',ex:{s:'昔から人の役に立ちたいと思っていました。',d:'祖母が運転免許を返したあと、病院へ行く手段がバスしかなく、1日3本の便に合わせて暮らす姿をそばで見てきたからです。'}}),
+ F('c3','③ 具体的な説明','この会社である理由','同じ業界の他社と比べて、この会社にしかないところは何ですか？',{ph:'調べて分かったこと、理解していること'}),
+ F('c4','④ 貢献できること','活かせる強み','あなたのどんな強み・経験が、この会社で役に立ちそうですか？',{ph:'自己PRやガクチカとつなげると書きやすい'}),
+ F('c5','⑤ どう活躍するか','入社後の働き方','入社したら、どんな仕事で、どう力を発揮したいですか？',{whhm:'How',ph:'入社したら、まずどんな仕事で、どう力を発揮したい？',deep:'具体的に、どの部署・どんな仕事を思い浮かべていますか？',ex:{s:'強みを活かして頑張りたいです。',d:'アルバイトで身につけた「相手の話を最後まで聞く」姿勢を活かし、まずは営業所で利用者の声を集める仕事に取り組みたいです。'}}),
+ F('c5b','⑤ どう活躍するか','もっと良くするために','そのために、どんな工夫や成長を重ねたいですか？',{whhm:'More & Better',ph:'そのために、何を学んだり工夫したりしたい？',deep:'今から始められることは何ですか？',ex:{s:'常に向上心を持って成長したいです。',d:'集めた声をダイヤ改正の提案につなげられるよう、乗り降りのデータの読み方も学んでいきたいです。'}}),
+ F('c6','⑥ 入社後の展望','将来の姿','5年後・10年後、この会社でどんな仕事をしていたいですか？',{ph:'成し遂げたいこと、なりたい人材像'})]}
+};
+const FOCUS={
+ gaigai:'・Why：なぜその活動を始めたのか。始める前の具体的な経験（原体験）まで降りているか。\n・How：課題に対して本人が何をしたか。チームの成果ではなく、本人の行動と判断が見えるか。\n・More & Better：途中で重ねた行動と、やってみて見直した工夫が具体的か。',
+ gaku:'・Why：なぜそのゼミ・研究テーマを選んだのか。具体的な経験や疑問まで降りているか。題材が先生の提案なら、提案を聞いて「やりたい」と思った理由があるか。\n・How：本人がどう手を動かしたか（調べ方・聞き取り・分析など）。\n・More & Better：途中で重ねた行動と、見直した工夫が具体的か。',
+ prA:'・Why：(1)その場面でなぜその行動をとったか、(2)なぜそれが自分の強みになったか（原体験）を区別する。\n・How：その強みを、どの場面で、誰に対して、どう発揮したか。\n・More & Better：途中で重ねた行動と、見直した工夫。',
+ prB:'・これは強み育成型の自己PRです。派手な実績ではなく、時間をかけて強みを育ててきた歩みが主役です。\n・Why：出発点（最初は苦手だったか、何がきっかけか）が具体的か。決意表明ではなく、歩みの振り返りか。\n・How：育て始めたとき、まず何をしたか。\n・More & Better（最重要）：壁を越えるために重ねた行動と工夫が、時間の流れとともに見えるか。',
+ shibo:'・Why（最重要・三段）：第1段 この会社の何がいいと思ったか（どの会社にも言える内容でないか）／第2段 なぜそれをいいと思ったか（価値観）／第3段 その気持ちの原体験。\n・How：入社後、強みや経験をどう活かして働くか。\n・More & Better：さらにどんな工夫や成長を重ねたいか。'
+};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const KEY='es-sakusei-navi-v1';
+const ABSTRACT=['成長','貢献','やりがい','コミュニケーション','頑張','努力','挑戦','視野','楽しかった','人の役に立','魅力を感じ','共感','興味があ','大切さ'];
+const blank=()=>({purpose:'',who:'self',limit:'400',question:'',company:'',job:'',persona:'',ans:{},cur:0,view:'body',skelEdit:{}});
+let st=blank();
+function load(){try{const s=localStorage.getItem(KEY);if(s)st=Object.assign(blank(),JSON.parse(s));}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+const sheet=()=>SHEETS[st.purpose];
+const ans=()=>st.ans[st.purpose]||(st.ans[st.purpose]={});
+const len=s=>Array.from(String(s).replace(/\s/g,'')).length;
+
+/* ===== テーマ ===== */
+function theme(){const s=sheet();document.documentElement.style.setProperty('--accent',s?s.color:'#2D6B4A');document.documentElement.style.setProperty('--soft',s?s.soft:'#E8F2EC');}
+
+/* ===== 全体の描画 ===== */
+function render(){
+  theme(); const s=sheet();
+  ['#qStep','#skStep','#aiStep'].forEach(x=>$(x).hidden=!s);
+  const sh=st.purpose==='shibo'; $('#cReq').hidden=!sh; $('#cOpt').hidden=sh;
+  if(!s) return;
+  if(st.cur>=s.fields.length) st.cur=s.fields.length-1;
+  renderQ(); renderSkel(); $('#aiOut').hidden=true; $('#aiErr').classList.remove('show');
+}
+
+/* ===== 問い ===== */
+function isWeak(f,v){
+  if(!f.whhm||!v.trim()) return false;
+  if(len(v)<40) return true;
+  return ABSTRACT.some(w=>v.includes(w)) && !/[0-9０-９]|年|月|とき|時|頃|ころ|場面|日/.test(v);
+}
+function renderQ(){
+  const s=sheet(), fs=s.fields, f=fs[st.cur], a=ans(), v=a[f.id]||'';
+  const done=fs.filter(x=>(a[x.id]||'').trim()).length;
+  $('#pbar').style.width=(done/fs.length*100)+'%';
+  $('#ptext').textContent=`問い ${st.cur+1} / ${fs.length}　（${done}問 回答済み）`;
+  $('#dots').innerHTML=fs.map((x,i)=>`<button type="button" class="dot${(a[x.id]||'').trim()?' done':''}${i===st.cur?' cur':''}${x.whhm?' w':''}" data-i="${i}" aria-label="${esc(x.sec+' '+x.label)}${(a[x.id]||'').trim()?'（回答済み）':''}">${i+1}</button>`).join('');
+  document.querySelectorAll('.dot').forEach(b=>b.addEventListener('click',()=>{st.cur=+b.dataset.i;save();renderQ();}));
+  const talk=st.who==='talk';
+  $('#qcard').innerHTML=`
+   <div class="qcard${f.whhm?' whhm':''}">
+    <div class="qhead"><span>${esc(f.sec)}　${esc(f.label)}</span>${f.whhm?`<span class="tag">${esc(f.whhm)}</span>`:''}${f.required&&!f.whhm?'<span class="tag" style="background:#fff;color:#8A2E23">必須</span>':''}</div>
+    <div class="qbody">
+     <p class="qq">${esc(talk?f.q.replace(/あなた/g,'学生さん'):f.q)}</p>
+     ${f.hint?`<span class="hint">${esc(f.hint)}</span>`:''}
+     ${talk&&f.tip?`<div class="tipbox"><b>面談での聞き方：</b>${esc(f.tip)}</div>`:''}
+     ${f.ex?`<button type="button" class="sbtn" aria-expanded="false" aria-controls="ex">見本を見る</button>
+      <div class="sample" id="ex"><div class="cap">${esc(s.exNote)}。題材はまねせず、「どこまで具体的に書くか」の深さだけ参考にしてください。</div>
+      <div class="pair"><div class="s"><b>浅い例（場面が見えない）</b>${esc(f.ex.s)}</div><div class="d"><b>深い例（場面まで降りている）</b>${esc(f.ex.d)}</div></div></div>`:''}
+     <textarea id="ansBox" rows="${f.rows}" placeholder="${esc(f.ph)}" aria-label="${esc(f.q)}" style="margin-top:8px">${esc(v)}</textarea>
+     <div class="meta"><span>${f.whhm?'ここは必ず書きましょう':'分かる範囲で'}</span><span id="aLen">${len(v)}字</span></div>
+     <div class="deepq${isWeak(f,v)?' show':''}" id="deep"><b>もう一歩：</b>${esc(f.deep||'それは、経験で言うと？ 具体的な場面を一つ書き足してみましょう。')}</div>
+    </div>
+   </div>`;
+  const box=$('#ansBox');
+  box.addEventListener('input',()=>{a[f.id]=box.value;save();$('#aLen').textContent=len(box.value)+'字';$('#deep').classList.toggle('show',isWeak(f,box.value));updateProgress();});
+  box.addEventListener('blur',()=>{renderSkel();});
+  const sb=document.querySelector('.sbtn');
+  if(sb) sb.addEventListener('click',()=>{const o=$('#ex').classList.toggle('open');sb.setAttribute('aria-expanded',o);sb.textContent=o?'見本を閉じる':'見本を見る';});
+  $('#prev').disabled=st.cur===0;
+  $('#next').textContent=st.cur===fs.length-1?'骨組みを見る →':'次の問い →';
+}
+function updateProgress(){
+  const fs=sheet().fields,a=ans(),done=fs.filter(x=>(a[x.id]||'').trim()).length;
+  $('#pbar').style.width=(done/fs.length*100)+'%';
+  $('#ptext').textContent=`問い ${st.cur+1} / ${fs.length}　（${done}問 回答済み）`;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('done',!!(a[fs[i].id]||'').trim()));
+}
+$('#prev').addEventListener('click',()=>{if(st.cur>0){st.cur--;save();renderQ();}});
+$('#next').addEventListener('click',()=>{
+  const n=sheet().fields.length;
+  if(st.cur<n-1){st.cur++;save();renderQ();$('#qcard').scrollIntoView({behavior:smooth(),block:'nearest'});}
+  else{renderSkel();$('#skStep').scrollIntoView({behavior:smooth(),block:'start'});}
+});
+const smooth=()=>matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+
+/* ===== 骨組み ===== */
+function sentence(t){t=t.trim().replace(/\n+/g,'');if(!t)return'';return /[。！？」』）)]$/.test(t)?t:t+'。';}
+function buildSkel(mode){
+  const s=sheet(),a=ans(); const out=[]; const gaps=[];
+  s.fields.forEach(f=>{
+    const v=(a[f.id]||'').trim();
+    if(!v){ if(f.whhm||f.required){gaps.push(f); out.push(mode==='head'?`■${f.sec}｜${f.label}\n【${f.label}：未記入】`:`【${f.label}】`);} return; }
+    out.push(mode==='head'?`■${f.sec}｜${f.label}${f.whhm?`（${f.whhm}）`:''}\n${sentence(v)}`:sentence(v));
+  });
+  return {text:mode==='head'?out.join('\n\n'):out.join(''),gaps};
+}
+function renderSkel(){
+  if(!sheet()) return;
+  const key=st.purpose+'_'+st.view;
+  const built=buildSkel(st.view);
+  const txt=(st.skelEdit[key]!=null)?st.skelEdit[key]:built.text;
+  $('#skel').value=txt;
+  $('#vBody').setAttribute('aria-pressed',st.view==='body');$('#vHead').setAttribute('aria-pressed',st.view==='head');
+  countSkel();
+  const g=built.gaps; const n=$('#gapNote');
+  if(g.length){n.innerHTML='まだ答えていない大事な問いがあります。【　】のまま仕上げに進むこともできますが、書けるところは書いてみましょう。<br>・'+g.map(f=>esc(f.sec+'　'+f.label)).join('<br>・');n.classList.add('show');}
+  else n.classList.remove('show');
+}
+function countSkel(){
+  const body=st.view==='body'?$('#skel').value:buildSkel('body').text;
+  const n=len(body.replace(/【[^】]*】/g,'')), lim=+st.limit, c=$('#count');
+  c.className='count';
+  if(lim){ const r=n/lim; c.textContent=`本文 ${n}字 ／ 指定 ${lim}字（【　】を除く）`+(n>lim?`　…${n-lim}字オーバー。仕上げでAIに削ってもらえます`:r<0.7?'　…少し短め。黄色の問いに書き足すと良くなります':'　…ちょうど良い長さです'); const cls=n>lim?'over':(r>=0.7?'ok':''); if(cls) c.classList.add(cls); }
+  else c.textContent=`本文 ${n}字（【　】を除く）`;
+}
+$('#skel').addEventListener('input',()=>{st.skelEdit[st.purpose+'_'+st.view]=$('#skel').value;save();countSkel();});
+$('#vBody').addEventListener('click',()=>{st.view='body';save();renderSkel();});
+$('#vHead').addEventListener('click',()=>{st.view='head';save();renderSkel();});
+$('#resetSkel').addEventListener('click',()=>{delete st.skelEdit[st.purpose+'_body'];delete st.skelEdit[st.purpose+'_head'];save();renderSkel();flash('#skMsg','答えから作り直しました');});
+$('#copySkel').addEventListener('click',()=>copyText($('#skel').value,'#skMsg'));
+
+/* ===== AIへの仕上げ依頼 ===== */
+function buildPrompt(){
+  const s=sheet(), lim=+st.limit, c=st.company.trim(), j=st.job.trim(), p=st.persona.trim(), q=st.question.trim();
+  const headSkel=st.skelEdit[st.purpose+'_head']!=null?st.skelEdit[st.purpose+'_head']:buildSkel('head').text;
+  const bodySkel=st.skelEdit[st.purpose+'_body']!=null?st.skelEdit[st.purpose+'_body']:buildSkel('body').text;
+  const hasGap=/【[^】]*】/.test(bodySkel);
+  return `# ESの仕上げのお願い（就活の木・ES作成ナビ）
+
+あなたは大学のキャリアカウンセラーです。学生が問いに一つずつ答えて作った「ESの骨組み」を、学生本人の言葉のまま、伝わる「${s.topic}」に仕上げてください。
+
+## この仕上げの考え方
+AIが整えたESは、そつはないけれど、誰が書いても同じ「金太郎あめ」になりがちです。採用担当者が読みたいのは、整った文章ではなく、その学生にしか書けない経験と言葉です。
+あなたの仕事は、上手な文章を書くことではなく、学生の骨組みを、学生の声のまま、読みやすくつなぐことです。
+
+## 絶対に守ること
+1. **学生の言葉を残す。** 学生の言い回し、気持ちの言葉、数字、固有名詞、場面の描写、会話文は、削らず・言い換えずに残してください。
+2. **創作しない。** 骨組みにない経験、行動、数字、成果、他者の評価、気持ち、動機を、一切書き足さないでください。
+3. **定型句を持ち込まない。** 学生が書いていない「〜力を培いました」「〜の大切さを学びました」「主体性」「粘り強さ」「貴社の〜に共感し」「貴社に貢献したい」などや、ビジネス文書のような硬い言葉、大人びた語彙は使わないでください。
+4. **直してよいのは、つなぎ方だけ。** 接続の言葉、文の区切り、重複の削除、主語と述語のねじれ、伝わりにくい言い回し、字数の調整に限ります。順序を入れ替えた場合は、「こうした」「そこで」などの指示語・接続語が正しく指しているか確かめてください。
+5. **【　】はそのまま残す。** 骨組みの【　】は、学生がまだ書いていない部分です。中身を想像で埋めず、【　】のまま完成文の正しい位置に残してください。
+6. 文章は「です・ます」で、学生本人の声として読めるようにしてください。
+
+## まず診断してください
+次の観点で、骨組みのWhy・How・More & Betterを ◎（具体的な場面まで書けている）／△（書いてあるが浅い）／×（ない・【　】）で判定し、骨組みを短く引用して根拠を示してください。
+${FOCUS[st.purpose]}
+・More & Betterは、途中で重ねた行動（More）と、やってみて見直した工夫（Better）です。最初の行動はHowとして扱います。
+・△の要素も、学生の言葉は消さずに残し、足りない部分は質問で返してください。
+${c||p?`
+## 提出先について
+${c?`企業名：${c}`:''}${j?`　職種：${j}`:''}
+${p?`学生が採用ページから写した「求める人物像」：「${p}」　これを最優先の根拠にしてください。`:`可能であればWeb検索で、採用ページなどから事業内容・職種の仕事・求める人物像を確認し、情報源を示してください。確認できない場合は、推測で企業像を作らず「確認できませんでした」と書いてください。`}
+・企業の情報は、学生の経験のうち、どこを前に出し、どこを短くするかを選ぶためにだけ使ってください。求める人物像の言葉を、学生が書いていないのに持ち込まないでください。寄せるために話を盛らないでください。
+`:''}${q?`
+## 設問文
+「${q}」　完成文が、この設問の条件に答えているかも確かめてください。
+`:''}
+## 字数
+${lim?`・指定は${lim}字です。完成文の本文を、${hasGap?`【　】の中身が入る分を見込んで、指定の8割程度`:'指定の9〜10割'}に収めてください。見出しは数えません。最後に（約〇〇字・目安）と書いてください。
+・削るときは、前置き・一般論・重複から削り、学生固有の経験や言葉は最後まで残してください。`:'・字数の指定はありません。内容を削らないでください。'}
+
+## 出力（この順で）
+0. 診断（Why／How／More & Better を各1行で）
+1. 完成文（そのまま読める文章。【　】がある場合はその位置に残す）
+2. 変えた点（3つまで。「骨組みの表現 → 完成文」の形で）
+3. もっとあなたらしくするための質問（△・×・【　】の部分について、2〜3問。具体的な場面を思い出せる聞き方で）
+4. 金太郎あめチェック（定型句、創作、求める人物像の言葉の持ち込みがないかを自分で点検した結果を1行で）
+
+---
+
+# 学生のESの骨組み
+
+【作成するもの】${s.name}
+${headSkel}
+`;
+}
+function make(copy){
+  const err=$('#aiErr'),s=sheet(),a=ans(),miss=[];
+  if(st.purpose==='shibo'&&!st.company.trim()) miss.push('企業名（手順1）');
+  if(!s.fields.some(f=>(a[f.id]||'').trim())) miss.push('問いへの答え（手順2）');
+  if(miss.length){err.innerHTML='次の入力が必要です。<br>・'+miss.map(esc).join('<br>・');err.classList.add('show');$('#aiOut').hidden=true;return;}
+  err.classList.remove('show');
+  $('#prompt').value=buildPrompt();$('#aiOut').hidden=false;
+  if(copy) copyText($('#prompt').value,'#aiMsg'); else $('#aiOut').scrollIntoView({behavior:smooth(),block:'start'});
+}
+$('#make').addEventListener('click',()=>make(false));
+$('#makeCopy').addEventListener('click',()=>make(true));
+$('#copyP').addEventListener('click',()=>copyText($('#prompt').value,'#cpMsg'));
+
+/* ===== 共通 ===== */
+async function copyText(t,msgSel){
+  let ok=false; try{await navigator.clipboard.writeText(t);ok=true;}catch(e){
+    const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{ok=document.execCommand('copy');}catch(e2){}ta.remove();}
+  flash(msgSel,ok?'コピーしました':'コピーできませんでした。選択してコピーしてください');
+}
+function flash(sel,msg){const m=$(sel);m.textContent=msg;setTimeout(()=>m.textContent='',4000);}
+$('#purpose').addEventListener('change',e=>{st.purpose=e.target.value;st.cur=0;save();render();});
+document.querySelectorAll('input[name=who]').forEach(r=>r.addEventListener('change',e=>{st.who=e.target.value;save();if(sheet())renderQ();}));
+[['#limit','limit','change'],['#question','question','input'],['#company','company','input'],['#job','job','input'],['#persona','persona','input']].forEach(([s,k,ev])=>$(s).addEventListener(ev,e=>{st[k]=e.target.value;save();if(k==='limit'&&sheet())countSkel();}));
+$('#reset').addEventListener('click',()=>{if(!confirm('入力した内容をすべて消します。よろしいですか？'))return;st=blank();try{localStorage.removeItem(KEY);}catch(e){}init();});
+function init(){
+  $('#purpose').value=st.purpose;document.querySelectorAll('input[name=who]').forEach(r=>r.checked=r.value===st.who);
+  $('#limit').value=st.limit;$('#question').value=st.question;$('#company').value=st.company;$('#job').value=st.job;$('#persona').value=st.persona;
+  render();
+}
+load();init();
+</script>
+</body></html>
