@@ -1,0 +1,2402 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>就活の木 ｜ 職種マトリクス 556</title>
+
+<!-- ── PWA（ホーム画面アイコン登録）対応 ── -->
+<link rel="manifest" href="manifest-matrix.json">
+<meta name="theme-color" content="#2d6b4a">
+<link rel="icon" type="image/png" href="matrix-favicon.png">
+<link rel="apple-touch-icon" href="matrix-apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="556マトリックス">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap');
+
+  :root {
+    --bg: #1a3a2a;
+    --deep: #2d6b4a;
+    --mid: #3d8a5f;
+    --light: #4da070;
+    --gold: #d4a843;
+    --mint: #6de0b0;
+    --card-bg: #3a7a55;
+    --card-border: #5aaa7a;
+    --text-light: #d0ede0;
+    --white: #f0faf5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans+JP', sans-serif;
+    background: var(--bg);
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  header {
+    background: var(--deep);
+    border-bottom: 2px solid var(--gold);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header h1 {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+  header .subtitle { font-size: 0.75rem; color: var(--mint); }
+  .tree-icon { font-size: 1.8rem; }
+
+  /* ─── フィルターバー ─── */
+  .filter-bar {
+    background: var(--deep);
+    padding: 10px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .filter-label { font-size: 0.7rem; color: var(--mint); margin-right: 4px; }
+
+  .btn {
+    border: none; cursor: pointer;
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 0.72rem; font-family: inherit;
+    transition: all 0.2s;
+    border: 1.5px solid transparent;
+  }
+  .btn-grad {
+    background: var(--card-bg);
+    color: var(--text-light);
+    border-color: var(--card-border);
+  }
+  .btn-grad.active-A { background: #2a7a3a; border-color: var(--mint); color: var(--mint); }
+  .btn-grad.active-B { background: #5a6a2a; border-color: var(--gold); color: var(--gold); }
+  .btn-grad.active-C { background: #6a3a2a; border-color: #e08060; color: #e08060; }
+  .btn-grad.active-ALL { background: var(--mid); border-color: var(--text-light); color: var(--white); }
+
+  .btn-cat {
+    background: var(--card-bg);
+    color: var(--text-light);
+    border-color: var(--card-border);
+    font-size: 0.68rem;
+  }
+  .btn-cat.active { background: var(--gold); color: var(--bg); border-color: var(--gold); font-weight: 700; }
+  .btn-cat.print-selected { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+  @media print {
+    /* 背景グラフィックの強制リセット */
+    * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* 印刷モーダル以外をすべて非表示（QRオーバーレイが表示中の場合はそちらを優先） */
+    body > *:not(#printModal):not(#qr-print-overlay) { display: none !important; }
+    body.qr-printing > *:not(#qr-print-overlay) { display: none !important; }
+    body.qr-printing #printModal { display: none !important; }
+    #qr-print-overlay.active {
+      display: block !important;
+      position: static !important;
+      background: none !important;
+    }
+    #qr-print-box {
+      box-shadow: none !important;
+      margin: 40px auto;
+    }
+    .qp-print-btn, .qp-close-btn { display: none !important; }
+
+    /* body自体の背景をリセット */
+    body {
+      background: white !important;
+      color: #111 !important;
+    }
+
+    /* printModal を通常フローで全幅表示 */
+    #printModal {
+      display: block !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      overflow: visible !important;
+      background: white !important;
+      z-index: 9999 !important;
+    }
+
+    /* 内側ラッパーの overflow:hidden / max-width を解除（複数ページ印刷の要） */
+    #printModal > div:first-child {
+      overflow: visible !important;
+      max-width: none !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      background: white !important;
+    }
+
+    /* 印刷プレビューのヘッダーボタンエリアだけを非表示（ラッパーは残す） */
+    #printModal > div:first-child > div:first-child { display: none !important; }
+
+    /* コンテンツエリアを白背景・静的配置 */
+    #printContent {
+      position: static !important;
+      width: 100% !important;
+      background: white !important;
+      color: #111 !important;
+      padding: 16px !important;
+    }
+
+    /* printContent内の全要素の背景・文字色をリセット（★spanは除く） */
+    #printContent *:not(.star-colored) {
+      background-color: transparent !important;
+      color: #111 !important;
+      border-color: #ccc !important;
+    }
+
+    /* ★の色付きspanはインラインstyleの色をそのまま使う（上書きしない） */
+
+    /* テーブルヘッダーだけ薄いグレー背景を維持 */
+    #printContent thead tr {
+      background-color: #e8e8e8 !important;
+    }
+    #printContent thead th {
+      color: #1a1a1a !important;
+    }
+
+    /* 偶数行の縞模様を維持 */
+    #printContent tbody tr:nth-child(even) {
+      background-color: #fafafa !important;
+    }
+
+    /* カテゴリ見出しの色付きボーダーは維持（border-colorを上書きしない） */
+    #printContent [style*="border-bottom:3px solid"],
+    #printContent [style*="border-left:4px solid"] {
+      border-color: inherit !important;
+    }
+
+    /* アドバイスボックスの背景色を明示 */
+    #printContent [style*="background:#e8f5ee"] {
+      background-color: #e8f5ee !important;
+      color: #1a3a1a !important;
+    }
+    #printContent [style*="background:#fff8e8"],
+    #printContent [style*="background:#f5f0e0"] {
+      background-color: #fff8e8 !important;
+      color: #3a2a00 !important;
+    }
+
+    /* jobtag リンクの色 */
+    #printContent a {
+      color: #2d6b4a !important;
+    }
+
+    /* ★ 強制改ページをやめる（プレビューと同じ連続レイアウト）
+       page-breakクラスが付いていても改ページしない */
+    .page-break { page-break-after: auto !important; break-after: auto !important; }
+
+    /* カテゴリのまとまりは途中で切らず、ページに収まらなければ次ページへ送る */
+    #printContent > div { page-break-inside: avoid; break-inside: avoid; }
+
+    /* テーブル・行が途中で分断されないように */
+    #printContent table { page-break-inside: avoid; break-inside: avoid; }
+    #printContent tr { page-break-inside: avoid; break-inside: avoid; }
+  }
+
+  .divider { width: 1px; height: 20px; background: var(--card-border); }
+
+  .count-badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--mint);
+    background: var(--card-bg);
+    padding: 2px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+  }
+
+  .btn-label-toggle {
+    background: var(--card-bg);
+    color: var(--gold);
+    border: 1.5px solid var(--gold);
+    font-size: 0.72rem;
+  }
+  .btn-print {
+    background: var(--card-bg);
+    color: var(--mint);
+    border: 1.5px solid var(--mint);
+    font-size: 0.72rem;
+  }
+  .btn-print:hover {
+    background: var(--mint);
+    color: var(--bg);
+    font-weight: 700;
+  }
+  .btn-qr {
+    background: var(--card-bg);
+    color: var(--gold);
+    border: 1.5px solid var(--gold);
+    font-size: 0.72rem;
+  }
+  .btn-qr:hover {
+    background: var(--gold);
+    color: var(--bg);
+    font-weight: 700;
+  }
+  /* ── QRコード印刷オーバーレイ ── */
+  #qr-print-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.75); align-items: center; justify-content: center;
+  }
+  #qr-print-overlay.active { display: flex; }
+  #qr-print-box {
+    background: #fff; border-radius: 20px; padding: 32px 28px;
+    max-width: 340px; width: 90%; text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.45); position: relative;
+  }
+  #qr-print-box .qp-icon  { font-size: 30px; margin-bottom: 4px; }
+  #qr-print-box .qp-title { font-size: 16px; font-weight: 900; color: #2d6b4a; margin-bottom: 4px; }
+  #qr-print-box .qp-sub   { font-size: 11px; color: #555; margin-bottom: 16px; line-height: 1.6; }
+  #qr-canvas-wrap { margin: 0 auto 14px; width: 190px; height: 190px; display: flex; align-items: center; justify-content: center; }
+  #qr-print-box .qp-url   { font-size: 10px; color: #888; word-break: break-all; margin-bottom: 16px; padding: 8px; background: #f5f5f5; border-radius: 8px; }
+  .qp-print-btn {
+    background: linear-gradient(135deg,#2d6b4a,#4da070); color: #fff;
+    border: none; border-radius: 10px; padding: 11px 0; width: 100%;
+    font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 8px;
+  }
+  .qp-print-btn:hover { opacity: 0.88; }
+  .qp-close-btn {
+    background: none; border: 1.5px solid #5aaa7a; border-radius: 10px;
+    padding: 9px 0; width: 100%; font-size: 12px; color: #3d8a5f;
+    font-weight: 700; cursor: pointer;
+  }
+  .qp-close-btn:hover { background: #f0faf5; }
+
+  .btn-label-toggle.active {
+    background: var(--gold);
+    color: var(--bg);
+    font-weight: 700;
+  }
+
+  /* ─── メインレイアウト ─── */
+  .main {
+    display: flex;
+    gap: 0;
+    height: calc(100vh - 110px);
+  }
+
+  /* ─── マトリクスエリア ─── */
+  .matrix-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse at center, #1f4a32 0%, #0d2018 100%);
+  }
+
+  canvas#matrix {
+    display: block;
+    cursor: crosshair;
+  }
+
+  /* ─── 軸ラベル ─── */
+  .axis-label {
+    position: absolute;
+    font-size: 0.65rem;
+    color: rgba(109,224,176,0.7);
+    pointer-events: none;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .axis-top { top: 8px; left: 50%; transform: translateX(-50%); }
+  .axis-bottom { bottom: 8px; left: 50%; transform: translateX(-50%); }
+  .axis-left { left: 8px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+  .axis-right { right: 8px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+  /* ─── ツールチップ ─── */
+  #tooltip {
+    position: fixed;
+    background: rgba(26,58,42,0.97);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 8px 12px;
+    pointer-events: none;
+    display: none;
+    z-index: 50;
+    max-width: 240px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  }
+  #tooltip .tt-name {
+    font-size: 0.78rem;
+    color: var(--white);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  #tooltip .tt-item {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 2px 0;
+  }
+  #tooltip .tt-item:last-child { border-bottom: none; }
+  #tooltip .tt-cat {
+    font-size: 0.6rem;
+    color: var(--mint);
+    margin-left: 4px;
+  }
+  #tooltip .tt-more {
+    font-size: 0.62rem;
+    color: var(--gold);
+    margin-top: 4px;
+  }
+
+  /* ─── ポップアップ ─── */
+  #popup {
+    position: fixed;
+    background: var(--card-bg);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 16px;
+    min-width: 260px;
+    max-width: 320px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    z-index: 100;
+    display: none;
+    animation: popIn 0.15s ease;
+  }
+  @keyframes popIn {
+    from { opacity:0; transform:scale(0.9); }
+    to   { opacity:1; transform:scale(1); }
+  }
+  #popup h3 { font-size: 1rem; color: var(--gold); margin-bottom: 8px; }
+  #popup .pop-meta { font-size: 0.7rem; color: var(--mint); margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+  #popup .pop-badge {
+    padding: 2px 8px; border-radius: 10px; font-size: 0.65rem;
+  }
+  #popup .badge-A { background: #2a7a3a; color: var(--mint); }
+  #popup .badge-B { background: #5a6a2a; color: var(--gold); }
+  #popup .badge-C { background: #6a3a2a; color: #e08060; }
+  #popup .pop-score { font-size: 0.72rem; color: var(--text-light); line-height: 1.8; }
+  #popup .pop-link {
+    display: inline-block; margin-top: 10px;
+    background: var(--gold); color: var(--bg);
+    padding: 5px 14px; border-radius: 6px;
+    font-size: 0.72rem; text-decoration: none; font-weight: 700;
+  }
+  #popup .pop-close {
+    position: absolute; top: 8px; right: 10px;
+    cursor: pointer; color: var(--text-light); font-size: 1.1rem;
+    background: none; border: none; font-family: inherit;
+  }
+
+  /* ─── クラスター一覧ポップアップ ─── */
+  #cluster-popup {
+    position: fixed;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 14px;
+    min-width: 200px;
+    max-width: 280px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    z-index: 99;
+    display: none;
+  }
+  #cluster-popup h4 { font-size: 0.75rem; color: var(--mint); margin-bottom: 8px; }
+  .cluster-item {
+    padding: 5px 8px; border-radius: 6px; cursor: pointer;
+    font-size: 0.72rem; color: var(--text-light);
+    transition: background 0.15s;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .cluster-item:hover { background: var(--card-bg); }
+  .cluster-item .ci-cat { font-size: 0.6rem; color: var(--mint); }
+  #cluster-popup .pop-close {
+    position: absolute; top: 6px; right: 8px;
+    cursor: pointer; color: var(--text-light); font-size: 1rem;
+    background: none; border: none;
+  }
+
+  /* ─── 凡例 ─── */
+  .legend {
+    position: absolute;
+    bottom: 28px; left: 10px;
+    background: rgba(26,58,42,0.85);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.62rem;
+    color: var(--text-light);
+    pointer-events: none;
+  }
+  .legend-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="tree-icon">🌳</span>
+  <div>
+    <h1>就活の木 ｜ 職種マトリクス</h1>
+    <div class="subtitle">556職種 × 2軸分析 ─ 自分に合う仕事を探そう</div>
+  </div>
+</header>
+
+<div class="filter-bar" id="filterBar">
+  <span class="filter-label">🎓 新卒</span>
+  <button class="btn btn-grad active-ALL" data-grad="ALL" onclick="setGrad('ALL')">全職種</button>
+  <button class="btn btn-grad" data-grad="A" onclick="setGrad('A')">🟢 新卒向け</button>
+  <button class="btn btn-grad" data-grad="B" onclick="setGrad('B')">🟡 経験後可</button>
+  <button class="btn btn-grad" data-grad="C" onclick="setGrad('C')">🔴 資格必須</button>
+
+  <div class="divider"></div>
+  <span class="filter-label">📂 カテゴリ</span>
+  <button class="btn btn-cat active" data-cat="ALL" onclick="setCat('ALL')">すべて</button>
+  <div id="catBtns"></div>
+
+  <div class="divider"></div>
+  <button class="btn btn-label-toggle" id="labelToggleBtn" onclick="toggleLabels()">💼 代表職種を表示</button>
+
+  <div class="divider"></div>
+  <button class="btn btn-print" id="printBtn" onclick="openSelectModal()">📋 職種を選んで印刷</button>
+  <button class="btn btn-qr" onclick="showQrPrint556()">📱 QRコードを表示</button>
+
+  <span class="count-badge" id="countBadge">556件表示中</span>
+</div>
+
+<div class="main">
+  <div class="matrix-area" id="matrixArea">
+    <canvas id="matrix"></canvas>
+    <div class="axis-label axis-top">▲ 目標管理・成果重視</div>
+    <div class="axis-label axis-bottom">▼ プロセス・過程重視</div>
+    <div class="axis-label axis-left">◀ 協調的関与</div>
+    <div class="axis-label axis-right">積極的・感謝される関わり ▶</div>
+    <div id="tooltip"></div>
+
+    <div class="legend">
+      <div class="legend-row"><span class="legend-dot" style="background:#5de88a"></span>🟢 新卒向け（A）</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#d4a843"></span>🟡 経験後可（B）</div>
+      <div class="legend-row"><span class="legend-dot" style="background:#e07050"></span>🔴 資格必須（C）</div>
+    </div>
+  </div>
+</div>
+
+<!-- 職種選択モーダル -->
+<div id="selectModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:200;overflow:hidden;">
+  <div style="background:#1a3a2a;margin:16px auto;max-width:900px;height:calc(100vh - 32px);border-radius:12px;border:1px solid #5aaa7a;display:flex;flex-direction:column;overflow:hidden;">
+
+    <!-- ヘッダー -->
+    <div style="background:#2d6b4a;padding:12px 20px;display:flex;align-items:center;gap:12px;border-bottom:2px solid #d4a843;flex-shrink:0;">
+      <span style="font-size:1.2rem;">🌳</span>
+      <div style="color:#d4a843;font-weight:700;font-size:1rem;">職種を選んで印刷 ｜ 就活の木</div>
+      <div style="margin-left:auto;display:flex;gap:8px;">
+        <button id="selectedCount" style="background:#3a7a55;color:#6de0b0;border:1px solid #5aaa7a;padding:4px 14px;border-radius:6px;font-size:0.75rem;">選択中：0件</button>
+        <button onclick="printSelected()" style="background:#d4a843;color:#1a3a2a;border:none;padding:6px 16px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.8rem;">🖨️ 印刷する</button>
+        <button onclick="closeSelectModal()" style="background:#5aaa7a;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.8rem;">✕ 閉じる</button>
+      </div>
+    </div>
+
+    <!-- 本体：3ペイン -->
+    <div style="display:flex;flex:1;overflow:hidden;">
+
+      <!-- 左：カテゴリ一覧 -->
+      <div style="width:170px;background:#162e1e;border-right:1px solid #3a7a55;overflow-y:auto;flex-shrink:0;">
+        <div style="padding:10px 12px;font-size:0.65rem;color:#6de0b0;border-bottom:1px solid #3a7a55;">📂 カテゴリを選択</div>
+        <div id="catListPane"></div>
+      </div>
+
+      <!-- 中：職種チェックリスト -->
+      <div style="flex:1;overflow-y:auto;background:#1a3a2a;">
+        <div style="padding:10px 14px;font-size:0.65rem;color:#6de0b0;border-bottom:1px solid #3a7a55;display:flex;align-items:center;gap:8px;">
+          <span id="catListTitle">← カテゴリを選んでください</span>
+          <button onclick="selectAllInCat()" style="margin-left:auto;background:#3a7a55;color:#d0ede0;border:none;padding:2px 10px;border-radius:4px;font-size:0.65rem;cursor:pointer;">全選択</button>
+          <button onclick="clearCat()" style="background:#3a7a55;color:#d0ede0;border:none;padding:2px 10px;border-radius:4px;font-size:0.65rem;cursor:pointer;">解除</button>
+        </div>
+        <div id="jobListPane" style="padding:6px;"></div>
+      </div>
+
+      <!-- 右：選択済みリスト -->
+      <div style="width:220px;background:#162e1e;border-left:1px solid #3a7a55;overflow-y:auto;flex-shrink:0;">
+        <div style="padding:10px 12px;font-size:0.65rem;color:#d4a843;border-bottom:1px solid #3a7a55;display:flex;align-items:center;">
+          ✅ 選択済み職種
+          <button onclick="clearAllSelected()" style="margin-left:auto;background:none;color:#e07070;border:none;font-size:0.65rem;cursor:pointer;">全解除</button>
+        </div>
+        <div id="selectedPane" style="padding:6px;"></div>
+      </div>
+    </div>
+
+    <!-- 軸説明フッター -->
+    <div style="padding:8px 16px;background:#162e1e;border-top:1px solid #3a7a55;font-size:0.65rem;color:#6de0b0;display:flex;gap:20px;flex-shrink:0;">
+      <span>🤝 人との関わり：★多＝積極的に感謝される関わり　★少＝協調的・サポート的</span>
+      <span>🎯 目標・数字：★多＝数字・目標がはっきりしている　★少＝プロセス・成長重視</span>
+    </div>
+  </div>
+</div>
+
+<!-- 印刷プレビューモーダル -->
+<div id="printModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:200;overflow-y:auto;">
+  <div style="background:#fff;margin:20px auto;max-width:860px;border-radius:12px;padding:0;overflow:hidden;">
+    <div style="background:#2d6b4a;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="color:#d4a843;font-weight:700;font-size:1.1rem;">🖨️ 印刷プレビュー ｜ 就活の木 職種研究シート</div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="setTimeout(()=>window.print(),300)" style="background:#d4a843;color:#1a3a2a;border:none;padding:6px 18px;border-radius:6px;font-weight:700;cursor:pointer;">印刷する</button>
+        <button onclick="closePrintModal()" style="background:#5aaa7a;color:#fff;border:none;padding:6px 18px;border-radius:6px;cursor:pointer;">閉じる</button>
+      </div>
+    </div>
+    <div id="printContent" style="padding:24px;"></div>
+  </div>
+</div>
+
+<!-- 印刷トレイ（右下固定） -->
+<div id="printTray" style="
+  position:fixed; bottom:20px; right:20px; z-index:150;
+  width:260px; background:#1a3a2a; border:1px solid #d4a843;
+  border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  display:none; flex-direction:column; max-height:400px;">
+  <div style="background:#2d6b4a;padding:8px 12px;border-radius:9px 9px 0 0;display:flex;align-items:center;gap:8px;border-bottom:1px solid #d4a843;">
+    <span style="color:#d4a843;font-weight:700;font-size:0.8rem;">🖨️ 印刷リスト</span>
+    <span id="trayCount" style="background:#d4a843;color:#1a3a2a;font-size:0.65rem;font-weight:700;padding:1px 7px;border-radius:10px;">0件</span>
+    <button onclick="closeTray()" style="margin-left:auto;background:none;border:none;color:#d0ede0;cursor:pointer;font-size:1rem;">✕</button>
+  </div>
+  <div id="trayList" style="overflow-y:auto;flex:1;padding:6px;"></div>
+  <div style="padding:8px;border-top:1px solid #3a7a55;display:flex;gap:6px;">
+    <button onclick="clearTray()" style="flex:1;background:#3a7a55;color:#d0ede0;border:none;padding:5px;border-radius:5px;font-size:0.7rem;cursor:pointer;">全解除</button>
+    <button onclick="executePrint()" style="flex:2;background:#d4a843;color:#1a3a2a;border:none;padding:5px;border-radius:5px;font-size:0.75rem;font-weight:700;cursor:pointer;">印刷プレビュー →</button>
+  </div>
+</div>
+
+<!-- 印刷トレイ開くボタン（右下） -->
+<div id="trayOpenBtn" style="
+  position:fixed; bottom:20px; right:20px; z-index:149;
+  background:#d4a843; color:#1a3a2a; border:none;
+  border-radius:24px; padding:8px 16px; cursor:pointer;
+  font-weight:700; font-size:0.8rem; box-shadow:0 4px 12px rgba(0,0,0,0.4);
+  display:flex; align-items:center; gap:6px;">
+  <span>🖨️ 印刷リスト</span>
+  <span id="trayBadge" style="background:#1a3a2a;color:#d4a843;font-size:0.65rem;padding:1px 7px;border-radius:10px;">0件</span>
+</div>
+
+<div id="popup">
+  <button class="pop-close" onclick="closePopup()">✕</button>
+  <h3 id="pop-name"></h3>
+  <div class="pop-meta" id="pop-meta"></div>
+  <div class="pop-score" id="pop-score"></div>
+  <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+    <a id="pop-link" class="pop-link" href="#" target="_blank" style="flex:1;">🔗 jobtag で詳しく見る</a>
+    <button id="pop-add-btn" style="background:#d4a843;color:#1a3a2a;border:none;padding:5px 10px;border-radius:6px;font-size:0.7rem;font-weight:700;cursor:pointer;flex:1;">＋ 印刷リストに追加</button>
+  </div>
+</div>
+
+<div id="cluster-popup">
+  <button class="pop-close" onclick="document.getElementById('cluster-popup').style.display='none'">✕</button>
+  <h4 id="cluster-title"></h4>
+  <div id="cluster-list"></div>
+</div>
+
+<script>
+// ===================== データ =====================
+const JOBS = [
+  {id:1,name:"豆腐製造・豆腐職人",cat:"製造・技術",grad:"C",x:-3,y:-3,jtag:1},
+  {id:2,name:"パン製造・パン職人",cat:"製造・技術",grad:"B",x:-2,y:-2,jtag:2},
+  {id:3,name:"洋菓子製造・パティシエ",cat:"製造・技術",grad:"B",x:0,y:-1,jtag:3},
+  {id:4,name:"和菓子製造・和菓子職人",cat:"製造・技術",grad:"C",x:-2,y:-2,jtag:4},
+  {id:5,name:"乳製品製造",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:5},
+  {id:6,name:"水産ねり製品製造",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:6},
+  {id:7,name:"冷凍加工食品製造",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:7},
+  {id:8,name:"惣菜製造",cat:"製造・技術",grad:"A",x:-2,y:-1,jtag:8},
+  {id:9,name:"清酒製造",cat:"製造・技術",grad:"C",x:-2,y:-2,jtag:9},
+  {id:10,name:"みそ製造",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:10},
+  {id:11,name:"しょうゆ製造",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:11},
+  {id:12,name:"ハム・ソーセージ・ベーコン製造",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:12},
+  {id:13,name:"ワイン製造",cat:"製造・技術",grad:"C",x:-2,y:-1,jtag:13},
+  {id:14,name:"ビール製造",cat:"製造・技術",grad:"B",x:-2,y:-1,jtag:14},
+  {id:15,name:"かん詰・びん詰・レトルト食品製造",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:15},
+  {id:16,name:"野菜つけ物製造",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:16},
+  {id:17,name:"陶磁器製造",cat:"製造・技術",grad:"C",x:-3,y:-3,jtag:17},
+  {id:18,name:"ガラス食器製造",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:18},
+  {id:19,name:"プラスチック成形",cat:"製造・技術",grad:"A",x:-3,y:-1,jtag:19},
+  {id:20,name:"建築設計技術者",cat:"建設・建築",grad:"A",x:-1,y:1,jtag:20},
+  {id:21,name:"建築施工管理技術者",cat:"建設・建築",grad:"A",x:1,y:3,jtag:21},
+  {id:22,name:"土木設計技術者",cat:"建設・建築",grad:"A",x:-1,y:1,jtag:22},
+  {id:23,name:"土木施工管理技術者",cat:"建設・建築",grad:"A",x:1,y:3,jtag:23},
+  {id:24,name:"測量士",cat:"建設・建築",grad:"B",x:-2,y:0,jtag:24},
+  {id:25,name:"CADオペレーター",cat:"建設・建築",grad:"A",x:-2,y:-1,jtag:25},
+  {id:26,name:"大工",cat:"建設・建築",grad:"C",x:-1,y:-2,jtag:26},
+  {id:27,name:"型枠大工",cat:"建設・建築",grad:"C",x:-2,y:-2,jtag:27},
+  {id:28,name:"鉄筋工",cat:"建設・建築",grad:"C",x:-3,y:-1,jtag:28},
+  {id:29,name:"鉄骨工",cat:"建設・建築",grad:"C",x:-3,y:-1,jtag:29},
+  {id:30,name:"とび",cat:"建設・建築",grad:"C",x:-2,y:-1,jtag:30},
+  {id:31,name:"建設機械オペレーター",cat:"建設・建築",grad:"C",x:-3,y:-1,jtag:31},
+  {id:32,name:"建設・土木作業員",cat:"建設・建築",grad:"B",x:-3,y:-2,jtag:32},
+  {id:33,name:"潜水士",cat:"建設・建築",grad:"C",x:-2,y:0,jtag:33},
+  {id:34,name:"さく井工・ボーリング工",cat:"建設・建築",grad:"C",x:-3,y:-1,jtag:35},
+  {id:35,name:"舗装工",cat:"建設・建築",grad:"C",x:-3,y:-2,jtag:36},
+  {id:36,name:"ブロック積み",cat:"建設・建築",grad:"C",x:-3,y:-2,jtag:37},
+  {id:37,name:"タイル工",cat:"建設・建築",grad:"C",x:-2,y:-2,jtag:38},
+  {id:38,name:"左官",cat:"建設・建築",grad:"C",x:-2,y:-2,jtag:39},
+  {id:39,name:"建築板金",cat:"建設・建築",grad:"C",x:-2,y:-1,jtag:40},
+  {id:40,name:"サッシ取付",cat:"建設・建築",grad:"C",x:-2,y:-1,jtag:41},
+  {id:41,name:"内装工",cat:"建設・建築",grad:"C",x:-1,y:-1,jtag:42},
+  {id:42,name:"建築塗装工",cat:"建設・建築",grad:"C",x:-2,y:-1,jtag:43},
+  {id:43,name:"防水工",cat:"建設・建築",grad:"C",x:-3,y:-1,jtag:44},
+  {id:44,name:"保温工事",cat:"建設・建築",grad:"C",x:-3,y:-1,jtag:45},
+  {id:45,name:"電気工事士",cat:"建設・建築",grad:"B",x:-1,y:0,jtag:46},
+  {id:46,name:"配管工",cat:"建設・建築",grad:"C",x:-2,y:-1,jtag:47},
+  {id:47,name:"エレベーター据付",cat:"建設・建築",grad:"B",x:-2,y:0,jtag:48},
+  {id:48,name:"鉄道線路管理",cat:"運輸・物流",grad:"B",x:-2,y:0,jtag:49},
+  {id:49,name:"送電線工事",cat:"建設・建築",grad:"C",x:-2,y:0,jtag:50},
+  {id:50,name:"解体工",cat:"建設・建築",grad:"C",x:-3,y:-1,jtag:51},
+  {id:51,name:"ホテル・旅館支配人",cat:"サービス・接客",grad:"C",x:2,y:4,jtag:52},
+  {id:52,name:"銀行支店長",cat:"金融・保険",grad:"C",x:2,y:5,jtag:53},
+  {id:53,name:"デパート店員",cat:"サービス・接客",grad:"A",x:3,y:1,jtag:54},
+  {id:54,name:"スーパー店長",cat:"サービス・接客",grad:"C",x:2,y:3,jtag:55},
+  {id:55,name:"スーパーレジ係",cat:"サービス・接客",grad:"A",x:1,y:-2,jtag:56},
+  {id:56,name:"スーパー店員",cat:"サービス・接客",grad:"A",x:1,y:-1,jtag:57},
+  {id:57,name:"商社営業",cat:"営業・販売",grad:"A",x:4,y:4,jtag:58},
+  {id:58,name:"住宅・不動産営業",cat:"営業・販売",grad:"A",x:4,y:4,jtag:59},
+  {id:59,name:"自動車営業",cat:"営業・販売",grad:"A",x:4,y:3,jtag:60},
+  {id:60,name:"広告営業",cat:"営業・販売",grad:"A",x:4,y:4,jtag:61},
+  {id:61,name:"印刷営業",cat:"営業・販売",grad:"A",x:3,y:3,jtag:62},
+  {id:62,name:"医薬情報担当者（MR）",cat:"医療・福祉",grad:"A",x:4,y:4,jtag:63},
+  {id:63,name:"コールセンターオペレーター",cat:"事務・管理",grad:"A",x:2,y:1,jtag:64},
+  {id:64,name:"せり人",cat:"営業・販売",grad:"C",x:3,y:3,jtag:65},
+  {id:65,name:"フラワーショップ店員",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:66},
+  {id:66,name:"電器店店員",cat:"サービス・接客",grad:"A",x:3,y:1,jtag:67},
+  {id:67,name:"書店員",cat:"サービス・接客",grad:"A",x:1,y:-2,jtag:68},
+  {id:68,name:"メガネ販売",cat:"サービス・接客",grad:"A",x:3,y:1,jtag:69},
+  {id:69,name:"スポーツ用品販売",cat:"サービス・接客",grad:"A",x:3,y:1,jtag:70},
+  {id:70,name:"ホームセンター店員",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:71},
+  {id:71,name:"ペットショップ店員",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:72},
+  {id:72,name:"衣料品販売",cat:"サービス・接客",grad:"A",x:3,y:1,jtag:73},
+  {id:73,name:"検針員",cat:"事務・管理",grad:"A",x:-1,y:-2,jtag:74},
+  {id:74,name:"フランチャイズチェーン・スーパーバイザー",cat:"営業・販売",grad:"B",x:2,y:3,jtag:75},
+  {id:75,name:"シューフィッター",cat:"サービス・接客",grad:"B",x:3,y:0,jtag:76},
+  {id:76,name:"駅構内売店店員",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:77},
+  {id:77,name:"コンビニエンスストア店員",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:78},
+  {id:78,name:"ベーカリーショップ店員",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:79},
+  {id:79,name:"中小企業診断士",cat:"士業・法律",grad:"C",x:2,y:3,jtag:80},
+  {id:80,name:"経営コンサルタント",cat:"士業・法律",grad:"B",x:3,y:4,jtag:81},
+  {id:81,name:"ファイナンシャル・プランナー",cat:"金融・保険",grad:"B",x:3,y:2,jtag:82},
+  {id:82,name:"社会保険労務士",cat:"士業・法律",grad:"B",x:1,y:2,jtag:83},
+  {id:83,name:"司法書士",cat:"士業・法律",grad:"C",x:0,y:1,jtag:84},
+  {id:84,name:"行政書士",cat:"士業・法律",grad:"C",x:0,y:1,jtag:85},
+  {id:85,name:"土地家屋調査士",cat:"士業・法律",grad:"C",x:-1,y:1,jtag:86},
+  {id:86,name:"翻訳者",cat:"クリエイティブ",grad:"B",x:-2,y:-1,jtag:87},
+  {id:87,name:"通訳者",cat:"クリエイティブ",grad:"B",x:2,y:0,jtag:88},
+  {id:88,name:"弁護士",cat:"士業・法律",grad:"C",x:2,y:3,jtag:89},
+  {id:89,name:"公認会計士",cat:"士業・法律",grad:"C",x:0,y:3,jtag:90},
+  {id:90,name:"弁理士",cat:"士業・法律",grad:"C",x:0,y:2,jtag:91},
+  {id:91,name:"税理士",cat:"士業・法律",grad:"C",x:1,y:3,jtag:92},
+  {id:92,name:"不動産鑑定士",cat:"士業・法律",grad:"C",x:0,y:2,jtag:93},
+  {id:93,name:"気象予報士",cat:"専門・研究",grad:"C",x:-1,y:1,jtag:94},
+  {id:94,name:"ビル施設管理",cat:"建設・建築",grad:"B",x:-1,y:0,jtag:95},
+  {id:95,name:"駐車場管理",cat:"事務・管理",grad:"A",x:-1,y:-2,jtag:96},
+  {id:96,name:"ビル清掃",cat:"事務・管理",grad:"A",x:-2,y:-3,jtag:97},
+  {id:97,name:"鉄道車両清掃",cat:"事務・管理",grad:"A",x:-2,y:-2,jtag:98},
+  {id:98,name:"西洋料理調理人（コック）",cat:"サービス・接客",grad:"B",x:1,y:-1,jtag:99},
+  {id:99,name:"日本料理調理人（板前）",cat:"サービス・接客",grad:"C",x:0,y:-2,jtag:100},
+  {id:100,name:"すし職人",cat:"サービス・接客",grad:"C",x:1,y:-2,jtag:101},
+  {id:101,name:"そば・うどん調理人",cat:"サービス・接客",grad:"C",x:0,y:-2,jtag:102},
+  {id:102,name:"中華料理調理人",cat:"サービス・接客",grad:"C",x:0,y:-1,jtag:103},
+  {id:103,name:"ハンバーガーショップ店長",cat:"サービス・接客",grad:"B",x:2,y:2,jtag:104},
+  {id:104,name:"カフェ店員",cat:"サービス・接客",grad:"A",x:3,y:-1,jtag:105},
+  {id:105,name:"ソムリエ",cat:"サービス・接客",grad:"C",x:3,y:0,jtag:106},
+  {id:106,name:"バーテンダー",cat:"サービス・接客",grad:"B",x:3,y:-1,jtag:107},
+  {id:107,name:"ラーメン調理人",cat:"サービス・接客",grad:"B",x:1,y:-2,jtag:108},
+  {id:108,name:"旅行会社カウンター係",cat:"サービス・接客",grad:"A",x:4,y:1,jtag:109},
+  {id:109,name:"ツアーコンダクター",cat:"サービス・接客",grad:"A",x:4,y:2,jtag:110},
+  {id:110,name:"観光バスガイド",cat:"サービス・接客",grad:"A",x:4,y:0,jtag:111},
+  {id:111,name:"遊園地スタッフ",cat:"サービス・接客",grad:"A",x:3,y:0,jtag:112},
+  {id:112,name:"キャディ",cat:"サービス・接客",grad:"B",x:3,y:-1,jtag:113},
+  {id:113,name:"通訳ガイド",cat:"サービス・接客",grad:"B",x:4,y:0,jtag:114},
+  {id:114,name:"理容師",cat:"サービス・接客",grad:"B",x:3,y:-1,jtag:115},
+  {id:115,name:"美容師",cat:"サービス・接客",grad:"B",x:4,y:0,jtag:116},
+  {id:116,name:"エステティシャン",cat:"サービス・接客",grad:"A",x:3,y:-1,jtag:117},
+  {id:117,name:"メイクアップアーティスト",cat:"クリエイティブ",grad:"B",x:4,y:0,jtag:118},
+  {id:118,name:"クリーニング師",cat:"サービス・接客",grad:"B",x:0,y:-2,jtag:119},
+  {id:119,name:"スポーツインストラクター",cat:"サービス・接客",grad:"A",x:4,y:0,jtag:120},
+  {id:120,name:"自動車教習指導員",cat:"サービス・接客",grad:"B",x:2,y:1,jtag:121},
+  {id:121,name:"音楽教室講師",cat:"教育",grad:"B",x:3,y:-1,jtag:122},
+  {id:122,name:"ビデオレンタル店店員",cat:"サービス・接客",grad:"A",x:2,y:-2,jtag:123},
+  {id:123,name:"レンタカー店舗スタッフ",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:124},
+  {id:124,name:"ブライダルコーディネーター",cat:"サービス・接客",grad:"A",x:4,y:1,jtag:125},
+  {id:125,name:"家政婦（夫）",cat:"サービス・接客",grad:"B",x:1,y:-3,jtag:126},
+  {id:126,name:"ピアノ調律師",cat:"サービス・接客",grad:"C",x:1,y:-2,jtag:127},
+  {id:127,name:"ネイリスト",cat:"サービス・接客",grad:"B",x:3,y:-1,jtag:128},
+  {id:128,name:"児童相談所相談員",cat:"医療・福祉",grad:"B",x:3,y:1,jtag:129},
+  {id:129,name:"福祉事務所ケースワーカー",cat:"医療・福祉",grad:"A",x:3,y:1,jtag:130},
+  {id:130,name:"保育士",cat:"医療・福祉",grad:"A",x:4,y:-1,jtag:131},
+  {id:131,name:"介護支援専門員・ケアマネジャー",cat:"医療・福祉",grad:"C",x:3,y:1,jtag:132},
+  {id:132,name:"訪問介護員・ホームヘルパー",cat:"医療・福祉",grad:"B",x:3,y:-2,jtag:133},
+  {id:133,name:"施設介護員",cat:"医療・福祉",grad:"A",x:3,y:-2,jtag:134},
+  {id:134,name:"手話通訳者",cat:"医療・福祉",grad:"B",x:2,y:-1,jtag:135},
+  {id:135,name:"キャリアカウンセラー・キャリアコンサルタント",cat:"医療・福祉",grad:"B",x:4,y:0,jtag:136},
+  {id:136,name:"福祉用具専門相談員",cat:"医療・福祉",grad:"B",x:3,y:0,jtag:137},
+  {id:137,name:"国家公務員（行政事務）",cat:"公務員・法律",grad:"A",x:0,y:2,jtag:138},
+  {id:138,name:"地方公務員（行政事務）",cat:"公務員・法律",grad:"A",x:0,y:1,jtag:139},
+  {id:139,name:"警察官（都道府県警察）",cat:"公務員・法律",grad:"A",x:2,y:3,jtag:140},
+  {id:140,name:"海上保安官",cat:"公務員・法律",grad:"A",x:2,y:3,jtag:141},
+  {id:141,name:"麻薬取締官",cat:"公務員・法律",grad:"B",x:2,y:3,jtag:142},
+  {id:142,name:"入国警備官",cat:"公務員・法律",grad:"A",x:2,y:2,jtag:143},
+  {id:143,name:"裁判官",cat:"士業・法律",grad:"C",x:1,y:3,jtag:144},
+  {id:144,name:"検察官",cat:"士業・法律",grad:"C",x:2,y:4,jtag:145},
+  {id:145,name:"家庭裁判所調査官",cat:"公務員・法律",grad:"B",x:2,y:2,jtag:146},
+  {id:146,name:"法務教官",cat:"公務員・法律",grad:"A",x:2,y:2,jtag:147},
+  {id:147,name:"刑務官",cat:"公務員・法律",grad:"A",x:1,y:2,jtag:148},
+  {id:148,name:"税務事務官",cat:"公務員・法律",grad:"A",x:0,y:3,jtag:149},
+  {id:149,name:"外務公務員（外交官）",cat:"公務員・法律",grad:"B",x:3,y:3,jtag:150},
+  {id:150,name:"国際公務員",cat:"公務員・法律",grad:"B",x:3,y:3,jtag:151},
+  {id:151,name:"陸上自衛官",cat:"公務員・法律",grad:"A",x:2,y:4,jtag:152},
+  {id:152,name:"海上自衛官",cat:"公務員・法律",grad:"A",x:2,y:4,jtag:153},
+  {id:153,name:"航空自衛官",cat:"公務員・法律",grad:"A",x:2,y:4,jtag:154},
+  {id:154,name:"消防官",cat:"公務員・法律",grad:"A",x:3,y:3,jtag:155},
+  {id:155,name:"看護師",cat:"医療・福祉",grad:"B",x:4,y:1,jtag:156},
+  {id:156,name:"助産師",cat:"医療・福祉",grad:"C",x:4,y:1,jtag:157},
+  {id:157,name:"薬剤師",cat:"医療・福祉",grad:"C",x:2,y:1,jtag:158},
+  {id:158,name:"歯科医師",cat:"医療・福祉",grad:"C",x:3,y:2,jtag:159},
+  {id:159,name:"保健師",cat:"医療・福祉",grad:"C",x:3,y:1,jtag:160},
+  {id:160,name:"臨床検査技師",cat:"医療・福祉",grad:"B",x:1,y:0,jtag:161},
+  {id:161,name:"細胞検査士",cat:"医療・福祉",grad:"C",x:0,y:0,jtag:162},
+  {id:162,name:"診療放射線技師",cat:"医療・福祉",grad:"B",x:1,y:0,jtag:163},
+  {id:163,name:"臨床工学技士",cat:"医療・福祉",grad:"B",x:1,y:1,jtag:164},
+  {id:164,name:"歯科技工士",cat:"医療・福祉",grad:"B",x:1,y:-1,jtag:165},
+  {id:165,name:"歯科衛生士",cat:"医療・福祉",grad:"B",x:3,y:0,jtag:166},
+  {id:166,name:"理学療法士（PT）",cat:"医療・福祉",grad:"B",x:3,y:0,jtag:167},
+  {id:167,name:"作業療法士（OT）",cat:"医療・福祉",grad:"B",x:3,y:0,jtag:168},
+  {id:168,name:"言語聴覚士",cat:"医療・福祉",grad:"B",x:3,y:0,jtag:169},
+  {id:169,name:"視能訓練士",cat:"医療・福祉",grad:"B",x:2,y:0,jtag:170},
+  {id:170,name:"栄養士",cat:"医療・福祉",grad:"B",x:2,y:0,jtag:171},
+  {id:171,name:"あんまマッサージ指圧師",cat:"医療・福祉",grad:"C",x:3,y:-2,jtag:172},
+  {id:172,name:"柔道整復師",cat:"医療・福祉",grad:"C",x:3,y:0,jtag:173},
+  {id:173,name:"診療情報管理士",cat:"医療・福祉",grad:"B",x:0,y:1,jtag:174},
+  {id:174,name:"はり師・きゅう師",cat:"医療・福祉",grad:"C",x:3,y:-1,jtag:175},
+  {id:175,name:"義肢装具士",cat:"医療・福祉",grad:"C",x:2,y:0,jtag:176},
+  {id:176,name:"幼稚園教員",cat:"教育",grad:"A",x:4,y:-1,jtag:178},
+  {id:177,name:"小学校教員",cat:"教育",grad:"A",x:4,y:0,jtag:179},
+  {id:178,name:"中学校教員",cat:"教育",grad:"A",x:3,y:1,jtag:180},
+  {id:179,name:"専門学校教員",cat:"教育",grad:"B",x:3,y:1,jtag:181},
+  {id:180,name:"図書館司書",cat:"教育",grad:"B",x:1,y:-2,jtag:182},
+  {id:181,name:"高等学校教員",cat:"教育",grad:"A",x:3,y:2,jtag:183},
+  {id:182,name:"大学・短期大学教員",cat:"教育",grad:"C",x:2,y:2,jtag:184},
+  {id:183,name:"学芸員",cat:"教育",grad:"B",x:1,y:-1,jtag:185},
+  {id:184,name:"路線バス運転士",cat:"運輸・物流",grad:"B",x:1,y:0,jtag:186},
+  {id:185,name:"観光バス運転士",cat:"運輸・物流",grad:"B",x:2,y:0,jtag:187},
+  {id:186,name:"タクシー運転手",cat:"運輸・物流",grad:"B",x:2,y:1,jtag:188},
+  {id:187,name:"パイロット",cat:"運輸・物流",grad:"B",x:2,y:3,jtag:189},
+  {id:188,name:"航海士",cat:"運輸・物流",grad:"B",x:1,y:2,jtag:190},
+  {id:189,name:"船舶機関士",cat:"運輸・物流",grad:"B",x:-1,y:1,jtag:191},
+  {id:190,name:"電車運転士",cat:"運輸・物流",grad:"B",x:1,y:1,jtag:192},
+  {id:191,name:"鉄道車掌",cat:"運輸・物流",grad:"A",x:2,y:1,jtag:193},
+  {id:192,name:"空港グランドスタッフ",cat:"運輸・物流",grad:"A",x:4,y:2,jtag:194},
+  {id:193,name:"駅務員",cat:"運輸・物流",grad:"A",x:2,y:0,jtag:195},
+  {id:194,name:"鉄道運転計画・運行管理",cat:"運輸・物流",grad:"A",x:0,y:2,jtag:196},
+  {id:195,name:"自動車整備士",cat:"製造・技術",grad:"B",x:1,y:0,jtag:197},
+  {id:196,name:"ガソリンスタンド・スタッフ",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:198},
+  {id:197,name:"道路パトロール隊員",cat:"運輸・物流",grad:"A",x:1,y:1,jtag:199},
+  {id:198,name:"タクシー配車オペレーター",cat:"運輸・物流",grad:"A",x:1,y:0,jtag:200},
+  {id:199,name:"引越作業員",cat:"運輸・物流",grad:"A",x:2,y:-1,jtag:201},
+  {id:200,name:"通関士",cat:"事務・管理",grad:"B",x:0,y:2,jtag:202},
+  {id:201,name:"航空管制官",cat:"運輸・物流",grad:"B",x:1,y:4,jtag:203},
+  {id:202,name:"ディスパッチャー（航空機運航管理者）",cat:"運輸・物流",grad:"B",x:1,y:3,jtag:204},
+  {id:203,name:"客室乗務員",cat:"運輸・物流",grad:"A",x:5,y:2,jtag:205},
+  {id:204,name:"航空整備士",cat:"運輸・物流",grad:"B",x:0,y:1,jtag:206},
+  {id:205,name:"船員",cat:"運輸・物流",grad:"B",x:0,y:1,jtag:207},
+  {id:206,name:"新聞記者",cat:"クリエイティブ",grad:"A",x:3,y:3,jtag:208},
+  {id:207,name:"雑誌記者",cat:"クリエイティブ",grad:"A",x:3,y:2,jtag:209},
+  {id:208,name:"図書編集者",cat:"クリエイティブ",grad:"A",x:1,y:1,jtag:210},
+  {id:209,name:"雑誌編集者",cat:"クリエイティブ",grad:"A",x:2,y:2,jtag:211},
+  {id:210,name:"テレビ・ラジオ放送技術者",cat:"クリエイティブ",grad:"A",x:0,y:1,jtag:212},
+  {id:211,name:"録音エンジニア",cat:"クリエイティブ",grad:"B",x:0,y:0,jtag:213},
+  {id:212,name:"映像編集者",cat:"クリエイティブ",grad:"A",x:0,y:0,jtag:214},
+  {id:213,name:"放送記者",cat:"クリエイティブ",grad:"A",x:3,y:3,jtag:215},
+  {id:214,name:"アナウンサー",cat:"クリエイティブ",grad:"A",x:4,y:2,jtag:216},
+  {id:215,name:"放送ディレクター",cat:"クリエイティブ",grad:"A",x:2,y:3,jtag:217},
+  {id:216,name:"厩舎スタッフ",cat:"農業・自然",grad:"B",x:1,y:-2,jtag:218},
+  {id:217,name:"アウトドアインストラクター",cat:"農業・自然",grad:"B",x:4,y:0,jtag:219},
+  {id:218,name:"動物園飼育員",cat:"農業・自然",grad:"A",x:2,y:-1,jtag:220},
+  {id:219,name:"農業技術者",cat:"農業・自然",grad:"B",x:-1,y:0,jtag:221},
+  {id:220,name:"造園工",cat:"農業・自然",grad:"B",x:-1,y:-1,jtag:222},
+  {id:221,name:"獣医師",cat:"農業・自然",grad:"C",x:3,y:1,jtag:223},
+  {id:222,name:"水族館飼育員",cat:"農業・自然",grad:"A",x:2,y:-1,jtag:224},
+  {id:223,name:"調教師",cat:"農業・自然",grad:"C",x:2,y:1,jtag:225},
+  {id:224,name:"犬訓練士",cat:"農業・自然",grad:"B",x:2,y:0,jtag:226},
+  {id:225,name:"トリマー",cat:"農業・自然",grad:"B",x:2,y:-1,jtag:227},
+  {id:226,name:"水産技術者",cat:"農業・自然",grad:"B",x:-1,y:0,jtag:228},
+  {id:227,name:"林業技術者",cat:"農業・自然",grad:"B",x:-1,y:0,jtag:229},
+  {id:228,name:"林業作業",cat:"農業・自然",grad:"B",x:-2,y:-2,jtag:230},
+  {id:229,name:"産業用ロボット開発技術者",cat:"IT・テック",grad:"A",x:-1,y:2,jtag:231},
+  {id:230,name:"産業用ロボットの設置・設定",cat:"IT・テック",grad:"B",x:-1,y:1,jtag:232},
+  {id:231,name:"産業用ロボットの保守・メンテナンス",cat:"IT・テック",grad:"B",x:0,y:0,jtag:233},
+  {id:232,name:"太陽光発電の企画・調査",cat:"建設・建築",grad:"A",x:0,y:2,jtag:234},
+  {id:233,name:"太陽光発電の設計・施工",cat:"建設・建築",grad:"B",x:-1,y:1,jtag:235},
+  {id:234,name:"太陽光発電のメンテナンス",cat:"建設・建築",grad:"B",x:-1,y:0,jtag:236},
+  {id:235,name:"フォークリフト運転作業員",cat:"運輸・物流",grad:"A",x:-2,y:-1,jtag:237},
+  {id:236,name:"ネット通販の企画開発",cat:"IT・テック",grad:"A",x:1,y:3,jtag:238},
+  {id:237,name:"ネット通販の運営",cat:"IT・テック",grad:"A",x:1,y:2,jtag:239},
+  {id:238,name:"Webマーケティング（ネット広告・販売促進）",cat:"IT・テック",grad:"A",x:2,y:3,jtag:240},
+  {id:239,name:"施設警備員",cat:"公務員・法律",grad:"A",x:1,y:0,jtag:241},
+  {id:240,name:"学童保育指導員",cat:"教育",grad:"A",x:4,y:-1,jtag:242},
+  {id:241,name:"児童指導員",cat:"医療・福祉",grad:"A",x:4,y:0,jtag:243},
+  {id:242,name:"障害者福祉施設指導専門員",cat:"医療・福祉",grad:"A",x:3,y:0,jtag:244},
+  {id:243,name:"老人福祉施設生活相談員",cat:"医療・福祉",grad:"B",x:3,y:0,jtag:245},
+  {id:244,name:"看護助手",cat:"医療・福祉",grad:"A",x:3,y:-2,jtag:246},
+  {id:245,name:"植物工場の研究開発",cat:"農業・自然",grad:"B",x:-1,y:1,jtag:247},
+  {id:246,name:"植物工場の設計・施工",cat:"農業・自然",grad:"B",x:-1,y:0,jtag:248},
+  {id:247,name:"植物工場の栽培管理",cat:"農業・自然",grad:"A",x:-1,y:0,jtag:249},
+  {id:248,name:"起業・創業",cat:"営業・販売",grad:"B",x:3,y:5,jtag:250},
+  {id:249,name:"鋳造工・鋳造設備オペレーター",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:251},
+  {id:250,name:"鍛造工・鍛造設備オペレーター",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:252},
+  {id:251,name:"金型工",cat:"製造・技術",grad:"C",x:-2,y:-1,jtag:253},
+  {id:252,name:"金属プレス工",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:254},
+  {id:253,name:"溶接工",cat:"製造・技術",grad:"B",x:-2,y:-1,jtag:255},
+  {id:254,name:"NC工作機械オペレーター",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:256},
+  {id:255,name:"めっき工",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:257},
+  {id:256,name:"非鉄金属製錬技術者",cat:"製造・技術",grad:"B",x:-2,y:0,jtag:258},
+  {id:257,name:"鉄鋼製造オペレーター",cat:"製造・技術",grad:"B",x:-3,y:0,jtag:259},
+  {id:258,name:"非破壊検査技術者",cat:"製造・技術",grad:"B",x:-1,y:1,jtag:260},
+  {id:259,name:"電子機器組立",cat:"製造・技術",grad:"A",x:-3,y:-1,jtag:261},
+  {id:260,name:"機械設計技術者",cat:"製造・技術",grad:"A",x:-1,y:1,jtag:262},
+  {id:261,name:"光学機器組立",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:263},
+  {id:262,name:"自動車組立",cat:"製造・技術",grad:"A",x:-3,y:-1,jtag:264},
+  {id:263,name:"生産用機械組立",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:265},
+  {id:264,name:"計器組立",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:266},
+  {id:265,name:"半導体技術者",cat:"製造・技術",grad:"A",x:-1,y:2,jtag:267},
+  {id:266,name:"半導体製造",cat:"製造・技術",grad:"A",x:-3,y:0,jtag:268},
+  {id:267,name:"物流設備管理・保全",cat:"運輸・物流",grad:"B",x:-2,y:0,jtag:269},
+  {id:268,name:"自動車技術者",cat:"製造・技術",grad:"A",x:-1,y:1,jtag:270},
+  {id:269,name:"精密機器技術者",cat:"製造・技術",grad:"A",x:-1,y:1,jtag:271},
+  {id:270,name:"電気技術者",cat:"製造・技術",grad:"A",x:-1,y:1,jtag:272},
+  {id:271,name:"電子機器技術者",cat:"製造・技術",grad:"A",x:-1,y:1,jtag:273},
+  {id:272,name:"電気通信技術者",cat:"製造・技術",grad:"A",x:0,y:1,jtag:274},
+  {id:273,name:"家電修理",cat:"製造・技術",grad:"B",x:1,y:-1,jtag:275},
+  {id:274,name:"プラント設計技術者",cat:"製造・技術",grad:"A",x:-1,y:2,jtag:276},
+  {id:275,name:"医療用画像機器組立",cat:"製造・技術",grad:"B",x:-2,y:0,jtag:277},
+  {id:276,name:"織布工・織機オペレーター",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:278},
+  {id:277,name:"染色工・染色設備オペレーター",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:279},
+  {id:278,name:"ミシン縫製",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:280},
+  {id:279,name:"木材製造",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:281},
+  {id:280,name:"合板製造",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:282},
+  {id:281,name:"家具製造",cat:"製造・技術",grad:"B",x:-2,y:-2,jtag:283},
+  {id:282,name:"紡織設備管理・保全",cat:"製造・技術",grad:"B",x:-2,y:0,jtag:284},
+  {id:283,name:"紙器製造",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:285},
+  {id:284,name:"紡績機械オペレーター",cat:"製造・技術",grad:"B",x:-3,y:-2,jtag:286},
+  {id:285,name:"建具製造",cat:"製造・技術",grad:"B",x:-2,y:-2,jtag:287},
+  {id:286,name:"食品技術者",cat:"製造・技術",grad:"A",x:-1,y:1,jtag:288},
+  {id:287,name:"靴製造",cat:"製造・技術",grad:"C",x:-2,y:-2,jtag:289},
+  {id:288,name:"かばん・袋物製造",cat:"製造・技術",grad:"C",x:-2,y:-2,jtag:290},
+  {id:289,name:"漆器製造",cat:"製造・技術",grad:"C",x:-2,y:-3,jtag:291},
+  {id:290,name:"貴金属装身具製作",cat:"製造・技術",grad:"C",x:-1,y:-2,jtag:292},
+  {id:291,name:"医薬品製造",cat:"製造・技術",grad:"A",x:-2,y:0,jtag:295},
+  {id:292,name:"生産・品質管理技術者",cat:"製造・技術",grad:"A",x:-1,y:2,jtag:296},
+  {id:293,name:"タイヤ製造",cat:"製造・技術",grad:"A",x:-3,y:-1,jtag:297},
+  {id:294,name:"化粧品製造",cat:"製造・技術",grad:"A",x:-2,y:0,jtag:298},
+  {id:295,name:"石油精製オペレーター",cat:"製造・技術",grad:"B",x:-2,y:1,jtag:299},
+  {id:296,name:"化学製品製造オペレーター",cat:"製造・技術",grad:"B",x:-2,y:0,jtag:300},
+  {id:297,name:"原子力技術者",cat:"製造・技術",grad:"B",x:-1,y:2,jtag:301},
+  {id:298,name:"発電所運転管理",cat:"製造・技術",grad:"B",x:-1,y:2,jtag:302},
+  {id:299,name:"分析化学技術者",cat:"製造・技術",grad:"A",x:-1,y:1,jtag:303},
+  {id:300,name:"陶磁器技術者",cat:"製造・技術",grad:"B",x:-2,y:0,jtag:304},
+  {id:301,name:"ファインセラミックス製造技術者",cat:"製造・技術",grad:"B",x:-2,y:1,jtag:305},
+  {id:302,name:"石工",cat:"製造・技術",grad:"C",x:-3,y:-2,jtag:306},
+  {id:303,name:"花火師",cat:"製造・技術",grad:"C",x:-2,y:-2,jtag:307},
+  {id:304,name:"高分子化学技術者",cat:"専門・研究",grad:"A",x:-1,y:2,jtag:308},
+  {id:305,name:"バイオテクノロジー技術者",cat:"専門・研究",grad:"A",x:-1,y:2,jtag:309},
+  {id:306,name:"宇宙開発技術者",cat:"専門・研究",grad:"B",x:-1,y:3,jtag:310},
+  {id:307,name:"航空機開発エンジニア（ジェットエンジン）",cat:"製造・技術",grad:"B",x:-1,y:3,jtag:311},
+  {id:308,name:"システムエンジニア（受託開発）",cat:"IT・テック",grad:"A",x:0,y:2,jtag:312},
+  {id:309,name:"プログラマー",cat:"IT・テック",grad:"A",x:-2,y:1,jtag:313},
+  {id:310,name:"システムエンジニア（Webサービス開発）",cat:"IT・テック",grad:"A",x:0,y:2,jtag:314},
+  {id:311,name:"システムエンジニア（組込み・IoT）",cat:"IT・テック",grad:"A",x:-1,y:2,jtag:312},
+  {id:312,name:"ソフトウェア開発（パッケージソフト）",cat:"IT・テック",grad:"A",x:-1,y:2,jtag:316},
+  {id:313,name:"ソフトウェア開発（スマホアプリ）",cat:"IT・テック",grad:"A",x:0,y:2,jtag:317},
+  {id:314,name:"システムエンジニア（基盤システム）",cat:"IT・テック",grad:"A",x:-1,y:2,jtag:318},
+  {id:315,name:"運用・管理（IT）",cat:"IT・テック",grad:"A",x:-1,y:1,jtag:319},
+  {id:316,name:"ヘルプデスク（IT）",cat:"IT・テック",grad:"A",x:2,y:0,jtag:320},
+  {id:317,name:"セキュリティエキスパート（オペレーション）",cat:"IT・テック",grad:"A",x:0,y:2,jtag:321},
+  {id:318,name:"プロジェクトマネージャ（IT）",cat:"IT・テック",grad:"B",x:1,y:4,jtag:322},
+  {id:319,name:"データサイエンティスト",cat:"IT・テック",grad:"A",x:-1,y:3,jtag:323},
+  {id:320,name:"DXプロデューサー",cat:"IT・テック",grad:"B",x:2,y:4,jtag:324},
+  {id:321,name:"AIエンジニア",cat:"IT・テック",grad:"A",x:-1,y:3,jtag:325},
+  {id:322,name:"Webデザイナー（Web制作会社）",cat:"クリエイティブ",grad:"A",x:0,y:1,jtag:326},
+  {id:323,name:"Webディレクター（Web制作会社）",cat:"クリエイティブ",grad:"A",x:1,y:2,jtag:327},
+  {id:324,name:"動画制作",cat:"クリエイティブ",grad:"A",x:0,y:0,jtag:328},
+  {id:325,name:"CG制作",cat:"クリエイティブ",grad:"A",x:-1,y:0,jtag:329},
+  {id:326,name:"ゲームクリエーター",cat:"クリエイティブ",grad:"A",x:0,y:1,jtag:330},
+  {id:327,name:"アートディレクター",cat:"クリエイティブ",grad:"B",x:1,y:2,jtag:331},
+  {id:328,name:"広告デザイナー",cat:"クリエイティブ",grad:"A",x:1,y:1,jtag:332},
+  {id:329,name:"広告ディレクター",cat:"クリエイティブ",grad:"B",x:2,y:3,jtag:333},
+  {id:330,name:"グラフィックデザイナー",cat:"クリエイティブ",grad:"A",x:0,y:0,jtag:334},
+  {id:331,name:"コピーライター",cat:"クリエイティブ",grad:"A",x:1,y:1,jtag:335},
+  {id:332,name:"ディスプレイデザイナー",cat:"クリエイティブ",grad:"A",x:1,y:0,jtag:336},
+  {id:333,name:"インテリアデザイナー",cat:"クリエイティブ",grad:"A",x:1,y:0,jtag:337},
+  {id:334,name:"インテリアコーディネーター",cat:"クリエイティブ",grad:"B",x:2,y:0,jtag:338},
+  {id:335,name:"カラーコーディネーター",cat:"クリエイティブ",grad:"B",x:2,y:0,jtag:339},
+  {id:336,name:"ファッションデザイナー",cat:"クリエイティブ",grad:"B",x:1,y:1,jtag:340},
+  {id:337,name:"パタンナー",cat:"クリエイティブ",grad:"B",x:-1,y:0,jtag:341},
+  {id:338,name:"イラストレーター",cat:"クリエイティブ",grad:"B",x:0,y:-1,jtag:342},
+  {id:339,name:"アニメーター",cat:"クリエイティブ",grad:"A",x:-1,y:0,jtag:343},
+  {id:340,name:"看板制作",cat:"クリエイティブ",grad:"B",x:0,y:-1,jtag:344},
+  {id:341,name:"テクニカルイラストレーター",cat:"クリエイティブ",grad:"B",x:-1,y:0,jtag:345},
+  {id:342,name:"スタイリスト",cat:"クリエイティブ",grad:"B",x:3,y:0,jtag:346},
+  {id:343,name:"ブックデザイナー",cat:"クリエイティブ",grad:"B",x:0,y:0,jtag:347},
+  {id:344,name:"テキスタイルデザイナー",cat:"クリエイティブ",grad:"B",x:0,y:0,jtag:348},
+  {id:345,name:"フラワーデザイナー",cat:"クリエイティブ",grad:"B",x:2,y:-1,jtag:349},
+  {id:346,name:"ジュエリーデザイナー",cat:"クリエイティブ",grad:"C",x:1,y:0,jtag:350},
+  {id:347,name:"フードコーディネーター",cat:"クリエイティブ",grad:"B",x:2,y:0,jtag:351},
+  {id:348,name:"舞台美術スタッフ",cat:"クリエイティブ",grad:"A",x:0,y:0,jtag:352},
+  {id:349,name:"舞台照明スタッフ",cat:"クリエイティブ",grad:"A",x:0,y:0,jtag:353},
+  {id:350,name:"インダストリアルデザイナー",cat:"クリエイティブ",grad:"A",x:0,y:1,jtag:354},
+  {id:351,name:"商業カメラマン",cat:"クリエイティブ",grad:"B",x:2,y:0,jtag:355},
+  {id:352,name:"テレビカメラマン",cat:"クリエイティブ",grad:"A",x:1,y:1,jtag:356},
+  {id:353,name:"報道カメラマン",cat:"クリエイティブ",grad:"A",x:2,y:2,jtag:357},
+  {id:354,name:"テクニカルライター",cat:"クリエイティブ",grad:"A",x:0,y:0,jtag:358},
+  {id:355,name:"製版オペレーター・DTPオペレーター",cat:"クリエイティブ",grad:"A",x:-1,y:0,jtag:359},
+  {id:356,name:"印刷オペレーター",cat:"製造・技術",grad:"A",x:-2,y:0,jtag:360},
+  {id:357,name:"製本オペレーター",cat:"製造・技術",grad:"A",x:-3,y:-1,jtag:361},
+  {id:358,name:"ITコンサルタント",cat:"IT・テック",grad:"B",x:2,y:4,jtag:362},
+  {id:359,name:"広報コンサルタント",cat:"営業・販売",grad:"B",x:3,y:3,jtag:363},
+  {id:360,name:"人事コンサルタント",cat:"士業・法律",grad:"B",x:2,y:3,jtag:364},
+  {id:361,name:"知的財産コーディネーター",cat:"士業・法律",grad:"B",x:1,y:2,jtag:365},
+  {id:362,name:"知的財産サーチャー",cat:"士業・法律",grad:"B",x:-1,y:1,jtag:366},
+  {id:363,name:"土木・建築工学研究者",cat:"専門・研究",grad:"B",x:-1,y:2,jtag:388},
+  {id:364,name:"情報工学研究者",cat:"専門・研究",grad:"B",x:-1,y:2,jtag:389},
+  {id:365,name:"医学研究者",cat:"専門・研究",grad:"C",x:-1,y:2,jtag:390},
+  {id:366,name:"科学捜査研究所鑑定技術職員",cat:"専門・研究",grad:"B",x:-1,y:2,jtag:391},
+  {id:367,name:"薬学研究者",cat:"専門・研究",grad:"C",x:-1,y:2,jtag:392},
+  {id:368,name:"バイオテクノロジー研究者",cat:"専門・研究",grad:"B",x:-1,y:2,jtag:393},
+  {id:369,name:"エコノミスト",cat:"専門・研究",grad:"C",x:0,y:3,jtag:394},
+  {id:370,name:"特別支援学校教員・特別支援学級教員",cat:"教育",grad:"A",x:4,y:0,jtag:395},
+  {id:371,name:"学習塾教師",cat:"教育",grad:"A",x:3,y:2,jtag:396},
+  {id:372,name:"日本語教師",cat:"教育",grad:"A",x:3,y:0,jtag:397},
+  {id:373,name:"英会話教師",cat:"教育",grad:"A",x:4,y:0,jtag:398},
+  {id:374,name:"職業訓練指導員",cat:"教育",grad:"B",x:3,y:1,jtag:399},
+  {id:375,name:"社会教育主事",cat:"教育",grad:"B",x:2,y:1,jtag:400},
+  {id:376,name:"救急救命士",cat:"医療・福祉",grad:"B",x:3,y:3,jtag:401},
+  {id:377,name:"外科医",cat:"医療・福祉",grad:"C",x:3,y:4,jtag:402},
+  {id:378,name:"小児科医",cat:"医療・福祉",grad:"C",x:4,y:3,jtag:403},
+  {id:379,name:"内科医",cat:"医療・福祉",grad:"C",x:3,y:3,jtag:404},
+  {id:380,name:"精神科医",cat:"医療・福祉",grad:"C",x:3,y:2,jtag:405},
+  {id:381,name:"産婦人科医",cat:"医療・福祉",grad:"C",x:4,y:3,jtag:406},
+  {id:382,name:"治験コーディネーター",cat:"医療・福祉",grad:"A",x:2,y:2,jtag:407},
+  {id:383,name:"医療ソーシャルワーカー",cat:"医療・福祉",grad:"A",x:4,y:1,jtag:408},
+  {id:384,name:"福祉ソーシャルワーカー",cat:"医療・福祉",grad:"A",x:4,y:0,jtag:409},
+  {id:385,name:"施設管理者（介護施設）",cat:"医療・福祉",grad:"C",x:3,y:3,jtag:410},
+  {id:386,name:"カウンセラー（医療福祉分野）",cat:"医療・福祉",grad:"B",x:4,y:0,jtag:411},
+  {id:387,name:"スクールカウンセラー",cat:"医療・福祉",grad:"C",x:4,y:0,jtag:412},
+  {id:388,name:"ベビーシッター",cat:"医療・福祉",grad:"A",x:4,y:-2,jtag:413},
+  {id:389,name:"フロント（ホテル・旅館）",cat:"サービス・接客",grad:"A",x:4,y:1,jtag:414},
+  {id:390,name:"客室清掃・整備担当（ホテル・旅館）",cat:"サービス・接客",grad:"A",x:1,y:-3,jtag:415},
+  {id:391,name:"接客担当（ホテル・旅館）",cat:"サービス・接客",grad:"A",x:4,y:0,jtag:416},
+  {id:392,name:"ホールスタッフ（レストラン）",cat:"サービス・接客",grad:"A",x:3,y:-1,jtag:417},
+  {id:393,name:"飲食チェーン店店員",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:418},
+  {id:394,name:"調香師",cat:"クリエイティブ",grad:"C",x:1,y:0,jtag:419},
+  {id:395,name:"アロマセラピスト",cat:"サービス・接客",grad:"B",x:3,y:-2,jtag:420},
+  {id:396,name:"リフレクソロジスト",cat:"サービス・接客",grad:"B",x:3,y:-2,jtag:421},
+  {id:397,name:"葬祭ディレクター",cat:"サービス・接客",grad:"A",x:3,y:1,jtag:422},
+  {id:398,name:"きもの着付指導員",cat:"サービス・接客",grad:"B",x:3,y:-1,jtag:423},
+  {id:399,name:"速記者・音声反訳者",cat:"事務・管理",grad:"B",x:0,y:-1,jtag:424},
+  {id:400,name:"パラリーガル（弁護士補助職）",cat:"士業・法律",grad:"A",x:1,y:1,jtag:425},
+  {id:401,name:"秘書",cat:"事務・管理",grad:"A",x:2,y:0,jtag:426},
+  {id:402,name:"受付事務",cat:"事務・管理",grad:"A",x:3,y:-2,jtag:427},
+  {id:403,name:"一般事務",cat:"事務・管理",grad:"A",x:0,y:-1,jtag:428},
+  {id:404,name:"データ入力",cat:"事務・管理",grad:"A",x:-2,y:-2,jtag:429},
+  {id:405,name:"経理事務",cat:"事務・管理",grad:"A",x:-1,y:1,jtag:430},
+  {id:406,name:"営業事務",cat:"事務・管理",grad:"A",x:1,y:1,jtag:431},
+  {id:407,name:"人事事務",cat:"事務・管理",grad:"A",x:1,y:2,jtag:432},
+  {id:408,name:"総務事務",cat:"事務・管理",grad:"A",x:0,y:0,jtag:433},
+  {id:409,name:"企画・調査担当",cat:"事務・管理",grad:"A",x:0,y:2,jtag:434},
+  {id:410,name:"調剤薬局事務",cat:"医療・福祉",grad:"A",x:2,y:-1,jtag:435},
+  {id:411,name:"介護事務",cat:"医療・福祉",grad:"A",x:1,y:0,jtag:436},
+  {id:412,name:"生産・工程管理事務",cat:"事務・管理",grad:"A",x:-1,y:1,jtag:437},
+  {id:413,name:"銀行等窓口事務",cat:"金融・保険",grad:"A",x:2,y:1,jtag:438},
+  {id:414,name:"貿易事務",cat:"事務・管理",grad:"A",x:0,y:1,jtag:439},
+  {id:415,name:"損害保険事務",cat:"金融・保険",grad:"A",x:1,y:1,jtag:440},
+  {id:416,name:"通信販売受付事務",cat:"事務・管理",grad:"A",x:2,y:-1,jtag:441},
+  {id:417,name:"学校事務",cat:"事務・管理",grad:"A",x:1,y:0,jtag:442},
+  {id:418,name:"医療事務",cat:"医療・福祉",grad:"A",x:2,y:0,jtag:443},
+  {id:419,name:"広報・PR担当",cat:"営業・販売",grad:"A",x:3,y:2,jtag:444},
+  {id:420,name:"IR広報担当",cat:"営業・販売",grad:"B",x:2,y:3,jtag:445},
+  {id:421,name:"企業法務担当",cat:"士業・法律",grad:"A",x:0,y:2,jtag:446},
+  {id:422,name:"コンプライアンス推進担当",cat:"士業・法律",grad:"A",x:0,y:2,jtag:447},
+  {id:423,name:"医薬品販売・登録販売者",cat:"医療・福祉",grad:"A",x:3,y:1,jtag:448},
+  {id:424,name:"リサイクルショップ店員",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:449},
+  {id:425,name:"携帯電話販売",cat:"営業・販売",grad:"A",x:4,y:2,jtag:450},
+  {id:426,name:"CDショップ店員",cat:"サービス・接客",grad:"A",x:2,y:-1,jtag:451},
+  {id:427,name:"コンサルティング営業（IT）",cat:"IT・テック",grad:"A",x:3,y:4,jtag:452},
+  {id:428,name:"保険営業（生命保険・損害保険）",cat:"金融・保険",grad:"A",x:4,y:4,jtag:453},
+  {id:429,name:"銀行・信用金庫渉外担当",cat:"金融・保険",grad:"A",x:4,y:4,jtag:454},
+  {id:430,name:"ディーラー",cat:"金融・保険",grad:"B",x:3,y:4,jtag:455},
+  {id:431,name:"マーケティング・リサーチャー",cat:"営業・販売",grad:"A",x:0,y:3,jtag:456},
+  {id:432,name:"証券アナリスト",cat:"金融・保険",grad:"B",x:0,y:4,jtag:457},
+  {id:433,name:"商品企画開発（チェーンストア）",cat:"営業・販売",grad:"A",x:1,y:3,jtag:461},
+  {id:434,name:"OA機器営業",cat:"営業・販売",grad:"A",x:3,y:3,jtag:462},
+  {id:435,name:"証券外務員",cat:"金融・保険",grad:"A",x:4,y:4,jtag:463},
+  {id:436,name:"化粧品販売・美容部員",cat:"サービス・接客",grad:"A",x:4,y:1,jtag:464},
+  {id:437,name:"化粧品訪問販売",cat:"営業・販売",grad:"A",x:4,y:3,jtag:465},
+  {id:438,name:"清涼飲料ルートセールス",cat:"営業・販売",grad:"A",x:3,y:2,jtag:466},
+  {id:439,name:"自転車販売",cat:"サービス・接客",grad:"A",x:2,y:0,jtag:467},
+  {id:440,name:"アクチュアリー",cat:"金融・保険",grad:"C",x:-1,y:3,jtag:468},
+  {id:441,name:"内部監査人",cat:"事務・管理",grad:"B",x:0,y:3,jtag:469},
+  {id:442,name:"ファンドマネージャー",cat:"金融・保険",grad:"C",x:1,y:5,jtag:470},
+  {id:443,name:"M&Aマネージャー・コンサルタント",cat:"金融・保険",grad:"C",x:2,y:5,jtag:471},
+  {id:444,name:"代理店営業（保険会社）",cat:"営業・販売",grad:"A",x:4,y:3,jtag:472},
+  {id:445,name:"マンション管理員",cat:"建設・建築",grad:"B",x:2,y:-2,jtag:473},
+  {id:446,name:"マンション管理フロント",cat:"建設・建築",grad:"A",x:2,y:1,jtag:474},
+  {id:447,name:"雑踏・交通誘導警備員",cat:"公務員・法律",grad:"A",x:0,y:-1,jtag:475},
+  {id:448,name:"ボイラーオペレーター",cat:"製造・技術",grad:"B",x:-2,y:0,jtag:476},
+  {id:449,name:"トラックドライバー",cat:"運輸・物流",grad:"A",x:0,y:0,jtag:477},
+  {id:450,name:"トレーラートラックドライバー",cat:"運輸・物流",grad:"B",x:0,y:0,jtag:478},
+  {id:451,name:"ダンプカー運転手",cat:"運輸・物流",grad:"B",x:-1,y:-1,jtag:479},
+  {id:452,name:"送迎バス等運転手",cat:"運輸・物流",grad:"B",x:1,y:-1,jtag:480},
+  {id:453,name:"介護タクシー運転手",cat:"運輸・物流",grad:"B",x:3,y:-1,jtag:481},
+  {id:454,name:"ルート配送ドライバー",cat:"運輸・物流",grad:"A",x:0,y:-1,jtag:482},
+  {id:455,name:"宅配便配達員",cat:"運輸・物流",grad:"A",x:1,y:-1,jtag:483},
+  {id:456,name:"新聞配達員",cat:"運輸・物流",grad:"A",x:0,y:-2,jtag:484},
+  {id:457,name:"倉庫作業員",cat:"運輸・物流",grad:"A",x:-2,y:-2,jtag:485},
+  {id:458,name:"ピッキング作業員",cat:"運輸・物流",grad:"A",x:-2,y:-2,jtag:486},
+  {id:459,name:"ハウスクリーニング",cat:"サービス・接客",grad:"A",x:1,y:-2,jtag:487},
+  {id:460,name:"ペストコントロール従事者",cat:"サービス・接客",grad:"B",x:1,y:0,jtag:488},
+  {id:461,name:"製品包装作業員",cat:"製造・技術",grad:"A",x:-3,y:-2,jtag:489},
+  {id:462,name:"工場労務作業員",cat:"製造・技術",grad:"A",x:-3,y:-2,jtag:490},
+  {id:463,name:"バックヤード作業員（スーパー食品部門）",cat:"製造・技術",grad:"A",x:-2,y:-2,jtag:491},
+  {id:464,name:"調理補助",cat:"サービス・接客",grad:"A",x:1,y:-3,jtag:492},
+  {id:465,name:"給食調理員",cat:"サービス・接客",grad:"A",x:1,y:-2,jtag:493},
+  {id:466,name:"ごみ収集作業員",cat:"運輸・物流",grad:"A",x:-1,y:-2,jtag:494},
+  {id:467,name:"産業廃棄物処理技術者",cat:"運輸・物流",grad:"B",x:-1,y:0,jtag:495},
+  {id:468,name:"産業廃棄物収集運搬作業員",cat:"運輸・物流",grad:"A",x:-2,y:-2,jtag:496},
+  {id:469,name:"積卸作業員",cat:"運輸・物流",grad:"A",x:-2,y:-2,jtag:497},
+  {id:470,name:"こん包作業員",cat:"運輸・物流",grad:"A",x:-3,y:-2,jtag:498},
+  {id:471,name:"港湾荷役作業員",cat:"運輸・物流",grad:"A",x:-2,y:-1,jtag:499},
+  {id:472,name:"ブリーダー",cat:"農業・自然",grad:"C",x:1,y:0,jtag:500},
+  {id:473,name:"自然保護官（レンジャー）",cat:"農業・自然",grad:"B",x:1,y:1,jtag:501},
+  {id:474,name:"酪農従事者",cat:"農業・自然",grad:"B",x:0,y:-1,jtag:502},
+  {id:475,name:"水産養殖従事者",cat:"農業・自然",grad:"B",x:-1,y:-1,jtag:503},
+  {id:476,name:"稲作農業者",cat:"農業・自然",grad:"C",x:-2,y:-2,jtag:504},
+  {id:477,name:"ハウス野菜栽培者",cat:"農業・自然",grad:"B",x:-1,y:-1,jtag:505},
+  {id:478,name:"果樹栽培者",cat:"農業・自然",grad:"B",x:-1,y:-2,jtag:506},
+  {id:479,name:"花き栽培者",cat:"農業・自然",grad:"B",x:-1,y:-1,jtag:507},
+  {id:480,name:"畜産技術者",cat:"農業・自然",grad:"B",x:-1,y:0,jtag:508},
+  {id:481,name:"沿岸漁業従事者",cat:"農業・自然",grad:"C",x:-1,y:-2,jtag:509},
+  {id:482,name:"動物看護",cat:"農業・自然",grad:"A",x:3,y:0,jtag:510},
+  {id:483,name:"ドローンパイロット",cat:"IT・テック",grad:"A",x:0,y:1,jtag:511},
+  {id:484,name:"国会議員",cat:"公務員・法律",grad:"C",x:4,y:5,jtag:512},
+  {id:485,name:"国際協力専門家",cat:"公務員・法律",grad:"B",x:3,y:2,jtag:513},
+  {id:486,name:"会社経営者",cat:"営業・販売",grad:"C",x:3,y:5,jtag:514},
+  {id:487,name:"玩具（おもちゃ）製作",cat:"クリエイティブ",grad:"B",x:0,y:0,jtag:515},
+  {id:488,name:"法務技官（心理）（矯正心理専門職）",cat:"公務員・法律",grad:"B",x:2,y:2,jtag:516},
+  {id:489,name:"入国審査官",cat:"公務員・法律",grad:"A",x:2,y:2,jtag:517},
+  {id:490,name:"検察事務官",cat:"公務員・法律",grad:"A",x:1,y:3,jtag:518},
+  {id:491,name:"労働基準監督官",cat:"公務員・法律",grad:"A",x:2,y:3,jtag:519},
+  {id:492,name:"セキュリティエキスパート（脆弱性診断）",cat:"IT・テック",grad:"A",x:0,y:2,jtag:520},
+  {id:493,name:"特許審査官",cat:"公務員・法律",grad:"B",x:0,y:2,jtag:521},
+  {id:494,name:"NPO法人職員（企画・運営）",cat:"医療・福祉",grad:"A",x:3,y:1,jtag:522},
+  {id:495,name:"データエンジニア",cat:"IT・テック",grad:"A",x:-1,y:2,jtag:523},
+  {id:496,name:"独立系ファイナンシャル・アドバイザー（IFA）",cat:"金融・保険",grad:"C",x:3,y:3,jtag:524},
+  {id:497,name:"タンクローリー乗務員",cat:"運輸・物流",grad:"B",x:0,y:0,jtag:525},
+  {id:498,name:"検査工（工業製品）",cat:"製造・技術",grad:"A",x:-2,y:0,jtag:526},
+  {id:499,name:"食品営業（食品メーカー）",cat:"営業・販売",grad:"A",x:3,y:3,jtag:527},
+  {id:500,name:"自動運転開発エンジニア（自動車）",cat:"IT・テック",grad:"A",x:-1,y:3,jtag:528},
+  {id:501,name:"医療機器開発技術者",cat:"製造・技術",grad:"A",x:-1,y:2,jtag:529},
+  {id:502,name:"臨床開発モニター",cat:"医療・福祉",grad:"A",x:2,y:2,jtag:530},
+  {id:503,name:"キッティング作業員（PCセットアップ作業員）",cat:"IT・テック",grad:"A",x:-1,y:-1,jtag:531},
+  {id:504,name:"フードデリバリー（料理配達員）",cat:"運輸・物流",grad:"A",x:1,y:-2,jtag:532},
+  {id:505,name:"セキュリティエキスパート（デジタルフォレンジック）",cat:"IT・テック",grad:"B",x:0,y:2,jtag:533},
+  {id:506,name:"セキュリティエキスパート（情報セキュリティ監査）",cat:"IT・テック",grad:"B",x:0,y:2,jtag:534},
+  {id:507,name:"風力発電のメンテナンス",cat:"建設・建築",grad:"B",x:-1,y:0,jtag:535},
+  {id:508,name:"総務課長",cat:"事務・管理",grad:"C",x:1,y:3,jtag:536},
+  {id:509,name:"人事課長",cat:"事務・管理",grad:"C",x:2,y:4,jtag:537},
+  {id:510,name:"経理課長",cat:"事務・管理",grad:"C",x:0,y:4,jtag:538},
+  {id:511,name:"営業課長",cat:"営業・販売",grad:"C",x:3,y:5,jtag:539},
+  {id:512,name:"デバッグ作業",cat:"IT・テック",grad:"A",x:-2,y:0,jtag:540},
+  {id:513,name:"ナレーター",cat:"クリエイティブ",grad:"B",x:3,y:0,jtag:541},
+  {id:514,name:"出荷・受荷事務",cat:"事務・管理",grad:"A",x:-1,y:0,jtag:542},
+  {id:515,name:"郵便局郵便窓口業務",cat:"事務・管理",grad:"A",x:2,y:0,jtag:543},
+  {id:516,name:"マーチャンダイザー・バイヤー",cat:"営業・販売",grad:"B",x:1,y:3,jtag:544},
+  {id:517,name:"歯科助手",cat:"医療・福祉",grad:"A",x:3,y:-1,jtag:545},
+  {id:518,name:"保育補助者",cat:"医療・福祉",grad:"A",x:3,y:-2,jtag:546},
+  {id:519,name:"造船技能者",cat:"製造・技術",grad:"B",x:-2,y:0,jtag:547},
+  {id:520,name:"検査工（食料品等）",cat:"製造・技術",grad:"A",x:-2,y:0,jtag:548},
+  {id:521,name:"クレーン運転士",cat:"製造・技術",grad:"B",x:-2,y:0,jtag:549},
+  {id:522,name:"造船技術者（船舶の開発・設計）",cat:"製造・技術",grad:"A",x:-1,y:2,jtag:550},
+  {id:523,name:"バイオマス発電プラントの設計",cat:"製造・技術",grad:"B",x:-1,y:2,jtag:551},
+  {id:524,name:"UX/UIデザイナー",cat:"IT・テック",grad:"A",x:1,y:2,jtag:552},
+  {id:525,name:"アニメ制作進行管理",cat:"クリエイティブ",grad:"A",x:1,y:2,jtag:553},
+  {id:526,name:"プロスポーツ運営団体職員（企画・運営）",cat:"営業・販売",grad:"A",x:2,y:3,jtag:554},
+  {id:527,name:"訪問介護のサービス提供責任者",cat:"医療・福祉",grad:"C",x:3,y:2,jtag:555},
+  {id:528,name:"障害者グループホーム世話人",cat:"医療・福祉",grad:"A",x:3,y:-1,jtag:556},
+  {id:529,name:"汎用金属工作機械工",cat:"製造・技術",grad:"B",x:-3,y:-1,jtag:557},
+  {id:530,name:"自動車板金塗装",cat:"製造・技術",grad:"B",x:-2,y:-1,jtag:558},
+  {id:531,name:"配電盤・制御盤等組立",cat:"製造・技術",grad:"B",x:-2,y:0,jtag:559},
+  {id:532,name:"社会学研究者",cat:"専門・研究",grad:"C",x:0,y:2,jtag:560},
+  {id:533,name:"鉄道車両の設計・開発",cat:"製造・技術",grad:"A",x:-1,y:2,jtag:561},
+  {id:534,name:"探偵",cat:"士業・法律",grad:"C",x:1,y:2,jtag:562},
+  {id:535,name:"麻酔科医",cat:"医療・福祉",grad:"C",x:2,y:3,jtag:563},
+  {id:536,name:"検疫官（看護師）",cat:"公務員・法律",grad:"C",x:2,y:2,jtag:564},
+  {id:537,name:"養護教諭",cat:"教育",grad:"A",x:4,y:0,jtag:565},
+  {id:538,name:"イベントの企画・運営",cat:"営業・販売",grad:"A",x:3,y:3,jtag:566},
+  {id:539,name:"学校事務（私立大学）",cat:"事務・管理",grad:"A",x:1,y:1,jtag:567},
+  {id:540,name:"児童発達支援管理責任者",cat:"医療・福祉",grad:"C",x:3,y:2,jtag:568},
+  {id:541,name:"納棺師",cat:"サービス・接客",grad:"B",x:2,y:-1,jtag:569},
+  {id:542,name:"耐震診断",cat:"建設・建築",grad:"B",x:0,y:1,jtag:570},
+  {id:543,name:"作業環境測定士",cat:"専門・研究",grad:"B",x:0,y:1,jtag:571},
+  {id:544,name:"下水道管路施設の点検・調査",cat:"建設・建築",grad:"B",x:-2,y:0,jtag:572},
+  {id:545,name:"オーケストラ奏者（団員）",cat:"クリエイティブ",grad:"C",x:0,y:-1,jtag:573},
+  {id:546,name:"ハローワーク職員",cat:"公務員・法律",grad:"A",x:3,y:1,jtag:574},
+  {id:547,name:"整形外科医",cat:"医療・福祉",grad:"C",x:3,y:3,jtag:575},
+  {id:548,name:"衛生管理者",cat:"事務・管理",grad:"B",x:0,y:2,jtag:576},
+  {id:549,name:"風力発電の企画・調査",cat:"建設・建築",grad:"A",x:0,y:2,jtag:577},
+  {id:550,name:"税関職員",cat:"公務員・法律",grad:"A",x:1,y:2,jtag:578},
+  {id:551,name:"自動車検査員",cat:"製造・技術",grad:"B",x:0,y:1,jtag:579},
+  {id:552,name:"障害福祉サービス管理責任者",cat:"医療・福祉",grad:"C",x:3,y:2,jtag:580},
+  {id:553,name:"ブロックチェーン・エンジニア",cat:"IT・テック",grad:"A",x:-1,y:3,jtag:581},
+  {id:554,name:"声優",cat:"クリエイティブ",grad:"C",x:3,y:0,jtag:582},
+  {id:555,name:"産業医",cat:"医療・福祉",grad:"C",x:2,y:2,jtag:583},
+  {id:556,name:"3Dプリンター技術者",cat:"IT・テック",grad:"A",x:-1,y:1,jtag:584},
+];
+
+const CAT_COLORS = {
+  'IT・テック':     '#4fc3f7',
+  'クリエイティブ': '#f48fb1',
+  'サービス・接客': '#81c784',
+  '事務・管理':     '#b0bec5',
+  '公務員・法律':   '#7986cb',
+  '医療・福祉':     '#ef9a9a',
+  '営業・販売':     '#ffb74d',
+  '士業・法律':     '#ce93d8',
+  '専門・研究':     '#80cbc4',
+  '建設・建築':     '#bcaaa4',
+  '教育':           '#fff176',
+  '製造・技術':     '#a5d6a7',
+  '農業・自然':     '#c5e1a5',
+  '運輸・物流':     '#80deea',
+  '金融・保険':     '#ffe082',
+};
+
+const GRAD_COLORS = { A:'#5de88a', B:'#d4a843', C:'#e07050' };
+
+// ===================== 状態 =====================
+let currentGrad = 'ALL';
+let currentCat  = 'ALL';
+let filtered    = [...JOBS];
+
+// ===================== カテゴリボタン生成 =====================
+const catBtns = document.getElementById('catBtns');
+Object.keys(CAT_COLORS).forEach(cat => {
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-cat';
+  btn.dataset.cat = cat;
+  btn.textContent = cat;
+  btn.style.borderColor = CAT_COLORS[cat] + '80';
+  btn.onclick = () => {
+    setCat(cat);
+    togglePrintCat(cat, btn);
+  };
+  catBtns.appendChild(btn);
+});
+
+function setGrad(g) {
+  currentGrad = g;
+  document.querySelectorAll('.btn-grad').forEach(b => {
+    b.className = 'btn btn-grad';
+    if (b.dataset.grad === g) b.classList.add('active-'+g);
+  });
+  applyFilter();
+}
+
+// フィルター用（単一選択）
+function setCat(c) {
+  currentCat = c;
+  document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.btn-cat[data-cat="${c}"]`).classList.add('active');
+
+  // カテゴリ切り替え時に印刷選択をリセット
+  printCats.clear();
+  document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('print-selected'));
+  updatePrintBtn();
+
+  applyFilter();
+}
+
+// 印刷選択セット
+let printCats = new Set();
+
+function togglePrintCat(cat, btn) {
+  if (cat === 'ALL') {
+    printCats.clear();
+    document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('print-selected'));
+  } else {
+    if (printCats.has(cat)) {
+      printCats.delete(cat);
+      btn.classList.remove('print-selected');
+    } else {
+      printCats.add(cat);
+      btn.classList.add('print-selected');
+    }
+  }
+  updatePrintBtn();
+}
+
+function updatePrintBtn() {
+  const btn = document.getElementById('printBtn');
+  if (printCats.size > 0) {
+    btn.textContent = `🖨️ 印刷する（${printCats.size}カテゴリ選択中）`;
+    btn.style.background = 'var(--mint)';
+    btn.style.color = 'var(--bg)';
+    btn.style.fontWeight = '700';
+  } else {
+    btn.textContent = '🖨️ 印刷する';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.fontWeight = '';
+  }
+}
+function applyFilter() {
+  filtered = JOBS.filter(j => {
+    if (currentGrad !== 'ALL' && j.grad !== currentGrad) return false;
+    if (currentCat  !== 'ALL' && j.cat  !== currentCat)  return false;
+    return true;
+  });
+  document.getElementById('countBadge').textContent = filtered.length + '件表示中';
+
+  // カテゴリが選ばれたら自動でラベル表示ON、ALLに戻したらOFF
+  const btn = document.getElementById('labelToggleBtn');
+  if (currentCat !== 'ALL') {
+    showLabels = true;
+    btn.textContent = '💼 職種名を非表示';
+    btn.classList.add('active');
+  } else {
+    showLabels = false;
+    btn.textContent = '💼 代表職種を表示';
+    btn.classList.remove('active');
+  }
+  drawMatrix();
+}
+
+function drawLabelsOnMatrix() {
+  drawLabels();
+}
+
+// ===================== ユーティリティ =====================
+function buildClusters() {
+  const clusters = {};
+  filtered.forEach(j => {
+    const key = `${j.x}_${j.y}`;
+    if (!clusters[key]) clusters[key] = [];
+    clusters[key].push(j);
+  });
+  return clusters;
+}
+
+// ===================== Canvas描画 =====================
+const canvas = document.getElementById('matrix');
+const ctx    = canvas.getContext('2d');
+const area   = document.getElementById('matrixArea');
+
+function resize() {
+  canvas.width  = area.clientWidth;
+  canvas.height = area.clientHeight;
+  drawMatrix();
+}
+
+function toCanvasXY(jx, jy) {
+  const pad = 40;
+  const w = canvas.width - pad*2;
+  const h = canvas.height - pad*2;
+  const cx = canvas.width/2;
+  const cy = canvas.height/2;
+  return {
+    cx: cx + (jx/5) * (w/2),
+    cy: cy - (jy/5) * (h/2)
+  };
+}
+
+function drawMatrix() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // 背景グリッド（16象限）
+  const cx = W/2, cy = H/2;
+  const padX = (W-80)/2, padY = (H-80)/2;
+
+  // 4象限の薄い色分け
+  const quadColors = [
+    {x:cx,y:0,w:padX,h:cy,c:'rgba(212,168,67,0.04)'},       // 右上：積極×目標
+    {x:0,y:0,w:cx,h:cy,c:'rgba(109,224,176,0.03)'},          // 左上：協調×目標
+    {x:0,y:cy,w:cx,h:padY,c:'rgba(109,224,176,0.03)'},       // 左下：協調×過程
+    {x:cx,y:cy,w:padX,h:padY,c:'rgba(212,168,67,0.03)'},     // 右下：積極×過程
+  ];
+  quadColors.forEach(q => {
+    ctx.fillStyle = q.c;
+    ctx.fillRect(q.x, q.y, q.w, q.h);
+  });
+
+  // グリッド線（16分割）
+  for(let i=-4;i<=4;i++) {
+    const gx = cx + (i/5)*(W-80)/2;
+    const gy = cy - (i/5)*(H-80)/2;
+    ctx.strokeStyle = i===0 ? 'rgba(109,224,176,0.4)' : 'rgba(109,224,176,0.1)';
+    ctx.lineWidth = i===0 ? 1.5 : 0.5;
+    ctx.beginPath(); ctx.moveTo(gx,20); ctx.lineTo(gx,H-20); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(20,gy); ctx.lineTo(W-20,gy); ctx.stroke();
+  }
+
+  // 点のクラスター検出：同座標をグループ化
+  const clusters = buildClusters();
+
+  // 点を描画
+  Object.values(clusters).forEach(group => {
+    const j0 = group[0];
+    const {cx:px, cy:py} = toCanvasXY(j0.x, j0.y);
+    const count = group.length;
+
+    // 複数の場合は大きめの円
+    const r = count === 1 ? 5 : Math.min(4 + count * 1.2, 14);
+
+    // カテゴリフィルター時は単色、それ以外はグラデフラグ色
+    const color = currentCat !== 'ALL'
+      ? CAT_COLORS[j0.cat] || '#aaa'
+      : GRAD_COLORS[j0.grad] || '#aaa';
+
+    ctx.beginPath();
+    ctx.arc(px, py, r, 0, Math.PI*2);
+    ctx.fillStyle = color + 'cc';
+    ctx.fill();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    if (count > 1) {
+      ctx.fillStyle = '#fff';
+      ctx.font = `bold ${count > 9 ? 7 : 8}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(count, px, py);
+    }
+  });
+
+  // ラベル描画（点の上に重ねる）
+  drawLabels();
+}
+
+// ===================== 代表職種ラベル =====================
+let showLabels = false;
+
+function toggleLabels() {
+  showLabels = !showLabels;
+  const btn = document.getElementById('labelToggleBtn');
+  if (showLabels) {
+    btn.textContent = '💼 代表職種を非表示';
+    btn.classList.add('active');
+  } else {
+    btn.textContent = '💼 代表職種を表示';
+    btn.classList.remove('active');
+  }
+  drawMatrix();
+}
+
+function drawLabels() {
+  if (!showLabels) return;
+
+  const W = canvas.width, H = canvas.height;
+  ctx.font = 'bold 10px "Noto Sans JP", sans-serif';
+
+  // 同座標の職種をグループ化（重なり防止）
+  const clusters = {};
+  filtered.forEach(j => {
+    const key = `${j.x}_${j.y}`;
+    if (!clusters[key]) clusters[key] = [];
+    clusters[key].push(j);
+  });
+
+  // 全点にラベル表示（同座標は代表1件のみ）
+  Object.values(clusters).forEach(group => {
+    const rep = group.find(j => j.grad === 'A') || group[0];
+    const {cx: px, cy: py} = toCanvasXY(rep.x, rep.y);
+    const r = group.length === 1 ? 5 : Math.min(4 + group.length * 1.2, 14);
+
+    const label = rep.name.length > 10 ? rep.name.slice(0,9) + '…' : rep.name;
+    const tw = ctx.measureText(label).width;
+    const pad = 4;
+    const lx = Math.max(2, Math.min(px - tw/2 - pad, W - tw - pad*2 - 2));
+    const ly = Math.max(2, py - r - 16);
+
+    // 背景
+    ctx.fillStyle = 'rgba(20,50,35,0.92)';
+    ctx.beginPath();
+    ctx.roundRect(lx, ly, tw + pad*2, 15, 3);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(212,168,67,0.65)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    // テキスト
+    ctx.fillStyle = '#f0faf5';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, lx + pad, ly + 7.5);
+  });
+}
+
+// ===================== ツールチップ =====================
+const tooltip = document.getElementById('tooltip');
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  // 近い点を探す
+  const clusters = buildClusters();
+  let nearest = null, minDist = 999;
+  Object.values(clusters).forEach(group => {
+    const {cx:px, cy:py} = toCanvasXY(group[0].x, group[0].y);
+    const dist = Math.hypot(mx-px, my-py);
+    if (dist < minDist) { minDist = dist; nearest = group; }
+  });
+
+  if (!nearest || minDist > 18) {
+    tooltip.style.display = 'none';
+    canvas.style.cursor = 'crosshair';
+    return;
+  }
+
+  canvas.style.cursor = 'pointer';
+  const MAX_SHOW = 6;
+  const shown = nearest.slice(0, MAX_SHOW);
+  const rest  = nearest.length - MAX_SHOW;
+
+  let html = '';
+  if (nearest.length === 1) {
+    const j = nearest[0];
+    html = `<div class="tt-name">${j.name}</div>
+            <div style="font-size:0.62rem;color:${CAT_COLORS[j.cat]||'#aaa'};margin-top:2px">${j.cat} ／ ${{A:'🟢新卒向け',B:'🟡経験後可',C:'🔴資格必須'}[j.grad]}</div>`;
+  } else {
+    html = `<div style="font-size:0.65rem;color:var(--mint);margin-bottom:4px">📍 ${nearest.length}職種</div>`;
+    shown.forEach(j => {
+      html += `<div class="tt-item">${j.name}<span class="tt-cat">${j.cat}</span></div>`;
+    });
+    if (rest > 0) html += `<div class="tt-more">…他${rest}件（クリックで一覧）</div>`;
+  }
+  tooltip.innerHTML = html;
+  tooltip.style.display = 'block';
+
+  // 位置調整
+  let lx = e.clientX + 16, ly = e.clientY - 10;
+  if (lx + 250 > window.innerWidth)  lx = e.clientX - 255;
+  if (ly + tooltip.offsetHeight > window.innerHeight) ly = e.clientY - tooltip.offsetHeight - 10;
+  tooltip.style.left = lx + 'px';
+  tooltip.style.top  = ly + 'px';
+});
+
+canvas.addEventListener('mouseleave', () => {
+  tooltip.style.display = 'none';
+  canvas.style.cursor = 'crosshair';
+});
+
+
+// ===================== クリックでポップアップ =====================
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  // 一番近い点を探す（クラスター優先）
+  let nearest = null, minDist = 999;
+  const clusters = buildClusters();
+
+  Object.entries(clusters).forEach(([key, group]) => {
+    const j0 = group[0];
+    const {cx:px, cy:py} = toCanvasXY(j0.x, j0.y);
+    const dist = Math.hypot(mx-px, my-py);
+    if (dist < minDist) { minDist = dist; nearest = group; }
+  });
+
+  if (!nearest || minDist > 20) {
+    closePopup();
+    document.getElementById('cluster-popup').style.display = 'none';
+    return;
+  }
+
+  if (nearest.length === 1) {
+    showPopup(nearest[0], e.clientX, e.clientY);
+  } else {
+    showCluster(nearest, e.clientX, e.clientY);
+  }
+});
+
+function showPopup(job, px, py) {
+  document.getElementById('cluster-popup').style.display = 'none';
+  const p = document.getElementById('popup');
+  document.getElementById('pop-name').textContent = job.name;
+
+  const gradLabel = {A:'🟢 新卒向け', B:'🟡 経験後可', C:'🔴 資格必須'}[job.grad];
+  const gradClass = 'badge-'+job.grad;
+  document.getElementById('pop-meta').innerHTML =
+    `<span class="pop-badge ${gradClass}">${gradLabel}</span>` +
+    `<span style="color:${CAT_COLORS[job.cat]||'#aaa'}">${job.cat}</span>`;
+
+  const xLabel = job.x > 0 ? `積極的関与 +${job.x}` : job.x < 0 ? `協調的関与 ${job.x}` : '中間';
+  const yLabel = job.y > 0 ? `目標管理重視 +${job.y}` : job.y < 0 ? `過程重視 ${job.y}` : '中間';
+  document.getElementById('pop-score').innerHTML =
+    `🔄 関わり方：${xLabel}<br>🎯 目標志向：${yLabel}`;
+
+  // jtag番号があればDetail直リンク、なければ検索リンク
+  const jobtagUrl = job.jtag
+    ? `https://shigoto.mhlw.go.jp/User/Occupation/Detail/${job.jtag}`
+    : `https://shigoto.mhlw.go.jp/User/search?jobTitleName=${encodeURIComponent(job.name.split("・")[0].split("（")[0])}`;
+  document.getElementById("pop-link").href = jobtagUrl;
+
+  // 印刷リスト追加ボタン
+  const addBtn = document.getElementById('pop-add-btn');
+  addBtn.onclick = () => addToTray(job);
+  addBtn.textContent = trayJobs.has(job.id) ? '✅ リスト追加済み' : '＋ 印刷リストに追加';
+  addBtn.style.background = trayJobs.has(job.id) ? '#3a7a55' : '#d4a843';
+
+  // 位置調整
+  p.style.display = 'block';
+  let left = px + 15, top = py - 10;
+  if (left + 320 > window.innerWidth) left = px - 335;
+  if (top + 200 > window.innerHeight) top = py - 200;
+  p.style.left = left + 'px';
+  p.style.top  = top  + 'px';
+}
+
+function showCluster(group, px, py) {
+  closePopup();
+  const cp = document.getElementById('cluster-popup');
+  document.getElementById('cluster-title').textContent = `📍 この位置の職種（${group.length}件）`;
+  const list = document.getElementById('cluster-list');
+  list.innerHTML = '';
+
+  // 「この${group.length}件を全部追加」ボタン
+  const addAllBtn = document.createElement('div');
+  addAllBtn.style.cssText = 'padding:5px 8px;background:#2d6b4a;border-radius:5px;margin-bottom:5px;text-align:center;cursor:pointer;font-size:0.7rem;color:#d4a843;font-weight:700;border:1px solid #d4a843;';
+  addAllBtn.textContent = `＋ この${group.length}件を全部 印刷リストに追加`;
+  addAllBtn.onclick = () => { group.forEach(j => addToTray(j)); };
+  list.appendChild(addAllBtn);
+
+  group.forEach(j => {
+    const div = document.createElement('div');
+    div.className = 'cluster-item';
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.gap = '6px';
+    div.innerHTML = `<span style="flex:1">${j.name}<br><span class="ci-cat">${j.cat} ／ ${{A:'🟢新卒',B:'🟡経験後',C:'🔴資格'}[j.grad]}</span></span>
+      <span class="tray-add-btn" data-id="${j.id}" style="font-size:0.65rem;color:#d4a843;cursor:pointer;border:1px solid #d4a843;padding:1px 5px;border-radius:3px;flex-shrink:0;">＋追加</span>`;
+    div.onclick = (e) => {
+      if (e.target.classList.contains('tray-add-btn')) {
+        addToTray(j);
+      } else {
+        showPopup(j, px, py);
+      }
+    };
+    list.appendChild(div);
+  });
+
+  cp.style.display = 'block';
+  let left = px + 15, top = py - 10;
+  if (left + 290 > window.innerWidth) left = px - 305;
+  if (top + 320 > window.innerHeight) top = py - 320;
+  cp.style.left = left + 'px';
+  cp.style.top  = top  + 'px';
+}
+
+function closePopup() {
+  document.getElementById('popup').style.display = 'none';
+}
+
+// ===================== 印刷トレイ =====================
+let trayJobs = new Map(); // id -> job
+
+document.getElementById('trayOpenBtn').onclick = () => {
+  document.getElementById('trayOpenBtn').style.display = 'none';
+  document.getElementById('printTray').style.display = 'flex';
+};
+
+function closeTray() {
+  document.getElementById('printTray').style.display = 'none';
+  document.getElementById('trayOpenBtn').style.display = 'flex';
+}
+
+function addToTray(job) {
+  if (trayJobs.has(job.id)) return;
+  trayJobs.set(job.id, job);
+  updateTray();
+  // トレイを一瞬表示
+  document.getElementById('trayOpenBtn').style.display = 'none';
+  document.getElementById('printTray').style.display = 'flex';
+  // ポップアップのボタンも更新
+  const addBtn = document.getElementById('pop-add-btn');
+  if (addBtn) {
+    addBtn.textContent = '✅ リスト追加済み';
+    addBtn.style.background = '#3a7a55';
+  }
+}
+
+function removeFromTray(id) {
+  trayJobs.delete(id);
+  updateTray();
+}
+
+function clearTray() {
+  trayJobs.clear();
+  updateTray();
+}
+
+function updateTray() {
+  const count = trayJobs.size;
+  document.getElementById('trayCount').textContent = count + '件';
+  document.getElementById('trayBadge').textContent = count + '件';
+
+  // カテゴリ別グループ化
+  const grouped = {};
+  trayJobs.forEach(j => {
+    if (!grouped[j.cat]) grouped[j.cat] = [];
+    grouped[j.cat].push(j);
+  });
+
+  const list = document.getElementById('trayList');
+  let html = '';
+  if (count === 0) {
+    html = '<div style="padding:12px;font-size:0.7rem;color:#6de0b0;text-align:center;">プロットをクリックして<br>職種を追加してください</div>';
+  } else {
+    Object.entries(grouped).forEach(([cat, jobs]) => {
+      html += `<div style="font-size:0.62rem;color:${CAT_COLORS[cat]||'#aaa'};padding:4px 4px 2px;font-weight:700;">${cat}</div>`;
+      jobs.forEach(j => {
+        html += `<div style="display:flex;align-items:center;padding:3px 4px;border-bottom:1px solid #243a2e;gap:4px;">
+          <span style="flex:1;font-size:0.7rem;color:#d0ede0;">${j.name}</span>
+          <span onclick="removeFromTray(${j.id})" style="color:#e07070;cursor:pointer;font-size:0.85rem;flex-shrink:0;">✕</span>
+        </div>`;
+      });
+    });
+  }
+  list.innerHTML = html;
+}
+
+function executePrint() {
+  if (trayJobs.size === 0) { alert('職種を選択してください'); return; }
+  const grouped = {};
+  trayJobs.forEach(j => {
+    if (!grouped[j.cat]) grouped[j.cat] = [];
+    grouped[j.cat].push(j);
+  });
+  openPrintPreviewWithData(grouped);
+}
+
+// ===================== 印刷プレビュー =====================
+function starsHtml(score, color) {
+  // -5〜+5 を 1〜5に変換
+  const level = Math.round((score + 5) / 2);
+  const clamped = Math.max(1, Math.min(5, level));
+  let s = '';
+  for (let i = 1; i <= 5; i++) {
+    s += `<span class="star-colored" style="color:${i <= clamped ? color : '#ccc'};font-size:1.1rem;">★</span>`;
+  }
+  return s;
+}
+
+function barHtml(score, color) {
+  const pct = Math.round((score + 5) / 10 * 100);
+  return `<div style="display:inline-block;width:80px;height:10px;background:#eee;border-radius:5px;vertical-align:middle;margin-right:4px;">
+    <div style="width:${pct}%;height:100%;background:${color};border-radius:5px;"></div>
+  </div>`;
+}
+
+function jobtagUrl(name) {
+  const encoded = encodeURIComponent(name.split('（')[0].split('・')[0]);
+  return `https://shigoto.mhlw.go.jp/User/search?jobTitleName=${encoded}`;
+}
+
+// ===================== 職種選択モーダル =====================
+let selectedJobs = new Map(); // id -> job object
+let currentCatInModal = null;
+
+function openSelectModal() {
+  // カテゴリ一覧を生成
+  const catPane = document.getElementById('catListPane');
+  catPane.innerHTML = '';
+  Object.keys(CAT_COLORS).forEach(cat => {
+    const count = JOBS.filter(j => j.cat === cat).length;
+    const selectedInCat = JOBS.filter(j => j.cat === cat && selectedJobs.has(j.id)).length;
+    const btn = document.createElement('div');
+    btn.id = 'catBtn_' + cat;
+    btn.style.cssText = `padding:9px 12px;cursor:pointer;font-size:0.75rem;color:#d0ede0;border-bottom:1px solid #1a3a2a;display:flex;align-items:center;gap:6px;transition:background 0.15s;`;
+    btn.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:${CAT_COLORS[cat]};display:inline-block;flex-shrink:0;"></span>
+      <span style="flex:1;">${cat}</span>
+      <span style="font-size:0.6rem;color:#6de0b0;">${selectedInCat > 0 ? selectedInCat+'✓' : count}</span>`;
+    btn.onclick = () => loadCatJobs(cat);
+    btn.onmouseover = () => { if(currentCatInModal !== cat) btn.style.background='#2d6b4a'; };
+    btn.onmouseout  = () => { if(currentCatInModal !== cat) btn.style.background=''; };
+    catPane.appendChild(btn);
+  });
+  updateSelectedPane();
+  document.getElementById('selectModal').style.display = 'block';
+
+  // 毎回選択状態をリセット
+  selectedJobs.clear();
+  currentCatInModal = null;
+
+  // マトリクスで選択中のカテゴリがあれば自動で開いて全選択
+  if (currentCat !== 'ALL') {
+    JOBS.filter(j => j.cat === currentCat).forEach(j => selectedJobs.set(j.id, j));
+    loadCatJobs(currentCat);
+    updateSelectedPane();
+    document.getElementById('selCount').textContent = '選択中：' + selectedJobs.size + '件';
+  }
+}
+
+function loadCatJobs(cat) {
+  currentCatInModal = cat;
+  // カテゴリボタンのアクティブ状態
+  document.querySelectorAll('[id^="catBtn_"]').forEach(b => b.style.background = '');
+  const active = document.getElementById('catBtn_' + cat);
+  if (active) active.style.background = '#2d6b4a';
+
+  document.getElementById('catListTitle').textContent = `📂 ${cat}`;
+  const jobs = JOBS.filter(j => j.cat === cat).sort((a,b) => b.x - a.x);
+  const pane = document.getElementById('jobListPane');
+  pane.innerHTML = '';
+
+  jobs.forEach(j => {
+    const isChecked = selectedJobs.has(j.id);
+    const xStars = starsStr(j.x);
+    const yStars = starsStr(j.y);
+    const gradLabel = {A:'🟢',B:'🟡',C:'🔴'}[j.grad];
+    const div = document.createElement('div');
+    div.id = 'jobRow_' + j.id;
+    div.style.cssText = `padding:7px 10px;border-bottom:1px solid #243a2e;display:flex;align-items:center;gap:8px;cursor:pointer;transition:background 0.1s;background:${isChecked ? '#1e4a30' : ''};`;
+    div.innerHTML = `
+      <input type="checkbox" id="chk_${j.id}" ${isChecked ? 'checked' : ''} style="accent-color:#d4a843;width:14px;height:14px;flex-shrink:0;">
+      <div style="flex:1;">
+        <div style="font-size:0.78rem;font-weight:600;color:#f0faf5;">${gradLabel} ${j.name}</div>
+        <div style="font-size:0.65rem;color:#6de0b0;margin-top:2px;">
+          🤝${xStars} &nbsp; 🎯${yStars}
+        </div>
+      </div>`;
+    div.onclick = (e) => {
+      if (e.target.tagName !== 'INPUT') {
+        const chk = document.getElementById('chk_' + j.id);
+        chk.checked = !chk.checked;
+      }
+      toggleJobSelect(j);
+    };
+    pane.appendChild(div);
+  });
+}
+
+function starsStr(score) {
+  const level = Math.max(1, Math.min(5, Math.round((score + 5) / 2)));
+  return '★'.repeat(level) + '☆'.repeat(5 - level);
+}
+
+function toggleJobSelect(job) {
+  if (selectedJobs.has(job.id)) {
+    selectedJobs.delete(job.id);
+    const row = document.getElementById('jobRow_' + job.id);
+    if (row) row.style.background = '';
+  } else {
+    selectedJobs.set(job.id, job);
+    const row = document.getElementById('jobRow_' + job.id);
+    if (row) row.style.background = '#1e4a30';
+  }
+  updateSelectedPane();
+  updateCatPane();
+}
+
+function selectAllInCat() {
+  if (!currentCatInModal) return;
+  JOBS.filter(j => j.cat === currentCatInModal).forEach(j => {
+    selectedJobs.set(j.id, j);
+    const chk = document.getElementById('chk_' + j.id);
+    if (chk) chk.checked = true;
+    const row = document.getElementById('jobRow_' + j.id);
+    if (row) row.style.background = '#1e4a30';
+  });
+  updateSelectedPane();
+  updateCatPane();
+}
+
+function clearCat() {
+  if (!currentCatInModal) return;
+  JOBS.filter(j => j.cat === currentCatInModal).forEach(j => {
+    selectedJobs.delete(j.id);
+    const chk = document.getElementById('chk_' + j.id);
+    if (chk) chk.checked = false;
+    const row = document.getElementById('jobRow_' + j.id);
+    if (row) row.style.background = '';
+  });
+  updateSelectedPane();
+  updateCatPane();
+}
+
+function clearAllSelected() {
+  selectedJobs.clear();
+  document.querySelectorAll('[id^="chk_"]').forEach(c => c.checked = false);
+  document.querySelectorAll('[id^="jobRow_"]').forEach(r => r.style.background = '');
+  updateSelectedPane();
+  updateCatPane();
+}
+
+function updateCatPane() {
+  Object.keys(CAT_COLORS).forEach(cat => {
+    const count = JOBS.filter(j => j.cat === cat).length;
+    const sel = JOBS.filter(j => j.cat === cat && selectedJobs.has(j.id)).length;
+    const btn = document.getElementById('catBtn_' + cat);
+    if (!btn) return;
+    const span = btn.querySelector('span:last-child');
+    if (span) span.textContent = sel > 0 ? sel + '✓' : count;
+    btn.style.borderLeft = sel > 0 ? `3px solid ${CAT_COLORS[cat]}` : '';
+  });
+}
+
+function updateSelectedPane() {
+  const pane = document.getElementById('selectedPane');
+  const count = document.getElementById('selectedCount');
+  count.textContent = `選択中：${selectedJobs.size}件`;
+
+  if (selectedJobs.size === 0) {
+    pane.innerHTML = '<div style="padding:12px;font-size:0.7rem;color:#6de0b0;text-align:center;">職種を選択してください</div>';
+    return;
+  }
+
+  // カテゴリ別にグループ化
+  const grouped = {};
+  selectedJobs.forEach(j => {
+    if (!grouped[j.cat]) grouped[j.cat] = [];
+    grouped[j.cat].push(j);
+  });
+
+  let html = '';
+  Object.entries(grouped).forEach(([cat, jobs]) => {
+    html += `<div style="padding:5px 8px;font-size:0.65rem;color:${CAT_COLORS[cat]};font-weight:700;border-bottom:1px solid #2d6b4a;">${cat}（${jobs.length}）</div>`;
+    jobs.forEach(j => {
+      html += `<div style="padding:4px 10px;font-size:0.7rem;color:#d0ede0;display:flex;align-items:center;gap:4px;border-bottom:1px solid #1a3a2a;">
+        <span style="flex:1;">${j.name}</span>
+        <span onclick="toggleJobSelect(j)" style="color:#e07070;cursor:pointer;font-size:0.8rem;"
+          data-id="${j.id}">✕</span>
+      </div>`;
+    });
+  });
+  pane.innerHTML = html;
+
+  // ✕ボタンにイベント付与
+  pane.querySelectorAll('[data-id]').forEach(el => {
+    el.onclick = () => {
+      const id = parseInt(el.dataset.id);
+      const job = JOBS.find(j => j.id === id);
+      if (job) toggleJobSelect(job);
+    };
+  });
+}
+
+function closeSelectModal() {
+  document.getElementById('selectModal').style.display = 'none';
+  currentCatInModal = null;
+}
+
+function printSelected() {
+  if (selectedJobs.size === 0) {
+    alert('職種を選択してください');
+    return;
+  }
+  closeSelectModal();
+
+  // カテゴリ別にグループ化して印刷プレビューへ
+  const grouped = {};
+  selectedJobs.forEach(j => {
+    if (!grouped[j.cat]) grouped[j.cat] = [];
+    grouped[j.cat].push(j);
+  });
+
+  // 既存のopenPrintPreviewをカスタムデータで呼ぶ
+  openPrintPreviewWithData(grouped);
+}
+
+function openPrintPreviewWithData(grouped) {
+  let html = '';
+  const cats = Object.keys(grouped);
+
+  cats.forEach((cat, idx) => {
+    const jobs = grouped[cat].sort((a, b) => b.x - a.x);
+    const catColor = CAT_COLORS[cat] || '#888';
+    const isLast = idx === cats.length - 1;
+
+    html += `<div class="${isLast ? '' : 'page-break'}" style="padding:20px 10px 30px;">`;
+
+    html += `
+      <div style="display:flex;align-items:center;border-bottom:3px solid ${catColor};padding-bottom:10px;margin-bottom:16px;">
+        <div style="width:6px;height:40px;background:${catColor};border-radius:3px;margin-right:12px;"></div>
+        <div>
+          <div style="font-size:0.72rem;color:#555;margin-bottom:2px;font-weight:600;">就活の木 ｜ 職種研究シート</div>
+          <div style="font-size:1.3rem;font-weight:700;color:#2d4a3a;">${cat}</div>
+          <div style="font-size:0.75rem;color:#333;margin-top:2px;">${jobs.length}職種 ／ 2軸で見る仕事の特徴</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;font-size:0.68rem;color:#444;">
+          出典：厚生労働省 jobtag（職業情報提供サイト）<br>
+          スコア設計：就活の木 キャリアコンサルタント
+        </div>
+      </div>`;
+
+    html += `
+      <div style="display:flex;gap:16px;margin-bottom:14px;font-size:0.72rem;">
+        <div style="background:#e8f5ee;border-left:4px solid #2d8a4a;padding:8px 12px;border-radius:0 4px 4px 0;color:#1a3a1a;">
+          <strong style="color:#1a5a2a;">🤝 人との関わり</strong><br><span style="color:#2a4a2a;">★多い＝積極的に人と関わり感謝される仕事<br>★少ない＝協調的・サポート的な関わり方</span>
+        </div>
+        <div style="background:#f5f0e0;border-left:4px solid #a07820;padding:8px 12px;border-radius:0 4px 4px 0;color:#2a1a00;">
+          <strong style="color:#5a3a00;">🎯 目標・数字の重み</strong><br><span style="color:#3a2a00;">★多い＝数字・目標がはっきりしている仕事<br>★少ない＝プロセス・過程・成長を重視する仕事</span>
+        </div>
+      </div>`;
+
+    html += `<table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+      <thead>
+        <tr style="background:#e8f0ec;">
+          <th style="text-align:left;padding:9px 10px;border-bottom:2px solid #8ab89a;width:28%;color:#1a1a1a;font-size:0.85rem;font-weight:700;">職種名</th>
+          <th style="text-align:left;padding:9px 10px;border-bottom:2px solid #8ab89a;width:8%;color:#1a1a1a;font-size:0.82rem;font-weight:700;">新卒</th>
+          <th style="text-align:left;padding:9px 10px;border-bottom:2px solid #8ab89a;width:26%;color:#1a1a1a;font-size:0.82rem;font-weight:700;">🤝 人との関わり</th>
+          <th style="text-align:left;padding:9px 10px;border-bottom:2px solid #8ab89a;width:26%;color:#1a1a1a;font-size:0.82rem;font-weight:700;">🎯 目標・数字</th>
+          <th style="text-align:center;padding:9px 10px;border-bottom:2px solid #8ab89a;width:12%;color:#1a1a1a;font-size:0.82rem;font-weight:700;">jobtag</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    jobs.forEach((j, i) => {
+      const gradLabel = {A:'🟢 新卒向け', B:'🟡 経験後', C:'🔴 資格必須'}[j.grad];
+      const bg = i % 2 === 0 ? '#fff' : '#fafafa';
+      html += `
+        <tr style="background:${bg};border-bottom:1px solid #eee;">
+          <td style="padding:8px 10px;font-weight:700;color:#111;font-size:0.85rem;">${j.name}</td>
+          <td style="padding:8px 6px;font-size:0.72rem;color:#222;">${gradLabel}</td>
+          <td style="padding:7px 10px;">${starsHtml(j.x, '#4da070')}</td>
+          <td style="padding:7px 10px;">${starsHtml(j.y, '#d4a843')}</td>
+          <td style="padding:7px 6px;text-align:center;">
+            <a href="${jobtagUrl(j.name)}" target="_blank"
+               style="font-size:0.65rem;color:#2d6b4a;text-decoration:none;border:1px solid #4da070;padding:2px 6px;border-radius:4px;">
+              詳しく見る
+            </a>
+          </td>
+        </tr>`;
+    });
+
+    html += `</tbody></table>`;
+
+    html += `</div>`;
+  });
+
+  // 最後に1か所だけ表示
+  html += `
+    <div style="margin-top:16px;padding:12px 16px;background:#e8f5ee;border-radius:6px;font-size:0.75rem;color:#1a3a1a;border:1px solid #b0d8b8;">
+      💡 <strong>キャリアコンサルタントからひとこと：</strong>
+      この一覧は「仕事の雰囲気・特徴」を視覚化したものです。同じ職種でも会社によって大きく異なります。
+      jobtagのリンクから実際の仕事内容・求められるスキルを確認し、OB・OG訪問や会社説明会で「実態」を確かめてみましょう。
+      あなたに合った仕事は、等身大の自分を知ることから始まります。🌳
+    </div>
+
+    <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="padding:14px 16px;background:#e8f5ee;border-radius:8px;border-left:4px solid #2d6b4a;font-size:0.75rem;color:#1a3a1a;line-height:1.8;">
+        🌱 <strong style="color:#2d6b4a;">大学3年生の方へ</strong><br>
+        気になった職種は、ぜひ<strong>インターンシップ</strong>で実際に体験してみましょう。<br>
+        「なんとなく向いてそう」から「やっぱりこれだ」に変わる体験が、就活の一番の近道です。<br>
+        <span style="color:#3d8a5f;font-size:0.7rem;">▶ この職種名でインターン募集を検索してみよう</span>
+      </div>
+      <div style="padding:14px 16px;background:#fff8e8;border-radius:8px;border-left:4px solid #d4a843;font-size:0.75rem;color:#3a2a00;line-height:1.8;">
+        🌳 <strong style="color:#b8860b;">大学4年生の方へ</strong><br>
+        この職種名を<strong>マイナビ・リクナビ</strong>の検索窓にそのまま入れてみましょう。<br>
+        「企業名」ではなく<strong>「職種名」で絞る</strong>ことで、自分に合った企業が見つかりやすくなります。<br>
+        <span style="color:#b8860b;font-size:0.7rem;">▶ 職種で絞る → 気になる企業へエントリー</span>
+      </div>
+    </div>`;
+
+  document.getElementById('printContent').innerHTML = html;
+  document.getElementById('printModal').style.display = 'block';
+}
+
+function openPrintPreview() {
+  openSelectModal();
+}
+
+// ===================== 職種選択モーダル =====================
+function openPrintPreviewOld() {
+  const cats = printCats.size > 0 ? [...printCats] : Object.keys(CAT_COLORS);
+  let html = '';
+
+  cats.forEach((cat, idx) => {
+    const jobs = JOBS.filter(j => j.cat === cat).sort((a, b) => b.x - a.x);
+    if (!jobs.length) return;
+
+    const catColor = CAT_COLORS[cat] || '#888';
+    const isLast = idx === cats.length - 1;
+
+    html += `<div class="${isLast ? '' : 'page-break'}" style="padding:20px 10px 30px;">`;
+
+    // ページヘッダー
+    html += `
+      <div style="display:flex;align-items:center;border-bottom:3px solid ${catColor};padding-bottom:10px;margin-bottom:16px;">
+        <div style="width:6px;height:40px;background:${catColor};border-radius:3px;margin-right:12px;"></div>
+        <div>
+          <div style="font-size:0.72rem;color:#555;margin-bottom:2px;font-weight:600;">就活の木 ｜ 職種研究シート</div>
+          <div style="font-size:1.3rem;font-weight:700;color:#2d4a3a;">${cat}</div>
+          <div style="font-size:0.75rem;color:#333;margin-top:2px;">${jobs.length}職種 ／ 2軸で見る仕事の特徴</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;font-size:0.68rem;color:#444;">
+          出典：厚生労働省 jobtag（職業情報提供サイト）<br>
+          スコア設計：就活の木 キャリアコンサルタント
+        </div>
+      </div>`;
+
+    // 軸説明
+    html += `
+      <div style="display:flex;gap:16px;margin-bottom:14px;font-size:0.72rem;">
+        <div style="background:#e8f5ee;border-left:4px solid #2d8a4a;padding:8px 12px;border-radius:0 4px 4px 0;color:#1a3a1a;">
+          <strong style="color:#1a5a2a;">🤝 人との関わり</strong><br><span style="color:#2a4a2a;">★多い＝積極的に人と関わり感謝される仕事<br>★少ない＝協調的・サポート的な関わり方</span>
+        </div>
+        <div style="background:#f5f0e0;border-left:4px solid #a07820;padding:8px 12px;border-radius:0 4px 4px 0;color:#2a1a00;">
+          <strong style="color:#5a3a00;">🎯 目標・数字の重み</strong><br><span style="color:#3a2a00;">★多い＝数字・目標がはっきりしている仕事<br>★少ない＝プロセス・過程・成長を重視する仕事</span>
+        </div>
+      </div>`;
+
+    // 職種テーブル
+    html += `<table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+      <thead>
+        <tr style="background:#e8e8e8;">
+          <th style="text-align:left;padding:8px 10px;border-bottom:2px solid #aaa;width:28%;color:#1a1a1a;font-size:0.85rem;">職種名</th>
+          <th style="text-align:left;padding:7px 10px;border-bottom:2px solid #ddd;width:8%;">新卒</th>
+          <th style="text-align:left;padding:7px 10px;border-bottom:2px solid #ddd;width:28%;">🤝 人との関わり</th>
+          <th style="text-align:left;padding:7px 10px;border-bottom:2px solid #ddd;width:28%;">🎯 目標・数字</th>
+          <th style="text-align:center;padding:7px 10px;border-bottom:2px solid #ddd;width:8%;">詳細</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    jobs.forEach((j, i) => {
+      const gradLabel = {A:'🟢 新卒向け', B:'🟡 経験後', C:'🔴 資格必須'}[j.grad];
+      const bg = i % 2 === 0 ? '#fff' : '#fafafa';
+      html += `
+        <tr style="background:${bg};border-bottom:1px solid #eee;">
+          <td style="padding:8px 10px;font-weight:700;color:#111;font-size:0.85rem;">${j.name}</td>
+          <td style="padding:8px 6px;font-size:0.72rem;color:#222;">${gradLabel}</td>
+          <td style="padding:7px 10px;">${starsHtml(j.x, '#4da070')}</td>
+          <td style="padding:7px 10px;">${starsHtml(j.y, '#d4a843')}</td>
+          <td style="padding:7px 6px;text-align:center;">
+            <a href="${jobtagUrl(j.name)}" target="_blank"
+               style="font-size:0.65rem;color:#2d6b4a;text-decoration:none;border:1px solid #4da070;padding:2px 6px;border-radius:4px;">
+              jobtag
+            </a>
+          </td>
+        </tr>`;
+    });
+
+    html += `</tbody></table>`;
+
+    // フッターコメント
+    html += `
+      <div style="margin-top:14px;padding:12px 16px;background:#e8f5ee;border-radius:6px;font-size:0.75rem;color:#1a3a1a;border:1px solid #b0d8b8;">
+        💡 <strong>キャリアコンサルタントからひとこと：</strong>
+        この一覧は「仕事の雰囲気・特徴」を視覚化したものです。同じ職種でも会社によって大きく異なります。
+        jobtagのリンクから実際の仕事内容・求められるスキルを確認し、OB・OG訪問や会社説明会で「実態」を確かめてみましょう。
+        あなたに合った仕事は、等身大の自分を知ることから始まります。🌳
+      </div>
+
+      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+        <div style="padding:14px 16px;background:#e8f5ee;border-radius:8px;border-left:4px solid #2d6b4a;font-size:0.75rem;color:#1a3a1a;line-height:1.8;">
+          🌱 <strong style="color:#2d6b4a;">大学3年生の方へ</strong><br>
+          気になった職種は、ぜひ<strong>インターンシップ</strong>で実際に体験してみましょう。<br>
+          「なんとなく向いてそう」から「やっぱりこれだ」に変わる体験が、就活の一番の近道です。<br>
+          <span style="color:#3d8a5f;font-size:0.7rem;">▶ この職種名でインターン募集を検索してみよう</span>
+        </div>
+
+        <div style="padding:14px 16px;background:#fff8e8;border-radius:8px;border-left:4px solid #d4a843;font-size:0.75rem;color:#3a2a00;line-height:1.8;">
+          🌳 <strong style="color:#b8860b;">大学4年生の方へ</strong><br>
+          この職種名を<strong>マイナビ・リクナビ</strong>の検索窓にそのまま入れてみましょう。<br>
+          「企業名」ではなく<strong>「職種名」で絞る</strong>ことで、自分に合った企業が見つかりやすくなります。<br>
+          <span style="color:#b8860b;font-size:0.7rem;">▶ 職種で絞る → 気になる企業へエントリー</span>
+        </div>
+
+      </div>`;
+
+    html += `</div>`;
+  });
+
+  document.getElementById('printContent').innerHTML = html;
+  document.getElementById('printModal').style.display = 'block';
+}
+
+function closePrintModal() {
+  document.getElementById('printModal').style.display = 'none';
+}
+
+// ===================== 楕円ゾーン描画 共通関数 =====================
+
+// 点群から楕円パラメータを計算
+function calcEllipse(jobs, margin) {
+  if (jobs.length === 0) return null;
+  const pxs = jobs.map(j => toCanvasXY(j.x, j.y).cx);
+  const pys = jobs.map(j => toCanvasXY(j.x, j.y).cy);
+  const minX = Math.min(...pxs), maxX = Math.max(...pxs);
+  const minY = Math.min(...pys), maxY = Math.max(...pys);
+  return {
+    cx: (minX + maxX) / 2,
+    cy: (minY + maxY) / 2,
+    rx: Math.max((maxX - minX) / 2 + margin, margin),
+    ry: Math.max((maxY - minY) / 2 + margin, margin)
+  };
+}
+
+// 楕円を描画（点線 or 実線）
+function drawEllipseZone(e, color, lineWidth, dashed, label) {
+  if (!e) return;
+  ctx.save();
+  if (dashed) ctx.setLineDash([8, 5]);
+  ctx.beginPath();
+  ctx.ellipse(e.cx, e.cy, e.rx, e.ry, 0, 0, Math.PI * 2);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.stroke();
+  ctx.globalAlpha = 0.07;
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  if (label) {
+    ctx.setLineDash([]);
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.fillText(label, e.cx, e.cy - e.ry - 7);
+  }
+  ctx.restore();
+}
+
+// ===================== 16分割診断からの座標受信 =====================
+let shindanCX = NaN, shindanCY = NaN;
+
+(function() {
+  const params = new URLSearchParams(location.search);
+  shindanCX = parseFloat(params.get('cx'));
+  shindanCY = parseFloat(params.get('cy'));
+  if (isNaN(shindanCX) || isNaN(shindanCY)) return;
+
+  // バナー表示
+  const banner = document.createElement('div');
+  banner.id = 'shindan-banner';
+  banner.style.cssText = `
+    background: linear-gradient(135deg, #2d6b4a, #3d8a5f);
+    color: #d0ede0;
+    padding: 12px 18px;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    border-bottom: 2px solid #d4a843;
+    text-align: center;
+  `;
+  banner.innerHTML = `
+    🌳 <strong style="color:#f0faf5;">16分割診断の結果から来ました</strong>
+    ── <span style="color:#6de0b0;font-weight:700;">点線の楕円</span>があなたの特性ゾーンです。
+    カテゴリを選ぶと<span style="color:#d4a843;font-weight:700;">金色の楕円</span>が重なります。
+    <strong style="color:#f0faf5;">重なった部分</strong>が最も選びやすい職種です。
+  `;
+  document.body.insertBefore(banner, document.body.firstChild);
+
+  // 描画フックを追加してリフレッシュ
+  drawMatrix();
+  showNearbyJobs(shindanCX, shindanCY);
+})();
+
+// ===================== drawMatrixに楕円を追加 =====================
+const _origDrawMatrix = drawMatrix;
+window.drawMatrix = function() {
+  _origDrawMatrix();
+  drawZoneEllipses();
+};
+
+function drawZoneEllipses() {
+  // ── 点線楕円：診断ゾーン（診断から来た時のみ）──
+  if (!isNaN(shindanCX) && !isNaN(shindanCY)) {
+    const nearbyJobs = JOBS.filter(j =>
+      Math.sqrt((j.x - shindanCX) ** 2 + (j.y - shindanCY) ** 2) <= 2.5
+    );
+    const e = calcEllipse(nearbyJobs, 18);
+    drawEllipseZone(e, 'rgba(109,224,176,0.85)', 1.8, true, 'あなたの特性ゾーン');
+
+    // 近い職種に金色の光輪
+    nearbyJobs.forEach(j => {
+      const {cx: px, cy: py} = toCanvasXY(j.x, j.y);
+      const dist = Math.sqrt((j.x - shindanCX) ** 2 + (j.y - shindanCY) ** 2);
+      ctx.beginPath();
+      ctx.arc(px, py, 9, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(212,168,67,${dist < 1.2 ? 1.0 : 0.6})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // 十字マーカー
+    const {cx: tx, cy: ty} = toCanvasXY(shindanCX, shindanCY);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(109,224,176,0.7)';
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(tx - 16, ty); ctx.lineTo(tx + 16, ty); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(tx, ty - 16); ctx.lineTo(tx, ty + 16); ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── 金色実線楕円：カテゴリフィルターゾーン（ALLでない時）──
+  if (currentCat !== 'ALL') {
+    const catJobs = JOBS.filter(j => j.cat === currentCat);
+    const e = calcEllipse(catJobs, 22);
+    drawEllipseZone(e, 'rgba(212,168,67,0.9)', 2.5, false, currentCat + 'ゾーン');
+  }
+}
+
+// ===================== 初期化（楕円コード読み込み後に実行）=====================
+window.addEventListener('resize', resize);
+resize();
+
+// 近い職種リストをサイドに表示
+function showNearbyJobs(targetX, targetY) {
+  const nearby = JOBS
+    .map(j => ({ ...j, dist: Math.sqrt((j.x - targetX) ** 2 + (j.y - targetY) ** 2) }))
+    .filter(j => j.dist <= 2.5)
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, 30);
+
+  if (nearby.length === 0) return;
+
+  // カテゴリ別にグループ化
+  const grouped = {};
+  nearby.forEach(j => {
+    if (!grouped[j.cat]) grouped[j.cat] = [];
+    grouped[j.cat].push(j);
+  });
+
+  let html = `
+    <div style="
+      background:#2d6b4a;border-bottom:1px solid #5aaa7a;
+      padding:10px 14px;font-size:0.8rem;font-weight:700;color:#d4a843;
+      display:flex;align-items:center;gap:8px;
+    ">
+      ★ あなたの座標に近い職種（${nearby.length}件）
+    </div>`;
+
+  Object.entries(grouped).forEach(([cat, jobs]) => {
+    html += `<div style="padding:8px 14px 2px;font-size:0.68rem;color:#6de0b0;font-weight:700;border-bottom:1px solid #2d6b4a;">${cat}</div>`;
+    jobs.forEach(j => {
+      const distLabel = j.dist <= 1.0 ? '★' : j.dist <= 1.8 ? '◎' : '○';
+      html += `
+        <div style="
+          padding:5px 14px;font-size:0.75rem;color:#d0ede0;
+          border-bottom:1px solid #1a3a2a;
+          display:flex;align-items:center;gap:6px;cursor:pointer;
+        " onclick="openPopup(JOBS.find(j=>j.id===${j.id}))">
+          <span style="color:#d4a843;font-size:0.7rem;width:14px;">${distLabel}</span>
+          <span style="flex:1;">${j.name}</span>
+        </div>`;
+    });
+  });
+
+  // 既存のサイドパネル（selectedPane）の上に挿入
+  const target = document.getElementById('selectedPane');
+  if (!target) return;
+  const nearbyDiv = document.createElement('div');
+  nearbyDiv.id = 'nearbyPane';
+  nearbyDiv.style.cssText = 'border-bottom:2px solid #d4a843;margin-bottom:2px;';
+  nearbyDiv.innerHTML = html;
+  target.parentNode.insertBefore(nearbyDiv, target);
+}
+
+// PWA：ホーム画面アイコン登録（インストール）対応のためService Workerを登録
+// ※就活の木本体（index.html）のsw.jsとは別物。このページ単体のスコープに限定して登録する
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw-matrix.js', { scope: './jobmatrix_556.html' }).catch(()=>{});
+}
+</script>
+
+<!-- ── QRコード印刷オーバーレイ ── -->
+<div id="qr-print-overlay">
+  <div id="qr-print-box">
+    <div class="qp-icon">📱</div>
+    <div class="qp-title">就活の木 ｜ 職種マトリクス556</div>
+    <div class="qp-sub">スマホのカメラで読み取るとこのページが開きます<br>印刷してポスターや掲示物に貼れます</div>
+    <div id="qr-canvas-wrap"></div>
+    <div class="qp-url" id="qp-url-text">https://tanukin0423.github.io/gakusei-panel/jobmatrix_556.html</div>
+    <button class="qp-print-btn" onclick="printQr556()">🖨️ 印刷する</button>
+    <button class="qp-close-btn" onclick="closeQrPrint556()">閉じる</button>
+  </div>
+</div>
+
+<!-- ── QRコード機能JS ── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+  var QR_URL = 'https://tanukin0423.github.io/gakusei-panel/jobmatrix_556.html';
+  var _qrObj = null;
+
+  window.showQrPrint556 = function(){
+    var wrap = document.getElementById('qr-canvas-wrap');
+    wrap.innerHTML = '';
+    if(_qrObj){ try{ _qrObj.clear(); }catch(e){} _qrObj = null; }
+    _qrObj = new QRCode(wrap, {
+      text: QR_URL,
+      width: 185,
+      height: 185,
+      colorDark: '#2d6b4a',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+    document.getElementById('qp-url-text').textContent = QR_URL;
+    document.getElementById('qr-print-overlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closeQrPrint556 = function(){
+    document.getElementById('qr-print-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  window.printQr556 = function(){
+    document.body.classList.add('qr-printing');
+    window.print();
+    // 印刷ダイアログ後に qr-printing クラスを除去
+    setTimeout(function(){ document.body.classList.remove('qr-printing'); }, 1000);
+  };
+
+  document.getElementById('qr-print-overlay').addEventListener('click', function(e){
+    if(e.target === this) closeQrPrint556();
+  });
+})();
+</script>
+
+<!-- ===== 3年生・4年生向け 次のアクション（常設） ===== -->
+<div style="
+  max-width:900px;margin:20px auto 80px;padding:0 12px;
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+">
+  <div style="padding:16px 18px;background:#2d6b4a;border-radius:10px;border-left:4px solid #6de0b0;font-size:0.78rem;color:#d0ede0;line-height:1.9;">
+    🌱 <strong style="color:#f0faf5;font-size:0.88rem;">大学3年生の方へ</strong><br>
+    気になった職種は、ぜひ<strong style="color:#6de0b0;">インターンシップ</strong>で実際に体験してみましょう。<br>
+    「なんとなく向いてそう」から「やっぱりこれだ」に変わる体験が、就活の一番の近道です。<br>
+    <span style="color:#6de0b0;font-size:0.72rem;">▶ この職種名でインターン募集を検索してみよう</span>
+  </div>
+  <div style="padding:16px 18px;background:#3a2a00;border-radius:10px;border-left:4px solid #d4a843;font-size:0.78rem;color:#f0e0b0;line-height:1.9;">
+    🌳 <strong style="color:#f0faf5;font-size:0.88rem;">大学4年生の方へ</strong><br>
+    この職種名を<strong style="color:#d4a843;">マイナビ・リクナビ</strong>の検索窓にそのまま入れてみましょう。<br>
+    「企業名」ではなく<strong style="color:#d4a843;">「職種名」で絞る</strong>ことで、自分に合った企業が見つかりやすくなります。<br>
+    <span style="color:#d4a843;font-size:0.72rem;">▶ 職種で絞る → 気になる企業へエントリー</span>
+  </div>
+</div>
+
+</body>
+</html>
